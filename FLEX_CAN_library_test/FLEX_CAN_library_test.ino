@@ -24,7 +24,7 @@ void loop() {
   FD.write(msg); */
   if ( FD.read(msg) ) {
     if(msg.id == ID_Filter){
-      Serial.print("MB: "); Serial.print(msg.mb);
+      Serial.print("MB : "); Serial.print(msg.mb);
       Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
       Serial.print("  EXT: "); Serial.print(msg.flags.extended );
       Serial.print("  LEN: "); Serial.print(msg.len);
