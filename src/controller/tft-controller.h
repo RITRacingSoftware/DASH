@@ -2,6 +2,7 @@
 
 class TFT_CONTROLLER : public CONTROLLER_INTF
 {
+
 public:
     TFT_CONTROLLER() = default;
     ~TFT_CONTROLLER() = default;

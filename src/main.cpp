@@ -13,7 +13,7 @@ void setup()
 void loop()
 {
   controller.updateModel();
-  delay(167);
+  delay(80);
   controller.updateView();
-  delay(167);
+  delay(80);
 }
