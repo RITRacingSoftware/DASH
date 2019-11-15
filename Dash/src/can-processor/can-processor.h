@@ -6,6 +6,6 @@ class CAN_PROCESSOR : public CAN_PROCESSOR_INTF
     public:
     CAN_PROCESSOR() {}
 
-    bool readCAN(unit16_t & id, std::array<uint8_t, 8>) override;
+    bool readCAN(unit16_t & id, std::array<uint8_t, 8>);
 
 };
