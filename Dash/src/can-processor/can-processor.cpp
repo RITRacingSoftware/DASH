@@ -1,4 +1,0 @@
-class CAN_PROCESSOR{
-    
-
-}

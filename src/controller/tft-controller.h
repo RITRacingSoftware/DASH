@@ -1,15 +1,20 @@
 #include "../include/controller-intf.h"
+#include "../include/data-processor-intf.h"
+#include "etl/array.h"
 
-class TFT_CONTROLLER : public CONTROLLER_INTF
-{
+class TFT_CONTROLLER : public CONTROLLER_INTF {
+private:
+  DATA_PROCESSOR_INTF *my_data_processor;
 
 public:
-    TFT_CONTROLLER() = default;
-    ~TFT_CONTROLLER() = default;
+  TFT_CONTROLLER(DATA_PROCESSOR_INTF *dataProcessor);
+  ~TFT_CONTROLLER();
 
-    void initialize() override;
+  void initialize() override;
 
-    void updateView() override;
+  void updateView() override;
 
-    void updateModel() override;
+  void updateModel() override;
+
+  void processAccumulatorTemperature(etl::array<uint8_t, 8> const &data);
 };
