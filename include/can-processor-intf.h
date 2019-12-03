@@ -7,5 +7,6 @@ class CAN_PROCESSOR_INTF
 
     virtual ~CAN_PROCESSOR_INTF(){}
 
-    virtual bool readCAN(CAN_MESSAGE & msg);
+
+    virtual bool readCAN(CAN_MESSAGE & msg) = 0;
 };
