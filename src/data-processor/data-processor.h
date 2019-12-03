@@ -10,9 +10,11 @@ private:
   etl::map<uint16_t, etl::delegate<void(etl::array<uint8_t, 8> const &)>,
            MAX_MAP_SIZE> my_callback_map;
   
+  CAN_PROCESSOR canProcessor;
+  
 
 public:
-  DATA_PROCESSOR() {}
+  DATA_PROCESSOR() {canProcessor = CAN_PROCESSOR();}
   ~DATA_PROCESSOR(){}
 
   /*
@@ -23,8 +25,7 @@ public:
   @return True if it was able to add the callback to the registry, false otherwise
   The class using the dataprocessor will call register() to register all the callbacks on startup
   */
-  bool
-  registerCallback(uint16_t const &id,
+  bool registerCallback(uint16_t const &id,
                    etl::delegate<void(etl::array<uint8_t, 8> const &)> const
                        &callback);
 
