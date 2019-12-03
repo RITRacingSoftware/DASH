@@ -2,6 +2,7 @@
 #include "etl/map.h"
 #include "can-processor/can-processor.h"
 #include "etl/array.h"
+#include "stdint.h"
 
 #define MAX_SET_SIZE 80
 
@@ -26,7 +27,8 @@ bool DATA_PROCESSOR::registerCallback(uint16_t const &id, etl::delegate<void(etl
     if(my_callback_map.full()){
         return false;
     }
-    my_callback_map.insert(id);
+    std::pair<uint16_t, etl::delegate<void(etl::array<uint8_t, 8> const &)>> pair (id, callback);
+    my_callback_map.insert(pair);
     return true;
 }
 
@@ -37,15 +39,10 @@ bool DATA_PROCESSOR::registerCallback(uint16_t const &id, etl::delegate<void(etl
   void DATA_PROCESSOR::processData()
   {
       bool readingCAN = true; //Create a variable for looping reading can, initialize to true to start loop
-      etl::array<CAN_MESSAGE,MAX_SET_SIZE> CanMessages; //Array for storing the can messages read
-      int index = 0; //Index of current message
       while(readingCAN){ //Loop reading CAN messages until there aren't any messages left in the queue
-          CAN_MESSAGE emptyMessage; //Create an empty message to be populated with info
-          CanMessages[index] = emptyMessage; //Set the empty can message in the array
-          readingCAN = readCAN(&CanMessages[index]); //Read the next can message into array at current index, and set whether there are messages left
-          index +=1;
-      }
-      //What does it do with the data/can messages? Call function for each message?
-      //Calls the callback of the id from the map
-      //
+          CAN_MESSAGE message; //Create an empty message to be populated with info
+          readingCAN = canProcessor.readCAN(message); //Read the next can message into array at current index, and set whether there are messages left
+          etl::delegate<void(etl::array<uint8_t, 8> const &)> func = my_callback_map.at(message.id); //Get the function associated with the id
+          func(message.data); //Call the function with the data from the can message
+      } 
   }
