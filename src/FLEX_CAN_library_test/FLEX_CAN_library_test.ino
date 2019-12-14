@@ -28,7 +28,7 @@ void loop() {
       Serial.print("  ID: 0x"); Serial.print(msg.id, HEX );
       Serial.print("  EXT: "); Serial.print(msg.flags.extended );
       Serial.print("  LEN: "); Serial.print(msg.len);
-      Serial.print(" DATA: ");
+      Serial.print(" DATA: \n");
       Serial.print(" Motor Angle: " );
       Serial.println(msg.buf[0], msg.buf[1]);
       Serial.print(" Motor Speed: " );
@@ -36,7 +36,7 @@ void loop() {
       Serial.print(" Electircal Output Frequency: " );
       Serial.println(msg.buf[4], msg.buf[5]);
       Serial.print(" Delta Resolver Filtered: " );
-      Serial.print(lnmsg.buf[6], msg.buf[7]);
+      Serial.println(msg.buf[6], msg.buf[7]);
       /*for ( uint8_t i = 0; i < 8; i++ ) {
         Serial.print(msg.buf[i]); Serial.print(" ");
      }*/
