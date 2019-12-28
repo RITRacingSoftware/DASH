@@ -8,6 +8,7 @@ private:
 
 public:
   TFT_CONTROLLER(DATA_PROCESSOR_INTF *dataProcessor);
+
   ~TFT_CONTROLLER();
 
   void initialize() override;
