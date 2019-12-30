@@ -1,3 +1,6 @@
+#ifndef TFT_TEXT_ITEM_H_
+#define TFT_TEXT_ITEM_H_
+
 #include "../../../include/display-interfaces/display-item-intf.h"
 #include <cstdint>
 #include "etl/cstring.h"
@@ -36,3 +39,5 @@ public:
             this->my_fore_color == otherItem.my_fore_color);
   }
 };
+
+#endif /* TFT_TEXT_ITEM_H_ */
