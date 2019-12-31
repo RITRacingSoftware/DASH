@@ -7,11 +7,11 @@
 bool DATA_PROCESSOR::registerCallback(
     uint16_t const &id,
     etl::delegate<void(etl::array<uint8_t, 8> const &)> const &callback) {
-  // if (my_callback_map.full()) {
-  //   return false;
-  // }
-  // my_callback_map.insert({id, callback});
-  // return true;
+  if (my_callback_map.full()) {
+    return false;
+  }
+  my_callback_map.insert({id, callback});
+  return true;
 }
 
 void DATA_PROCESSOR::processData() {
@@ -25,10 +25,10 @@ void DATA_PROCESSOR::processData() {
                                                 // into array at current index,
                                                 // and set whether there are
                                                 // messages left
-    // etl::delegate<void(etl::array<uint8_t, 8> const &)> func =
-    //     my_callback_map.at(
-    //         message.id); // Get the function associated with the id
-    // func(message.data); // Call the function with the data from the can
+    etl::delegate<void(etl::array<uint8_t, 8> const &)> func =
+        my_callback_map.at(
+            message.id); // Get the function associated with the id
+    func(message.data);  // Call the function with the data from the can
     // message
   }
 }

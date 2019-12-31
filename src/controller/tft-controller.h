@@ -1,6 +1,8 @@
+#ifndef TFT_CONTROLLER_H_
+#define TFT_CONTROLLER_H_
+
 #include "../include/controller-intf.h"
 #include "../include/data-processor-intf.h"
-#include "etl/array.h"
 
 class TFT_CONTROLLER : public CONTROLLER_INTF {
 private:
@@ -19,3 +21,5 @@ public:
 
   void processAccumulatorTemperature(etl::array<uint8_t, 8> const &data);
 };
+
+#endif /* TFT_CONTROLLER_H_ */

@@ -10,8 +10,8 @@
 
 class DATA_PROCESSOR : public DATA_PROCESSOR_INTF {
 private:
-  // etl::map<uint16_t, etl::delegate<void(etl::array<uint8_t, 8> const &)>,
-  //          MAX_MAP_SIZE> my_callback_map;
+  etl::map<uint16_t, etl::delegate<void(etl::array<uint8_t, 8> const &)>,
+           MAX_MAP_SIZE> my_callback_map;
 
   CAN_PROCESSOR canProcessor;
 
