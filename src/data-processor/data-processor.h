@@ -6,7 +6,7 @@
 #include "etl/delegate.h"
 #include "can-processor/can-processor.h"
 
-#define MAX_MAP_SIZE 10
+#define MAX_MAP_SIZE 25
 
 class DATA_PROCESSOR : public DATA_PROCESSOR_INTF {
 private:

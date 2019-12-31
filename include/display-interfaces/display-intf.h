@@ -5,7 +5,7 @@
 #include <Arduino.h>
 #include "display-item-intf.h"
 
-#define MAX_ELEMENTS 20
+#define MAX_ELEMENTS 50
 
 class DISPLAY_INTF {
 public:
