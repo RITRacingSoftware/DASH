@@ -1,8 +1,8 @@
-#include "etl/delegate.h"
-#include "etl/array.h"
-
 #ifndef DATA_PROCESSOR_INTF_H_
 #define DATA_PROCESSOR_INTF_H_
+
+#include "etl/delegate.h"
+#include "etl/array.h"
 
 class DATA_PROCESSOR_INTF {
 public:
@@ -22,7 +22,7 @@ public:
   callbacks on startup
   */
   virtual bool registerCallback(
-      uint16_t,
+      uint16_t const &,
       etl::delegate<void(etl::array<uint8_t, 8> const &)> const &callback);
 
   /*

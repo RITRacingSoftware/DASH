@@ -14,8 +14,8 @@ TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin)
   this->my_display_driver.fillScreen(RA8875_BLACK);
 }
 
-void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *const element) {
-  this->my_elements.push_back(element);
+void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *element) {
+  // this->my_elements.push_back(element);
 }
 
 void TFT_DISPLAY::updateScreen() {
@@ -32,14 +32,14 @@ bool TFT_DISPLAY::removeElement(DISPLAY_ITEM_INTF const &element) {
   for (auto i = this->my_elements.begin(); i != this->my_elements.end(); i++) {
     // Double derefernce bc dereferencing the iterator to get the pointer
     if (**i == element) {
-      this->my_elements.erase(i);
+      // this->my_elements.erase(i);
       return true;
     }
   }
   return false;
 }
 
-etl::vector<DISPLAY_ITEM_INTF *const, MAX_ELEMENTS>
+etl::vector<DISPLAY_ITEM_INTF *, MAX_ELEMENTS>
 TFT_DISPLAY::getElements() const {
   return this->my_elements;
 }

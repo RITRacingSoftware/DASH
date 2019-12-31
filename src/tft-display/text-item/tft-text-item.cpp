@@ -7,7 +7,7 @@ TFT_TEXT_ITEM::TFT_TEXT_ITEM(const uint8_t fontSize, uint32_t xCoord,
                              uint16_t bgColor,
                              etl::string<MAX_STRING_SIZE> text)
     : my_font_size(fontSize), my_x(xCoord), my_y(yCoord),
-      my_fore_color(foreColor), my_bg_color(my_bg_color), my_text(text) {}
+      my_fore_color(foreColor), my_bg_color(bgColor), my_text(text) {}
 
 void TFT_TEXT_ITEM::updateElement(Adafruit_RA8875 *const displayDriver) {
   // Update the colors

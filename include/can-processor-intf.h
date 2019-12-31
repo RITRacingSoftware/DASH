@@ -1,8 +1,8 @@
-#include <etl/array.h>
-#include "can-message.h"
-
 #ifndef CAN_PROCESSOR_INTF_H_
 #define CAN_PROCESSOR_INTF_H_
+
+#include <etl/array.h>
+#include "can-message.h"
 
 class CAN_PROCESSOR_INTF {
 public:
