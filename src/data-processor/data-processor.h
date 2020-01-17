@@ -5,6 +5,7 @@
 #include "etl/map.h"
 #include "etl/delegate.h"
 #include "can-processor/can-processor.h"
+#include "gpio-processor/gpio-processor.h"
 
 #define MAX_MAP_SIZE 25
 
@@ -14,6 +15,7 @@ private:
            MAX_MAP_SIZE> my_callback_map;
 
   CAN_PROCESSOR canProcessor;
+  GPIO_PROCESSOR gpioProcessor;
 
 public:
   DATA_PROCESSOR() {}
@@ -26,7 +28,9 @@ public:
 
   void registerData() override;
 
-  void processData();
+  void processData() override;
+
+  void setPinData(uint8_t PIN, uint8_t value) override;
 };
 
 #endif /* DATA_PROCESSOR_H_ */

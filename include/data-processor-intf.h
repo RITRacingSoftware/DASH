@@ -31,6 +31,10 @@ public:
   loop to tell it to collect data
   */
   virtual void registerData();
+
+  virtual void setPinData(uint8_t PIN, uint8_t value);
+
+  virtual void processData();
 };
 
 #endif /* DATA_PROCESSOR_INTF_H_ */

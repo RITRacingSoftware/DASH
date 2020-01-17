@@ -34,3 +34,7 @@ void DATA_PROCESSOR::processData() {
 }
 
 void DATA_PROCESSOR::registerData() {}
+
+void DATA_PROCESSOR::setPinData(uint8_t PIN, uint8_t value) {
+  this->gpioProcessor.writeGPIO(PIN, value);
+}
