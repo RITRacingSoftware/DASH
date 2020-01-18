@@ -3,6 +3,7 @@
 #include "can-processor/can-processor.h"
 #include "etl/array.h"
 #include "stdint.h"
+#include <Arduino.h>
 
 bool DATA_PROCESSOR::registerCallback(
     uint16_t const &id,
