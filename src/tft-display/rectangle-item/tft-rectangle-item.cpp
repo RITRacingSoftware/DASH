@@ -9,7 +9,7 @@ TFT_RECTANGLE_ITEM::TFT_RECTANGLE_ITEM(uint32_t xCoord,
       my_color(color) {}
 
 void TFT_RECTANGLE_ITEM::updateElement(Adafruit_RA8875 *const displayDriver) {
-  // Update the colors
+  // Update the rectangle
   displayDriver->fillRect(this->my_x, this->my_y, this->my_width, this->my_height, this->my_color);
 }
 
