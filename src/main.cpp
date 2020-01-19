@@ -13,7 +13,6 @@ void setup() {
 }
 
 void loop() {
-  Serial.println("1");
   digitalWrite(13, HIGH);
   controller.updateModel();
   delay(80);
