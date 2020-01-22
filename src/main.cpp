@@ -1,9 +1,9 @@
 #include <Arduino.h>
-#include "controller/tft-controller.h"
+#include "controller/dash-controller.h"
 #include "data-processor/data-processor.h"
 
 DATA_PROCESSOR dataProcessor;
-TFT_CONTROLLER controller(&dataProcessor);
+DASH_CONTROLLER controller(&dataProcessor);
 
 void setup() {
   Serial.print("startingg");

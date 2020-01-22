@@ -1,17 +1,17 @@
-#ifndef TFT_CONTROLLER_H_
-#define TFT_CONTROLLER_H_
+#ifndef DASH_CONTROLLER_H_
+#define DASH_CONTROLLER_H_
 
 #include "../include/controller-intf.h"
 #include "../include/data-processor-intf.h"
 
-class TFT_CONTROLLER : public CONTROLLER_INTF {
+class DASH_CONTROLLER : public CONTROLLER_INTF {
 private:
   DATA_PROCESSOR_INTF *my_data_processor;
 
 public:
-  TFT_CONTROLLER(DATA_PROCESSOR_INTF *dataProcessor);
+  DASH_CONTROLLER(DATA_PROCESSOR_INTF *dataProcessor);
 
-  ~TFT_CONTROLLER() = default;
+  ~DASH_CONTROLLER() = default;
 
   void initialize() override;
 
@@ -22,4 +22,4 @@ public:
   void processAccumulatorTemperature(etl::array<uint8_t, 8> const &data);
 };
 
-#endif /* TFT_CONTROLLER_H_ */
+#endif /* DASH_CONTROLLER_H_ */
