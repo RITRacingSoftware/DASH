@@ -15,8 +15,12 @@ void setup() {
 }
 
 void loop() {
+<<<<<<< HEAD
   //Serial.println("1");
   //digitalWrite(13, HIGH);
+=======
+  digitalWrite(13, HIGH);
+>>>>>>> 6d9f02759078aafa1638d08f8b47bb8b061a86c0
   controller.updateModel();
   delay(80);
   //digitalWrite(13, LOW);

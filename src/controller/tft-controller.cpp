@@ -18,10 +18,14 @@ void TFT_CONTROLLER::updateView() {
   // Do nothing
 }
 
+<<<<<<< HEAD
 void TFT_CONTROLLER::updateModel() {
   //Serial.println("2");
   this->my_data_processor->processData();
 }
+=======
+void TFT_CONTROLLER::updateModel() { this->my_data_processor->processData(); }
+>>>>>>> 6d9f02759078aafa1638d08f8b47bb8b061a86c0
 
 void TFT_CONTROLLER::processAccumulatorTemperature(
     etl::array<uint8_t, 8> const &data) {
@@ -29,6 +33,9 @@ void TFT_CONTROLLER::processAccumulatorTemperature(
   pinMode(20, OUTPUT);
   digitalWrite(20, HIGH);
   Serial.println("Got message!!");
-  Serial.printf("Data: {%u}", reinterpret_cast<uint32_t>(data.data()));
+  Serial.printf("Data: ");
+  for (int i = 0; i < 8; i++) {
+    Serial.printf("%u", data[i]);
+  }
   Serial.println("");
 }
