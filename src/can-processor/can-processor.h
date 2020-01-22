@@ -9,6 +9,7 @@ public:
   ~CAN_PROCESSOR(){};
 
   bool readCAN(CAN_MESSAGE &msg) override;
+
 };
 
 #endif /* CAN_PROCESSOR_H_ */

@@ -15,7 +15,7 @@ private:
            MAX_MAP_SIZE> my_callback_map;
 
   CAN_PROCESSOR canProcessor;
-  GPIO_PROCESSOR gpioProcessor;
+  //GPIO_PROCESSOR gpioProcessor;
 
 public:
   DATA_PROCESSOR() {}

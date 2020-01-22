@@ -19,7 +19,7 @@ void TFT_CONTROLLER::updateView() {
 }
 
 void TFT_CONTROLLER::updateModel() {
-  Serial.println("2");
+  //Serial.println("2");
   this->my_data_processor->processData();
 }
 
