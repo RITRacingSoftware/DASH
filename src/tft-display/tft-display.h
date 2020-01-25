@@ -11,7 +11,7 @@ private:
 
 public:
   TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin);
-  ~TFT_DISPLAY();
+  ~TFT_DISPLAY() = default;
 
   void addElement(DISPLAY_ITEM_INTF *element) override;
 

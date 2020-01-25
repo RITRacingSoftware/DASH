@@ -6,6 +6,7 @@
 #include "etl/delegate.h"
 #include "can-processor/can-processor.h"
 #include "gpio-processor/gpio-processor.h"
+#include "../../include/dash-controller-intf.h"
 
 #define MAX_MAP_SIZE 25
 
@@ -15,10 +16,11 @@ private:
            MAX_MAP_SIZE> my_callback_map;
 
   CAN_PROCESSOR canProcessor;
+  DASH_CONTROLLER_INTF *myDashController;
   //GPIO_PROCESSOR gpioProcessor;
 
 public:
-  DATA_PROCESSOR() {}
+  DATA_PROCESSOR(DASH_CONTROLLER_INTF *dashController) {}
   ~DATA_PROCESSOR() {}
 
   bool

@@ -5,7 +5,10 @@
 #include "stdint.h"
 #include "Arduino.h"
 
-
+DATA_PROCESSOR::DATA_PROCESSOR(DASH_CONTROLLER_INTF *dashController)
+{
+  myDashController = dashController;
+}
 
 bool DATA_PROCESSOR::registerCallback(
     uint16_t const &id,
@@ -18,22 +21,11 @@ bool DATA_PROCESSOR::registerCallback(
 }
 
 void DATA_PROCESSOR::processData() {
-<<<<<<< HEAD
-  //Serial.println("3");
-  bool readingCAN = true; // Create a variable for looping reading can,
-                          // initialize to true to start loop
-  //Serial.println("4");
-  while (readingCAN) // Loop reading CAN messages until there aren't any
-                     // messages left in the queue
-  {
-    //Serial.println("5");
-=======
   bool readingCAN = true; // Create a variable for looping reading can,
                           // initialize to true to start loop
   while (readingCAN)      // Loop reading CAN messages until there aren't any
                           // messages left in the queue
   {
->>>>>>> 6d9f02759078aafa1638d08f8b47bb8b061a86c0
     CAN_MESSAGE message; // Create an empty message to be populated with info
     readingCAN = canProcessor.readCAN(message); // Read the next can
     // message
