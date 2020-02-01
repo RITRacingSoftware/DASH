@@ -7,7 +7,7 @@
 class TFT_DISPLAY : public DISPLAY_INTF {
 private:
   etl::vector<DISPLAY_ITEM_INTF *, MAX_ELEMENTS> my_elements;
-  Adafruit_RA8875 * my_display_driver;
+  //Adafruit_RA8875 *my_display_driver;
 
 public:
   TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin);

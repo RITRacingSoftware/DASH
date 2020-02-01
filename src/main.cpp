@@ -14,11 +14,11 @@ void setup() {
 }
 
 void loop() {
-  digitalWrite(13, HIGH);
+  digitalWrite(13, LOW);
   controller.updateModel();
   delay(80);
   Serial.println("loop");
-  digitalWrite(13, LOW);
+  digitalWrite(13, HIGH);
   controller.updateView();
   //Serial.println("6");
   delay(80);

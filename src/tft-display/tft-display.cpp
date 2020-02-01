@@ -3,24 +3,28 @@
 #include "Arduino.h" //Temporary
 #include "etl/cstring.h" //Temporary
 
-TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin)
-    : my_display_driver(new Adafruit_RA8875(CSPin, resetPin)) {
-  this->my_display_driver->begin(RA8875_480x272);
+namespace {
+  Adafruit_RA8875 my_display_driver(10,9);
+}
 
-  this->my_display_driver->displayOn(true);
-  this->my_display_driver->GPIOX(
+TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin) {
+  //my_display_driver = (Adafruit_RA8875(CSPin,resetPin));
+  my_display_driver.begin(RA8875_480x272);
+
+  my_display_driver.displayOn(true);
+  my_display_driver.GPIOX(
       true); // Enable TFT - display enable tied to GPIOX
-  this->my_display_driver->PWM1config(
+  my_display_driver.PWM1config(
       true, RA8875_PWM_CLK_DIV1024); // PWM output for backlight
-  this->my_display_driver->PWM1out(255);
-  this->my_display_driver->fillScreen(RA8875_BLACK);
-  this->my_display_driver->fillScreen(RA8875_YELLOW); //Temporary
-  this->my_display_driver->textMode(); //Temporary
+  my_display_driver.PWM1out(255);
+  my_display_driver.fillScreen(RA8875_BLACK);
+  my_display_driver.fillScreen(RA8875_YELLOW); //Temporary
+  my_display_driver.textMode(); //Temporary
   Serial.println("starting");
   // this->my_display_driver.setCursor(300, 300);
   // this->my_display_driver.textTransparent(RA8875_RED);
   etl::string<12> text = "What";
-  this->my_display_driver->textWrite(text.c_str(), text.size());
+  my_display_driver.textWrite(text.c_str(), text.size());
 }
 
 void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *element) {
@@ -53,10 +57,10 @@ void TFT_DISPLAY::updateScreen() {
     // }
   //this->my_elements[0]->updateElement(&this->my_display_driver);
   etl::string<14> text = "shits fuckeddd";
-  //this->my_display_driver->textMode();
-  // this->my_display_driver->setCursor(300, 300);
-  // this->my_display_driver->textTransparent(RA8875_RED);
-  // this->my_display_driver->textWrite("Hello world", 10);
+  my_display_driver.textMode();
+  my_display_driver.setCursor(100, 100);
+  my_display_driver.textTransparent(RA8875_RED);
+  my_display_driver.textWrite("Hello world", 10);
 
   
 }
@@ -77,6 +81,6 @@ TFT_DISPLAY::getElements() const {
   return this->my_elements;
 }
 
-TFT_DISPLAY::~TFT_DISPLAY(){
-  free(this->my_display_driver);
-}
+ TFT_DISPLAY::~TFT_DISPLAY(){
+   //free(my_display_driver);
+ }
