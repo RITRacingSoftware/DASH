@@ -17,7 +17,8 @@ void loop() {
   digitalWrite(13, HIGH);
   controller.updateModel();
   delay(80);
-  //digitalWrite(13, LOW);
+  Serial.println("loop");
+  digitalWrite(13, LOW);
   controller.updateView();
   //Serial.println("6");
   delay(80);

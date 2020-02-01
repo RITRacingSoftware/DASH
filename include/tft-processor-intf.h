@@ -1,4 +1,5 @@
-
+#ifndef TFT_PROCESSOR_INTF_H_
+#define TFT_PROCESSOR_INTF_H_
 
 class TFT_PROCESSOR_INTF
 {
@@ -11,3 +12,5 @@ class TFT_PROCESSOR_INTF
 
     virtual void initializeCallbacks() = 0;
 };
+
+#endif

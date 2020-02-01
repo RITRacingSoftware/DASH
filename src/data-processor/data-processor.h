@@ -20,7 +20,7 @@ private:
   //GPIO_PROCESSOR gpioProcessor;
 
 public:
-  DATA_PROCESSOR(DASH_CONTROLLER_INTF *dashController) {}
+  DATA_PROCESSOR(DASH_CONTROLLER_INTF *dashController);
   ~DATA_PROCESSOR() {}
 
   bool

@@ -31,13 +31,7 @@ public:
 
   void updateElement(Adafruit_RA8875 *const displayDriver) override;
 
-  bool operator==(TFT_TEXT_ITEM const &otherItem) {
-    return (this->my_font_size == otherItem.my_font_size &&
-            this->my_x == otherItem.my_x && this->my_y == otherItem.my_y &&
-            this->my_text == otherItem.my_text &&
-            this->my_bg_color == otherItem.my_bg_color &&
-            this->my_fore_color == otherItem.my_fore_color);
-  }
+  bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const override;
 };
 
 #endif /* TFT_TEXT_ITEM_H_ */

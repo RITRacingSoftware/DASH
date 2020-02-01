@@ -14,6 +14,7 @@ void TFT_TEXT_ITEM::updateElement(Adafruit_RA8875 *const displayDriver) {
   displayDriver->setCursor(this->my_x, this->my_y);
   displayDriver->textTransparent(this->my_fore_color);
 
+
   // Note: .c_str() gets a pointer to the begining of the string, adn .size()
   // gets the size of the actual string, not just the size of the container
   displayDriver->textWrite(this->my_text.c_str(), this->my_text.size());
@@ -29,3 +30,19 @@ void TFT_TEXT_ITEM::updateLocation(uint32_t xCoord, uint32_t yCoord) {
   this->my_x = xCoord;
   this->my_y = yCoord;
 }
+
+bool TFT_TEXT_ITEM::operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const{
+
+    TFT_TEXT_ITEM * otherItem = dynamic_cast<TFT_TEXT_ITEM *>(otherItem);
+
+    if (otherItem)
+    {
+        return (this->my_font_size == otherItem->my_font_size &&
+            this->my_x == otherItem->my_x && this->my_y == otherItem->my_y &&
+            this->my_text == otherItem->my_text &&
+            this->my_bg_color == otherItem->my_bg_color &&
+            this->my_fore_color == otherItem->my_fore_color);
+    }
+    
+    return false;
+  }

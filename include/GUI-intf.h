@@ -1,3 +1,6 @@
+#ifndef GUI_INTF_H_
+#define GUI_INTF_H_
+
 class GUI
 {
 public:
@@ -6,3 +9,5 @@ public:
 
     virtual void update() = 0;
 };
+
+#endif

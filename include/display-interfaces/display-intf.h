@@ -16,7 +16,7 @@ public:
 
   virtual void updateScreen() = 0;
 
-  virtual bool removeElement(DISPLAY_ITEM_INTF const &element) = 0;
+  virtual bool removeElement(DISPLAY_ITEM_INTF const *element) = 0;
 
   virtual etl::vector<DISPLAY_ITEM_INTF *, MAX_ELEMENTS>
   getElements() const = 0;

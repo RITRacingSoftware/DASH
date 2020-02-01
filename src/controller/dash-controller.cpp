@@ -2,35 +2,37 @@
 #include "dash-controller.h"
 #include "etl/delegate.h"
 #include "etl/array.h"
-#include "../tft-processor/tft-processor.h"
-#include "../data-processor/data-processor.h"
+
 
 DASH_CONTROLLER::DASH_CONTROLLER()
-  :my_tft_processor(&TFT_PROCESSOR(this)), my_data_processor(&DATA_PROCESSOR(this))
+  :my_tft_processor(this), my_data_processor(this)
 {
-  this->my_data_processor->registerCallback(
+  this->my_data_processor.registerCallback(
       0xAB,
       etl::delegate<void(etl::array<uint8_t, 8> const &)>::create<
           DASH_CONTROLLER, &DASH_CONTROLLER::processAccumulatorTemperature>(
           *this));
+
+  
   
 }
 
 void DASH_CONTROLLER::initialize() {
-  
+  this->my_tft_processor.initializeCallbacks();
 }
 
 void DASH_CONTROLLER::updateView() {
+  this->my_tft_processor.updateScreen();
   // Do nothing
 }
 
-void DASH_CONTROLLER::updateModel() { this->my_data_processor->processData(); }
+void DASH_CONTROLLER::updateModel() { this->my_data_processor.processData(); }
 
-void DASH_CONTROLLER::registerCallback(uint16_t const &id,
+bool DASH_CONTROLLER::registerCallback(uint16_t const &id,
                    etl::delegate<void(etl::array<uint8_t, 8> const &)> const
                        &callback)
                        {
-                         my_data_processor->registerCallback(id, callback);
+                         return my_data_processor.registerCallback(id, callback);
                        }
 
 void DASH_CONTROLLER::processAccumulatorTemperature(

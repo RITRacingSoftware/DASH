@@ -34,8 +34,9 @@ public:
     return (this->my_x == otherItem.my_x && this->my_y == otherItem.my_y &&
             this->my_width == otherItem.my_width &&
             this->my_height == otherItem.my_height &&
-            this->my_color == otherItem.my_color);
+            this->my_color == otherItem.my_color); 
   }
+
 };
 
 #endif /* TFT_RECTANGLE_ITEM_H_ */

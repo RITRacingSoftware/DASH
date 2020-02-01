@@ -1,3 +1,6 @@
+#ifndef GPIO_PROCESSOR_INTF_H_
+#define GPIO_PROCESSOR_INTF_H_
+
 #include "stdint.h"
 
 class GPIO_PROCESSOR_INTF
@@ -11,3 +14,5 @@ class GPIO_PROCESSOR_INTF
 
     virtual void writeGPIO(uint8_t pinNum, bool val) = 0;
 };
+
+#endif
