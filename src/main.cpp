@@ -6,21 +6,20 @@ DASH_CONTROLLER controller;
 
 void setup() {
   Serial.print("startingg");
-  pinMode(13, OUTPUT);
+  pinMode(19, OUTPUT);
   // put your setup code here, to run once:
   Serial.begin(9600);
   controller.initialize();
-  digitalWrite(13, HIGH);
+  digitalWrite(19, HIGH);
 }
 
 void loop() {
-  digitalWrite(13, HIGH);
+  digitalWrite(19, HIGH);
   controller.updateModel();
   delay(80);
   Serial.println("loop");
-  digitalWrite(13, LOW);
+  digitalWrite(19, LOW);
   controller.updateView();
-  //Serial.println("6");
+  // Serial.println("6");
   delay(80);
-
 }
