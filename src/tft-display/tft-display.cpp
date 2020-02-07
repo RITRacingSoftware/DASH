@@ -2,12 +2,13 @@
 #include "tft-display.h"
 #include "Arduino.h" //Temporary
 #include "etl/cstring.h" //Temporary
+//#include "tft-display-driver.h"
 
-namespace {
-  Adafruit_RA8875 my_display_driver(10,9);
-}
+// namespace {
+//   Adafruit_RA8875 my_display_driver(10,9);
+// }
 
-TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin) {
+TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin): my_display_driver(CSPin,resetPin){
   //my_display_driver = (Adafruit_RA8875(CSPin,resetPin));
   my_display_driver.begin(RA8875_480x272);
 
@@ -23,8 +24,10 @@ TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin) {
   Serial.println("starting");
   // this->my_display_driver.setCursor(300, 300);
   // this->my_display_driver.textTransparent(RA8875_RED);
-  etl::string<12> text = "What";
-  my_display_driver.textWrite(text.c_str(), text.size());
+  //etl::string<4> text = "What";
+  
+  my_display_driver.textWrite("whatt", 5);
+  //my_display_driver.softReset();
 }
 
 void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *element) {
@@ -34,7 +37,6 @@ void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *element) {
 
 void TFT_DISPLAY::updateScreen() {
   // Blank screen
-  //this->my_display_driver.graphicsMode();
   //this->my_display_driver.fillScreen(RA8875_BLACK);
   //this->my_display_driver.textMode();
 
@@ -58,9 +60,9 @@ void TFT_DISPLAY::updateScreen() {
   //this->my_elements[0]->updateElement(&this->my_display_driver);
   etl::string<14> text = "shits fuckeddd";
   my_display_driver.textMode();
-  my_display_driver.setCursor(100, 100);
+  my_display_driver.textSetCursor(50, 50);
   my_display_driver.textTransparent(RA8875_RED);
-  my_display_driver.textWrite("Hello world", 10);
+  my_display_driver.textWrite("Hello world", 11);
 
   
 }
