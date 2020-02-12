@@ -14,16 +14,16 @@ private:
   uint32_t my_y;
   uint16_t my_fore_color;
   uint16_t my_bg_color;
-  etl::string<MAX_STRING_SIZE> my_text;
+  char my_text[MAX_STRING_SIZE];
 
 public:
   TFT_TEXT_ITEM(const uint8_t fontSize, uint32_t xCoord, uint32_t yCoord,
                 uint16_t foreColor, uint16_t bgColor,
-                etl::string<MAX_STRING_SIZE> text);
+                char text[MAX_STRING_SIZE]);
 
   ~TFT_TEXT_ITEM() = default;
 
-  void updateText(etl::string<MAX_STRING_SIZE> my_text);
+  void updateText(char my_text[MAX_STRING_SIZE]);
 
   void updateColor(uint16_t color);
 

@@ -25,4 +25,20 @@ void TFT_RECTANGLE_ITEM::updateSize(uint32_t width, uint32_t height) {
   this->my_height = height;
 }
 
+bool TFT_RECTANGLE_ITEM::operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const{
+
+    TFT_RECTANGLE_ITEM * otherItem = dynamic_cast<TFT_RECTANGLE_ITEM *>(otherItem);
+
+    if (otherItem)
+    {
+        return (
+            this->my_x == otherItem->my_x && this->my_y == otherItem->my_y &&
+            this->my_width == otherItem->my_width &&
+            this->my_height == otherItem->my_height &&
+            this->my_color == otherItem->my_color);
+    }
+    
+    return false;
+  }
+
 

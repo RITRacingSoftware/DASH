@@ -22,11 +22,9 @@ public:
   void initialize() override;
   void updateView() override;
   void updateModel() override;
-  bool registerCallback(uint16_t const &id,
-                    etl::delegate<void(etl::array<uint8_t, 8> const &)> const
-                        &callback) override;
+  bool registerCallback() override;
                         
-  void processAccumulatorTemperature(etl::array<uint8_t, 8> const &data); //Should be moved to tft processor
+  //void processAccumulatorTemperature(etl::array<uint8_t, 8> const &data); //Should be moved to tft processor
 
   
 };

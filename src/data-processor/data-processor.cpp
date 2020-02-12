@@ -35,9 +35,18 @@ void DATA_PROCESSOR::processData() {
     if (readingCAN) {
       etl::delegate<void(etl::array<uint8_t, 8> const &)> func =
           this->my_callback_map.at(message.id);
-      Serial.printf("Data: %u\n", *reinterpret_cast<uint32_t *>(&message.data));
-      func(message.data); // Call the function with the data from the can
-    }                     // Get the function associated with the id
+      
+      for(int i = 0; i < 8; i++)
+      {
+        Serial.printf("Byte %d=%02X\n", i, message.data[i]);
+      }
+      Serial.printf("Now as a uint16=%X\n", *(uint16_t*)(&message.data));
+      if (func.is_valid())
+      {
+        Serial.println("Function is valid, calling it");
+        func(message.data);
+      } // Call the function with the data from the can
+    }                     // Get the function associated with the id}
     // message
   }
 }

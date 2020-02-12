@@ -15,9 +15,7 @@ public:
     virtual void updateView() = 0;
     virtual void updateModel() = 0;
 
-    virtual bool registerCallback(uint16_t const &id,
-                   etl::delegate<void(etl::array<uint8_t, 8> const &)> const
-                       &callback) = 0;
+    virtual bool registerCallback() = 0;
 };
 
 #endif
