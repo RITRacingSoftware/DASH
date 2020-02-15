@@ -3,8 +3,8 @@
 #include "etl/delegate.h"
 #include "etl/array.h"
 
-#define FAULT_CODES_ID 0xAB
-#define MOTOR_POSITION_ID 0xA5
+#define FAULT_CODES_ID 0x0AB
+#define MOTOR_POSITION_ID 0x0A5
 #define VOLTAGE_INFO_ID 0x0A7
 
 DASH_CONTROLLER::DASH_CONTROLLER()

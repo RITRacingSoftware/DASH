@@ -15,8 +15,8 @@ void TFT_PROCESSOR::updateScreen()
 
 TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : accumText(0,0,0,RA8875_BLUE, RA8875_RED,"data = 000"),
 motorSpeed(0,90,0,RA8875_RED, RA8875_RED,"Motor Speed = 000"), busVoltage(0,300,0,RA8875_WHITE, RA8875_RED,"Bus Voltage = 000"),
-busVoltRect(300,0,200,20,RA8875_BLACK),
-outputVoltage(0,0,30,RA8875_WHITE, RA8875_RED,"Output Voltage = 000"), greenRect(0,0,85,20,RA8875_GREEN), whiteRect(90,0,150,100,RA8875_CYAN),
+busVoltRect(300,0,200,20,RA8875_BLUE),
+outputVoltage(1,0,30,RA8875_WHITE, RA8875_RED,"Output Voltage = 000"), greenRect(0,0,85,20,RA8875_GREEN), whiteRect(90,0,150,20,RA8875_CYAN),
 myDashController(dashController), myDisplay(10,9){}
 
 void TFT_PROCESSOR::initializeCallbacks()
@@ -26,12 +26,14 @@ void TFT_PROCESSOR::initializeCallbacks()
 
     Serial.printf("Original text address=%p, this=%p\n", &this->accumText, this);
     this->myDisplay.addElement(&accumText);
+    this->myDisplay.addElement(&greenRect);
     this->myDisplay.addElement(&motorSpeed);
+    this->myDisplay.addElement(&whiteRect);
     this->myDisplay.addElement(&busVoltage);
     this->myDisplay.addElement(&busVoltRect);
     this->myDisplay.addElement(&outputVoltage);
-    this->myDisplay.addElement(&greenRect);
-    this->myDisplay.addElement(&whiteRect);
+    
+    
     
 
 

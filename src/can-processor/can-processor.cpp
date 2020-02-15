@@ -16,6 +16,8 @@ bool CAN_PROCESSOR::readCAN(CAN_MESSAGE &msg) {
   if (FD.read(nextMsg)) // If there is a CAN Message in the queue, set msg
                         // fields with it
   {
+    //pinMode(13, OUTPUT);
+    //digitalWrite(13, HIGH);
     Serial.println("Read message");
     Serial.print("ID = ");
     uint16_t bigVal = 0xABCD;
