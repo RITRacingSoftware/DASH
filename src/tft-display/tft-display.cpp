@@ -20,8 +20,6 @@ TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin)
   Serial.println("starting");
   // this->my_display_driver.setCursor(300, 300);
   // this->my_display_driver.textTransparent(RA8875_RED);
-  etl::string<12> text = "What";
-  this->my_display_driver.textWrite(text.c_str(), text.size());
 }
 
 void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *element) {
