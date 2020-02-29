@@ -11,47 +11,15 @@
 class TFT_PROCESSOR : public TFT_PROCESSOR_INTF {
     private:
     
-    int lap;
-    int batteryBeforeLap;
-    int batteryPercent;
-
-    DASH_CONTROLLER_INTF *myDashController;
-    TFT_DISPLAY myDisplay; //PROBLEM IS WITH THE DISPLAY
-
-
-    //Display Items
-    TFT_TEXT_ITEM faultText;
-    TFT_RECTANGLE_ITEM faultTextRect;
-
+    TFT_TEXT_ITEM accumText;
     TFT_TEXT_ITEM motorSpeed;
-    TFT_RECTANGLE_ITEM motorSpeedRect;
-
     TFT_TEXT_ITEM busVoltage;
     TFT_RECTANGLE_ITEM busVoltRect;
-
     TFT_TEXT_ITEM outputVoltage;
-    TFT_RECTANGLE_ITEM outputVoltageRect;
-
-    TFT_TEXT_ITEM maxTemp;
-    TFT_RECTANGLE_ITEM maxTempRect;
-
-    TFT_TEXT_ITEM packVoltage;
-    TFT_RECTANGLE_ITEM packVoltageRect;
-
-    TFT_TEXT_ITEM batteryPercentage;
-    TFT_RECTANGLE_ITEM batteryPercentageRect;
-
-    TFT_TEXT_ITEM batteryPerLap;
-    TFT_RECTANGLE_ITEM batteryPerLapRect;
-
-    TFT_TEXT_ITEM lapNumber;
-    TFT_RECTANGLE_ITEM lapNumberRect;
-
-
-
-    TFT_TEXT_ITEM waterTemp;
-    TFT_RECTANGLE_ITEM waterTempRect;
-
+    TFT_RECTANGLE_ITEM greenRect;
+    TFT_RECTANGLE_ITEM whiteRect;
+    DASH_CONTROLLER_INTF *myDashController;
+    TFT_DISPLAY myDisplay;
 
 
     public:
@@ -63,21 +31,12 @@ class TFT_PROCESSOR : public TFT_PROCESSOR_INTF {
 
     void initializeCallbacks() override;
 
-    void updateFaultText(etl::array<uint8_t, 8> const &data);
+    void updateAcumText(etl::array<uint8_t, 8> const &data);
 
     void MotorPositionInformation(etl::array<uint8_t, 8> const &data);
 
     void VoltageInfo(etl::array<uint8_t, 8> const &data);
 
-    void AccumTemp(etl::array<uint8_t, 8> const &data);
-
-    void AccumVoltage(etl::array<uint8_t, 8> const &data);
-
-    void AccumCharge(etl::array<uint8_t, 8> const &data);
-
-    void IncrementLap(etl::array<uint8_t, 8> const &data);
-
-    void waterTempInfo(etl::array<uint8_t, 8> const &data);
 
 };
 

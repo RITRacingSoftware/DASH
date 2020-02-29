@@ -11,7 +11,6 @@ TFT_TEXT_ITEM::TFT_TEXT_ITEM(const uint8_t fontSize, uint32_t xCoord,
       my_fore_color(foreColor), my_bg_color(bgColor)
       {
           strncpy(this->my_text, text, MAX_STRING_SIZE);
-          this->changed = true;
       }
 
 void TFT_TEXT_ITEM::updateElement(Adafruit_RA8875 *const displayDriver) {
@@ -25,7 +24,6 @@ void TFT_TEXT_ITEM::updateElement(Adafruit_RA8875 *const displayDriver) {
   // gets the size of the actual string, not just the size of the container
   //Serial.printf("Updating text %s, address=%p, address of me=%p\n", this->my_text, this->my_text, this);
   displayDriver->textWrite(this->my_text, MAX_STRING_SIZE);
-  this->changed = false;
 }
 
 void TFT_TEXT_ITEM::updateText(char text[MAX_STRING_SIZE]) {
@@ -65,7 +63,3 @@ bool TFT_TEXT_ITEM::operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const{
     
     return false;
   }
-  
-bool TFT_TEXT_ITEM::getChanged(){
-  return changed;
-}

@@ -15,7 +15,6 @@ private:
   uint16_t my_fore_color;
   uint16_t my_bg_color;
   char my_text[MAX_STRING_SIZE];
-  bool changed;
 
 public:
   TFT_TEXT_ITEM(const uint8_t fontSize, uint32_t xCoord, uint32_t yCoord,
@@ -33,8 +32,6 @@ public:
   void updateElement(Adafruit_RA8875 *const displayDriver) override;
 
   bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const override;
-
-  bool getChanged();
 };
 
 #endif /* TFT_TEXT_ITEM_H_ */
