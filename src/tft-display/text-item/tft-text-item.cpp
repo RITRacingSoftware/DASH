@@ -30,15 +30,13 @@ void TFT_TEXT_ITEM::updateElement(Adafruit_RA8875 *const displayDriver) {
 
 void TFT_TEXT_ITEM::updateText(char text[MAX_STRING_SIZE]) {
   //etl::string<MAX_STRING_SIZE> *pointer = &this->my_text;
-  Serial.println("hereeee");
+
   if(this->my_text == NULL){
-    Serial.println("null");
   }
   else{
-    Serial.print("not null");
-    Serial.printf("%s\n", text);
+
     strncpy(this->my_text, text, MAX_STRING_SIZE);
-    Serial.printf("new text = %s, address of text %p, address of me=%p\n", this->my_text, this->my_text, this);
+
   }
   
 }
@@ -67,5 +65,5 @@ bool TFT_TEXT_ITEM::operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const{
   }
   
 bool TFT_TEXT_ITEM::getChanged(){
-  return changed;
+  return this->changed;
 }

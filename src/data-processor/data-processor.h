@@ -7,6 +7,7 @@
 #include "can-processor/can-processor.h"
 #include "gpio-processor/gpio-processor.h"
 #include "../../include/dash-controller-intf.h"
+#include "etl/array.h"
 
 #define MAX_MAP_SIZE 25
 
@@ -17,6 +18,7 @@ private:
 
   CAN_PROCESSOR canProcessor;
   DASH_CONTROLLER_INTF *myDashController;
+  etl::array<uint16_t, MAX_MAP_SIZE> validIDs;
   //GPIO_PROCESSOR gpioProcessor;
 
 public:

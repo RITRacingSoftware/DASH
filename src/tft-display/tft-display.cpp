@@ -17,14 +17,10 @@ TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin)
   this->my_display_driver.PWM1out(255);
   this->my_display_driver.fillScreen(RA8875_BLACK);
   this->my_display_driver.textMode();                // Temporary
-  Serial.println("starting");
-  // this->my_display_driver.setCursor(300, 300);
-  // this->my_display_driver.textTransparent(RA8875_RED);
 }
 
 void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *element) {
-  Serial.println("Pushing element");
-  Serial.printf("Address of object pushed list=%p\n", element);
+
   this->my_elements.push_back(element);
 }
 

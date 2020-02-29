@@ -16,7 +16,6 @@ bool DATA_PROCESSOR::registerCallback(
   if (my_callback_map.full()) {
     return false;
   }
-  my_callback_map.insert({id, callback});
   return true;
 }
 
@@ -33,19 +32,27 @@ void DATA_PROCESSOR::processData() {
     // and set whether there are
     // messages left
     if (readingCAN) {
-      etl::delegate<void(etl::array<uint8_t, 8> const &)> func =
+      Serial.print("ID = ");
+      Serial.println(message.id, HEX);
+      Serial.print("Data:");
+      for(int i = 0; i<=7; i++){
+        Serial.print(i);
+        Serial.print(" = ");
+        Serial.println(message.data[i], HEX);
+      }
+      if(this->my_callback_map.find(message.id) != this->my_callback_map.end()){
+          etl::delegate<void(etl::array<uint8_t, 8> const &)> func =
           this->my_callback_map.at(message.id);
       
-      for(int i = 0; i < 8; i++)
-      {
-        Serial.printf("Byte %d=%02X\n", i, message.data[i]);
+          for(int i = 0; i < 8; i++)
+          {
+            Serial.printf("Byte %d=%02X\n", i, message.data[i]);
+          }
+          if (func.is_valid())
+          {
+            func(message.data);
+          } // Call the function with the data from the can
       }
-      Serial.printf("Now as a uint16=%X\n", *(uint16_t*)(&message.data));
-      if (func.is_valid())
-      {
-        Serial.println("Function is valid, calling it");
-        func(message.data);
-      } // Call the function with the data from the can
     }                     // Get the function associated with the id}
     // message
   }
