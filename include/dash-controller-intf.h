@@ -7,7 +7,6 @@
 class DASH_CONTROLLER_INTF
 {
 public:
-
     DASH_CONTROLLER_INTF() {}
     virtual ~DASH_CONTROLLER_INTF() {}
 
@@ -16,6 +15,8 @@ public:
     virtual void updateModel() = 0;
 
     virtual bool registerCallback() = 0;
+
+    virtual void readyToDrive() = 0;
 };
 
 #endif

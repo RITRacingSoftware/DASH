@@ -87,6 +87,8 @@ public:
     void IncrementLap(etl::array<uint8_t, 8> const &data);
 
     void waterTempInfo(etl::array<uint8_t, 8> const &data);
+
+    void readyToDriveMessage(etl::array<uint8_t, 8> const &data);
 };
 
 #endif /* TFT_PROCESSOR_H_ */

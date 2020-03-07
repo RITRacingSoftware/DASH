@@ -72,12 +72,27 @@ void TFT_PROCESSOR::updateFaultText(etl::array<uint8_t, 8> const &data)
 {
 
     char text[MAX_STRING_SIZE];
-    uint16_t number = data[0] | (data[1] << 8) | (data[2] << 16);
-    Serial.print("number = ");
-    Serial.println(number);
-    sprintf(text, "Fault = %d", number);
+    int numberFaults = 0;
+    for (int i = 0; i <= 7; i++)
+    {
+        uint8_t thisByte = data[i];
+        int thisBit = 0;
+        while (thisBit <= 7)
+        {
+            if (thisByte & 0x01)
+            {
+                numberFaults++;
+            }
+            thisByte >> 1;
+            thisBit++;
+        }
+    }
+    if (numberFaults > 0)
+    {
+        sprintf(text, "Number of Faults: ", numberFaults);
+        faults.updateText(text);
+    }
     //If accumulator temp is 16 bit value, send 16 bits ntoh function to corrtect endianess
-    //faultText.updateText(text);  UNCOMMENT
 }
 
 void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
@@ -159,4 +174,10 @@ void TFT_PROCESSOR::waterTempInfo(etl::array<uint8_t, 8> const &data)
     uint16_t number = data[0]; //Change
     sprintf(waterTempNum, "Twater: %d", number);
     waterTemp.updateText(waterTempNum);
+}
+
+void TFT_PROCESSOR::readyToDriveMessage(etl::array<uint8_t, 8> const &data)
+{
+    Serial.println("here");
+    this->myDashController->readyToDrive();
 }
