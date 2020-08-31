@@ -24,7 +24,7 @@ private:
     DASH_CONTROLLER_INTF *myDashController;
     TFT_DISPLAY myDisplay; //PROBLEM IS WITH THE DISPLAY
 
-    TFT_DISPLAY_ITEM faults;
+    TFT_DISPLAY_ITEM motorControllerFaults;
     // TFT_TEXT_ITEM faultText;
     // TFT_RECTANGLE_ITEM faultTextRect;
 
@@ -64,6 +64,8 @@ private:
     // TFT_TEXT_ITEM waterTemp;
     // TFT_RECTANGLE_ITEM waterTempRect;
 
+    TFT_DISPLAY_ITEM BMSFaults;
+
 public:
     TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController);
     ~TFT_PROCESSOR() = default;
@@ -72,7 +74,7 @@ public:
 
     void initializeCallbacks() override;
 
-    void updateFaultText(etl::array<uint8_t, 8> const &data);
+    void updateMCFaultText(etl::array<uint8_t, 8> const &data);
 
     void MotorPositionInformation(etl::array<uint8_t, 8> const &data);
 
@@ -89,6 +91,8 @@ public:
     void waterTempInfo(etl::array<uint8_t, 8> const &data);
 
     void readyToDriveMessage(etl::array<uint8_t, 8> const &data);
+
+    void updateBMSFaults(etl::array<uint8_t, 8> const &data);
 };
 
 #endif /* TFT_PROCESSOR_H_ */

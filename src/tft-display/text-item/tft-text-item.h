@@ -32,6 +32,8 @@ public:
 
   void updateElement(Adafruit_RA8875 *const displayDriver) override;
 
+  void addText(char my_text[MAX_STRING_SIZE]); //Adds onto the end of the previous string instead of creating new string
+
   bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const override;
 };
 

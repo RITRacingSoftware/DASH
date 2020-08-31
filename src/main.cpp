@@ -20,7 +20,7 @@ void setup()
   Serial.begin(9600);
   controller.initialize();
   digitalWrite(19, HIGH);
-  digitalWrite(16, HIGH); //for testing
+  digitalWrite(16, HIGH); //for testing RTDS
   digitalWrite(START_SOUND_SIGNAL, LOW);
 }
 

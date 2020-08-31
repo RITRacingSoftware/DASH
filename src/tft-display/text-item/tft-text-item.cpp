@@ -64,3 +64,15 @@ bool TFT_TEXT_ITEM::operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const
 
   return false;
 }
+
+void TFT_TEXT_ITEM::addText(char text[MAX_STRING_SIZE])
+{
+  if (this->my_text == NULL)
+  {
+    strncpy(this->my_text, text, MAX_STRING_SIZE);
+  }
+  else
+  {
+    strncat(this->my_text, text, MAX_STRING_SIZE);
+  }
+}

@@ -16,6 +16,12 @@ void TFT_DISPLAY_ITEM::updateText(char my_text[MAX_STRING_SIZE])
     this->changed = true;
 }
 
+void TFT_DISPLAY_ITEM::addText(char my_text[MAX_STRING_SIZE])
+{
+    myText.addText(my_text);
+    this->changed = true;
+}
+
 void TFT_DISPLAY_ITEM::updateTextColor(uint16_t color)
 {
     myText.updateColor(color);

@@ -19,6 +19,8 @@ public:
 
     void updateText(char my_text[MAX_STRING_SIZE]);
 
+    void addText(char my_text[MAX_STRING_SIZE]);
+
     void updateTextColor(uint16_t color);
 
     void updateTextLocation(uint32_t xCoord, uint32_t yCoord);

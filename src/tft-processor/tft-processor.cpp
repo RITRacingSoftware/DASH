@@ -15,7 +15,7 @@ void TFT_PROCESSOR::updateScreen()
 
 TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashController(dashController),
                                                                      myDisplay(10, 9),
-                                                                     faults(TFT_TEXT_ITEM(0, 0, 0, RA8875_WHITE, RA8875_RED, "No Faults"), TFT_RECTANGLE_ITEM(0, 0, 85, 20, RA8875_GREEN)),
+                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 150, 125, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(148, 123, 175, 20, RA8875_BLACK)),
                                                                      motorSpeed(TFT_TEXT_ITEM(0, 90, 0, RA8875_WHITE, RA8875_RED, "Motor Speed = 000"), TFT_RECTANGLE_ITEM(87, 0, 150, 20, RA8875_RED)),
                                                                      busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(295, 0, 150, 20, RA8875_BLUE)),
                                                                      outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 28, 140, 20, RA8875_BLACK)),
@@ -24,7 +24,8 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(175, 58, 50, 40, RA8875_BLACK)),
                                                                      lapNumber(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(318, 58, 50, 45, RA8875_BLACK)),
                                                                      batteryPerLap(TFT_TEXT_ITEM(2, 0, 0, RA8875_WHITE, RA8875_RED, "Bat/Lap: 0"), TFT_RECTANGLE_ITEM(200, 0, 125, 50, RA8875_BLACK)),
-                                                                     waterTemp(TFT_TEXT_ITEM(0, 150, 100, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(148, 98, 175, 20, RA8875_BLACK))
+                                                                     waterTemp(TFT_TEXT_ITEM(0, 150, 100, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(148, 98, 175, 20, RA8875_BLACK)),
+                                                                     BMSFaults(TFT_TEXT_ITEM(0, 150, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(148, 98, 175, 20, RA8875_BLACK))
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
@@ -36,7 +37,7 @@ void TFT_PROCESSOR::initializeCallbacks()
     //create callbacks and then register them
     //Create elements and send pointer to addElemnt to register it
 
-    // this->myDisplay.addElement(&faultText);
+    this->myDisplay.addElement(&motorControllerFaults);
     // this->myDisplay.addElement(&faultTextRect);
     // this->myDisplay.addElement(&motorSpeed);
     // this->myDisplay.addElement(&motorSpeedRect);
@@ -57,6 +58,7 @@ void TFT_PROCESSOR::initializeCallbacks()
     //this->myDisplay.addElement(&batteryPerLapRect);
     this->myDisplay.addElement(&waterTemp);
     //this->myDisplay.addElement(&waterTempRect);
+    this->myDisplay.addElement(&BMSFaults);
 
     // batteryPerLapRect.updateElement(myDisplay.getDisplayDriver());
     // batteryPerLap.updateElement(myDisplay.getDisplayDriver());
@@ -68,7 +70,7 @@ void TFT_PROCESSOR::initializeCallbacks()
     myDashController->registerCallback();
 }
 
-void TFT_PROCESSOR::updateFaultText(etl::array<uint8_t, 8> const &data)
+void TFT_PROCESSOR::updateMCFaultText(etl::array<uint8_t, 8> const &data)
 {
 
     char text[MAX_STRING_SIZE];
@@ -89,9 +91,20 @@ void TFT_PROCESSOR::updateFaultText(etl::array<uint8_t, 8> const &data)
     }
     if (numberFaults > 0)
     {
-        sprintf(text, "Number of Faults: ", numberFaults);
-        faults.updateText(text);
+        //sprintf(text, "Number of Faults: ", numberFaults);
+        // motorControllerFaults.updateText(text);
     }
+
+    //Use each byte of CAN data and List of fault messages to check all of the motor controller faults
+    checkMCFaults(data[0], MCByteZero);
+    checkMCFaults(data[1], MCByteOne);
+    checkMCFaults(data[2], MCByteTwo);
+    checkMCFaults(data[3], MCByteThree);
+    checkMCFaults(data[4], MCByteFour);
+    checkMCFaults(data[5], MCByteFive);
+    checkMCFaults(data[6], MCByteSix);
+    checkMCFaults(data[7], MCByteSeven);
+
     //If accumulator temp is 16 bit value, send 16 bits ntoh function to corrtect endianess
 }
 
@@ -178,6 +191,136 @@ void TFT_PROCESSOR::waterTempInfo(etl::array<uint8_t, 8> const &data)
 
 void TFT_PROCESSOR::readyToDriveMessage(etl::array<uint8_t, 8> const &data)
 {
-    Serial.println("here");
     this->myDashController->readyToDrive();
+}
+
+boolean isFault(uint8_t status, uint8_t mask)
+{
+    return (status && mask) != 0;
+}
+
+void TFT_PROCESSOR::updateBMSFaults(etl::array<uint8_t, 8> const &data)
+{
+    // if(data[0] != 0)
+    // {
+    //     if (isFault(data[0], 0x01))
+    //     {
+    //         BMSFaults.addText("Master in Fault State");
+    //     }
+    //     //Didn't add bits 1-3, didn't know what they mean
+    //     if(isFault(data[0], 0x04)){
+    //         BMSFaults.addText("Relay Fault");
+    //     }
+    // }
+
+    //Don't know what exactly is in this byte
+    // if(data[4] != 0)
+    // {
+    //     if(isFault(data[4], 0x01))
+    //     {
+    //         BMSFaults.addText("Driving while pligged in");
+    //     }
+    //     if(isFault(data[4], 0x02)){
+    //         BMSFaults.addText("Interlock tripped");
+    //     }
+    //     if(isFault(data[4], 0x04))
+    //     {
+    //         BMSFaults.addText("Communication fault with cell");
+    //     }
+    //     if(isFault(data[4], 0x08))
+    //     {
+    //         BMSFaults.addText("Charge overcurrent");
+    //     }
+    //     if(isFault(data[4], 0x05))
+    //     {
+    //         BMSFaults.addText("Driving while pligged in");
+    //     }
+    // }
+
+    checkBMSFaults(data[0], stateOfSystem);
+    //Don't know how to decode Fault Codes byte
+    checkBMSFaults(data[4], faultFlags);
+    //Didn't add warnings
+}
+
+//Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
+void TFT_PROCESSOR::checkBMSFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
+{
+    //Only check each bit if one is set
+    if (data != 0)
+    {
+        if (data && 0x01)
+        {
+            BMSFaults.addText(messages[0]);
+        }
+        if (data && 0x02)
+        {
+            BMSFaults.addText(messages[1]);
+        }
+        if (data && 0x04)
+        {
+            BMSFaults.addText(messages[2]);
+        }
+        if (data && 0x08)
+        {
+            BMSFaults.addText(messages[3]);
+        }
+        if (data && 0x10)
+        {
+            BMSFaults.addText(messages[4]);
+        }
+        if (data && 0x20)
+        {
+            BMSFaults.addText(messages[5]);
+        }
+        if (data && 0x40)
+        {
+            BMSFaults.addText(messages[6]);
+        }
+        if (data && 0x80)
+        {
+            BMSFaults.addText(messages[7]);
+        }
+    }
+}
+
+//Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
+void TFT_PROCESSOR::checkMCFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
+{
+    //Only check each bit if one is set
+    if (data != 0)
+    {
+        if (data && 0x01)
+        {
+            motorControllerFaults.addText(messages[0]);
+        }
+        if (data && 0x02)
+        {
+            motorControllerFaults.addText(messages[1]);
+        }
+        if (data && 0x04)
+        {
+            motorControllerFaults.addText(messages[2]);
+        }
+        if (data && 0x08)
+        {
+            motorControllerFaults.addText(messages[3]);
+        }
+        if (data && 0x10)
+        {
+            motorControllerFaults.addText(messages[4]);
+        }
+        if (data && 0x20)
+        {
+            motorControllerFaults.addText(messages[5]);
+        }
+        if (data && 0x40)
+        {
+            motorControllerFaults.addText(messages[6]);
+        }
+        if (data && 0x80)
+        {
+            motorControllerFaults.addText(messages[7]);
+        }
+    }
 }
