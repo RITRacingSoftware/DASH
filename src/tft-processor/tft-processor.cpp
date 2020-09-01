@@ -95,16 +95,19 @@ void TFT_PROCESSOR::updateMCFaultText(etl::array<uint8_t, 8> const &data)
         // motorControllerFaults.updateText(text);
     }
 
-    //Use each byte of CAN data and List of fault messages to check all of the motor controller faults
-    checkMCFaults(data[0], MCByteZero);
-    checkMCFaults(data[1], MCByteOne);
-    checkMCFaults(data[2], MCByteTwo);
-    checkMCFaults(data[3], MCByteThree);
-    checkMCFaults(data[4], MCByteFour);
-    checkMCFaults(data[5], MCByteFive);
-    checkMCFaults(data[6], MCByteSix);
-    checkMCFaults(data[7], MCByteSeven);
+    char faultsString[MAX_STRING_SIZE] = " ";
 
+    //Use each byte of CAN data and List of fault messages to check all of the motor controller faults
+    strncat(faultsString, checkMCFaults(data[0], MCByteZero), MAX_STRING_SIZE);
+    strncat(faultsString, checkMCFaults(data[1], MCByteOne), MAX_STRING_SIZE);
+    strncat(faultsString, checkMCFaults(data[2], MCByteTwo), MAX_STRING_SIZE);
+    strncat(faultsString, checkMCFaults(data[3], MCByteThree), MAX_STRING_SIZE);
+    strncat(faultsString, checkMCFaults(data[4], MCByteFour), MAX_STRING_SIZE);
+    strncat(faultsString, checkMCFaults(data[5], MCByteFive), MAX_STRING_SIZE);
+    strncat(faultsString, checkMCFaults(data[6], MCByteSix), MAX_STRING_SIZE);
+    strncat(faultsString, checkMCFaults(data[7], MCByteSeven), MAX_STRING_SIZE);
+
+    BMSFaults.updateText(faultsString);
     //If accumulator temp is 16 bit value, send 16 bits ntoh function to corrtect endianess
 }
 
@@ -237,6 +240,8 @@ void TFT_PROCESSOR::updateBMSFaults(etl::array<uint8_t, 8> const &data)
     //     }
     // }
 
+    etl::string<MAX_STRING_SIZE> BMSFaultsString = etl::string<MAX_STRING_SIZE>(" ");
+
     checkBMSFaults(data[0], stateOfSystem);
     //Don't know how to decode Fault Codes byte
     checkBMSFaults(data[4], faultFlags);
@@ -285,42 +290,52 @@ void TFT_PROCESSOR::checkBMSFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE
 }
 
 //Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
-void TFT_PROCESSOR::checkMCFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
+char *TFT_PROCESSOR::checkMCFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
 {
+    char faults[MAX_STRING_SIZE];
     //Only check each bit if one is set
     if (data != 0)
     {
         if (data && 0x01)
         {
-            motorControllerFaults.addText(messages[0]);
+            strncat(faults, messages[0], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x02)
         {
-            motorControllerFaults.addText(messages[1]);
+            strncat(faults, messages[1], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x04)
         {
-            motorControllerFaults.addText(messages[2]);
+            strncat(faults, messages[2], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x08)
         {
-            motorControllerFaults.addText(messages[3]);
+            strncat(faults, messages[3], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x10)
         {
-            motorControllerFaults.addText(messages[4]);
+            strncat(faults, messages[4], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x20)
         {
-            motorControllerFaults.addText(messages[5]);
+            strncat(faults, messages[5], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x40)
         {
-            motorControllerFaults.addText(messages[6]);
+            strncat(faults, messages[6], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x80)
         {
-            motorControllerFaults.addText(messages[7]);
+            strncat(faults, messages[7], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
     }
+    return faults;
 }
