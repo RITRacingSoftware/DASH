@@ -15,6 +15,7 @@ void TFT_PROCESSOR::updateScreen()
 
 TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashController(dashController),
                                                                      myDisplay(10, 9),
+                                                                     //Element(TFT_TEXT_ITEM(font_size, xCoordinate, yCoordinate, foreColor, BackgroundColor, text), TFT_RECTANGLE_ITEM(xCoordinate, yCoordinate, width, height, color))
                                                                      motorControllerFaults(TFT_TEXT_ITEM(0, 150, 125, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(148, 123, 175, 20, RA8875_BLACK)),
                                                                      motorSpeed(TFT_TEXT_ITEM(0, 90, 0, RA8875_WHITE, RA8875_RED, "Motor Speed = 000"), TFT_RECTANGLE_ITEM(87, 0, 150, 20, RA8875_RED)),
                                                                      busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(295, 0, 150, 20, RA8875_BLUE)),
@@ -30,6 +31,8 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
     this->lap = 0;
     this->batteryBeforeLap = 100;
     this->batteryPercent = 100;
+    this->previoustMCFaultString = "Motor Controller Faults: ";
+    this->previousBMSFaultString = "BMS Faults: ";
 }
 
 void TFT_PROCESSOR::initializeCallbacks()
@@ -50,7 +53,7 @@ void TFT_PROCESSOR::initializeCallbacks()
     //this->myDisplay.addElement(&maxTempRect);
     // this->myDisplay.addElement(&packVoltage);
     // this->myDisplay.addElement(&packVoltageRect);
-    // this->myDisplay.addElement(&batteryPercentage);
+    this->myDisplay.addElement(&batteryPercentage);
     // this->myDisplay.addElement(&batteryPercentageRect);
     this->myDisplay.addElement(&lapNumber);
     //this->myDisplay.addElement(&lapNumberRect);
@@ -73,29 +76,28 @@ void TFT_PROCESSOR::initializeCallbacks()
 void TFT_PROCESSOR::updateMCFaultText(etl::array<uint8_t, 8> const &data)
 {
 
-    char text[MAX_STRING_SIZE];
-    int numberFaults = 0;
-    for (int i = 0; i <= 7; i++)
-    {
-        uint8_t thisByte = data[i];
-        int thisBit = 0;
-        while (thisBit <= 7)
-        {
-            if (thisByte & 0x01)
-            {
-                numberFaults++;
-            }
-            thisByte >> 1;
-            thisBit++;
-        }
-    }
-    if (numberFaults > 0)
-    {
-        //sprintf(text, "Number of Faults: ", numberFaults);
-        // motorControllerFaults.updateText(text);
-    }
+    // int numberFaults = 0;
+    // for (int i = 0; i <= 7; i++)
+    // {
+    //     uint8_t thisByte = data[i];
+    //     int thisBit = 0;
+    //     while (thisBit <= 7)
+    //     {
+    //         if (thisByte & 0x01)
+    //         {
+    //             numberFaults++;
+    //         }
+    //         thisByte >> 1;
+    //         thisBit++;
+    //     }
+    // }
+    // if (numberFaults > 0)
+    // {
+    //     //sprintf(text, "Number of Faults: ", numberFaults);
+    //     // motorControllerFaults.updateText(text);
+    // }
 
-    char faultsString[MAX_STRING_SIZE] = " ";
+    char faultsString[MAX_STRING_SIZE] = "Motor Controller Faults: ";
 
     //Use each byte of CAN data and List of fault messages to check all of the motor controller faults
     strncat(faultsString, checkMCFaults(data[0], MCByteZero), MAX_STRING_SIZE);
@@ -107,7 +109,13 @@ void TFT_PROCESSOR::updateMCFaultText(etl::array<uint8_t, 8> const &data)
     strncat(faultsString, checkMCFaults(data[6], MCByteSix), MAX_STRING_SIZE);
     strncat(faultsString, checkMCFaults(data[7], MCByteSeven), MAX_STRING_SIZE);
 
-    BMSFaults.updateText(faultsString);
+    //Only update string if faults have changed
+    if (strcmp(faultsString, previoustMCFaultString) != 0)
+    {
+        BMSFaults.updateText(faultsString);
+    }
+    previoustMCFaultString = faultsString;
+
     //If accumulator temp is 16 bit value, send 16 bits ntoh function to corrtect endianess
 }
 
@@ -240,53 +248,63 @@ void TFT_PROCESSOR::updateBMSFaults(etl::array<uint8_t, 8> const &data)
     //     }
     // }
 
-    etl::string<MAX_STRING_SIZE> BMSFaultsString = etl::string<MAX_STRING_SIZE>(" ");
+    char BMSFaultsString[MAX_STRING_SIZE] = " ";
 
-    checkBMSFaults(data[0], stateOfSystem);
+    strncat(BMSFaultsString, checkBMSFaults(data[0], stateOfSystem), MAX_STRING_SIZE);
     //Don't know how to decode Fault Codes byte
-    checkBMSFaults(data[4], faultFlags);
+    strncat(BMSFaultsString, checkBMSFaults(data[4], faultFlags), MAX_STRING_SIZE);
     //Didn't add warnings
 }
 
 //Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
-void TFT_PROCESSOR::checkBMSFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
+char *TFT_PROCESSOR::checkBMSFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
 {
+    char faults[MAX_STRING_SIZE];
     //Only check each bit if one is set
     if (data != 0)
     {
         if (data && 0x01)
         {
-            BMSFaults.addText(messages[0]);
+            strncat(faults, messages[0], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x02)
         {
-            BMSFaults.addText(messages[1]);
+            strncat(faults, messages[1], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x04)
         {
-            BMSFaults.addText(messages[2]);
+            strncat(faults, messages[2], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x08)
         {
-            BMSFaults.addText(messages[3]);
+            strncat(faults, messages[3], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x10)
         {
-            BMSFaults.addText(messages[4]);
+            strncat(faults, messages[4], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x20)
         {
-            BMSFaults.addText(messages[5]);
+            strncat(faults, messages[5], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x40)
         {
-            BMSFaults.addText(messages[6]);
+            strncat(faults, messages[6], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
         if (data && 0x80)
         {
-            BMSFaults.addText(messages[7]);
+            strncat(faults, messages[7], MAX_STRING_SIZE);
+            strncat(faults, ", ", MAX_STRING_SIZE);
         }
     }
+    return faults;
 }
 
 //Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
