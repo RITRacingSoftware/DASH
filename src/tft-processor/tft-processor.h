@@ -8,6 +8,7 @@
 #include "../tft-display/text-item/tft-text-item.h"
 #include "../tft-display/rectangle-item/tft-rectangle-item.h"
 #include "../tft-display/tft-display-item.h"
+#include "etl/list.h"
 
 // struct displayItem{
 //     TFT_TEXT_ITEM text;
@@ -20,6 +21,8 @@ private:
     int lap;
     int batteryBeforeLap;
     int batteryPercent;
+    char *previoustMCFaultString;
+    char *previousBMSFaultString;
 
     DASH_CONTROLLER_INTF *myDashController;
     TFT_DISPLAY myDisplay; //PROBLEM IS WITH THE DISPLAY
@@ -66,6 +69,25 @@ private:
 
     TFT_DISPLAY_ITEM BMSFaults;
 
+    const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", " ", " ", " ", "Relay Fault", " ", " ", " "}};
+    const etl::array<char[MAX_STRING_SIZE], 8> faultFlags = {{"Driving while plugged in", "Interlock tripped", "Communication fault with cell",
+                                                              "Charge overcurrent", "Discharge overcurrent", "Over-temperature", "Under voltage", "Over voltage"}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteZero = {{"Hardware Gate/Desaturation Fault", "HW Over-current Fault", "Accelerator Shorted",
+                                                              "Accelerator Open", "Current Sensor Low", "Current Sensor High", "Module Temperature Low", "Module Temperature High"}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteOne = {{"Control PCB Temperature Low", "Control PCB Temperature High", "Gate Drive PCB Temperature Low",
+                                                             "Gate Drive PCB Temperature High", "5V Sense Voltage Low", "5V Sense Voltage Low", "12V Sense Voltage Low", "12V Sense Voltage Low"}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteTwo = {{"2.5V Sense Voltage Low", "2.5V Sense Voltage Low", "1.5V Sense Voltage Low", "1.5V Sense Voltage Low",
+                                                             "DC Bus Voltage High", "DC Bus Voltage Low", "Pre-charge Timeout", "Pre-charge Voltage Failure"}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteThree = {{"EEPROM Checksum Invalid", "EEPROM Data Out of Range", "EEPROM Update Required", " ", " ", " ",
+                                                               "Brake Shorted", "Brake Open"}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteFour = {{"Motor Over-speed Fault", "Over-current Fault", "Over-voltage Fault", "Inverter Over-temperature Fault",
+                                                              "Accelerator Input Shorted Fault", "Accelerator Input Open Fault", "Direction Command Fault", "Inverter Response Time-out Fault"}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteFive = {{"Hardware Gate/Desaturation Fault", "Hardware Over-current Fault", "Under-voltage Fault",
+                                                              "CAN Command Message Lost Fault", "Motor Over-temperature Fault", " ", " ", " "}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteSix = {{"Brake Input Shorted Fault", "Brake Input Open Fault", "Module A Over-temperature Fault",
+                                                             "Module B Over-temperature Fault", "Module C Over-temperature Fault", "PCB Over-temperature Fault", "Gate Drive Board 1 Over-temperature Fault", "Gate Drive Board 2 Over-temperature Fault"}};
+    const etl::array<char[MAX_STRING_SIZE], 8> MCByteSeven = {{"Gate Drive Board 3 Over-temperatuer Fault", "Current Sensor Fault", "", "Hardware Over-Voltage Fault", " ", " s", "Resolver Not Connected", "Inverter Discharge Active"}};
+
 public:
     TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController);
     ~TFT_PROCESSOR() = default;
@@ -93,6 +115,10 @@ public:
     void readyToDriveMessage(etl::array<uint8_t, 8> const &data);
 
     void updateBMSFaults(etl::array<uint8_t, 8> const &data);
+
+    char *checkBMSFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> message);
+
+    char *checkMCFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> message);
 };
 
 #endif /* TFT_PROCESSOR_H_ */
