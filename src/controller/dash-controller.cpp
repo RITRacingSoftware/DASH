@@ -12,8 +12,11 @@
 #define ACCUM_CHARGE_ID 0x626
 #define LAP_COMPLETE_ID 0x000
 #define WATER_TEMP_ID 0x000
-#define READY_TO_DRIVE_ID 0x001
+#define READY_TO_DRIVE_ID 0x0AA
 #define BMS_FAULTS_ID 0x622
+
+// Mask
+#define STATE_MASK (0xFFFF << (6 * 8))
 
 DASH_CONTROLLER::DASH_CONTROLLER()
     : my_tft_processor(this), my_data_processor(this)

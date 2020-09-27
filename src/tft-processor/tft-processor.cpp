@@ -20,13 +20,14 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      motorSpeed(TFT_TEXT_ITEM(0, 90, 0, RA8875_WHITE, RA8875_RED, "Motor Speed = 000"), TFT_RECTANGLE_ITEM(87, 0, 150, 20, RA8875_RED)),
                                                                      busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(295, 0, 150, 20, RA8875_BLUE)),
                                                                      outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 28, 140, 20, RA8875_BLACK)),
-                                                                     maxTemp(TFT_TEXT_ITEM(1, 205, 225, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(295, 223, 60, 40, RA8875_BLACK)),
+                                                                     maxTemp(TFT_TEXT_ITEM(1, 175, 235, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(295, 223, 60, 40, RA8875_BLACK)),
                                                                      packVoltage(TFT_TEXT_ITEM(1, 25, 225, RA8875_WHITE, RA8875_RED, "Vtotal: 000"), TFT_RECTANGLE_ITEM(168, 223, 60, 40, RA8875_BLACK)),
                                                                      batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(175, 58, 50, 40, RA8875_BLACK)),
                                                                      lapNumber(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(318, 58, 50, 45, RA8875_BLACK)),
                                                                      batteryPerLap(TFT_TEXT_ITEM(2, 0, 0, RA8875_WHITE, RA8875_RED, "Bat/Lap: 0"), TFT_RECTANGLE_ITEM(200, 0, 125, 50, RA8875_BLACK)),
                                                                      waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
-                                                                     BMSFaults(TFT_TEXT_ITEM(0, 0, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 100, 480, 50, RA8875_BLACK))
+                                                                     BMSFaults(TFT_TEXT_ITEM(0, 0, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 100, 480, 50, RA8875_BLACK)),
+                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 480, 150, RA8875_BLACK))
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
@@ -59,10 +60,10 @@ void TFT_PROCESSOR::initializeCallbacks()
     //this->myDisplay.addElement(&lapNumberRect);
     this->myDisplay.addElement(&batteryPerLap); //Instead of updating every cycle, try not adding to elements array but only update when get message?
     //this->myDisplay.addElement(&batteryPerLapRect);
-    this->myDisplay.addElement(&waterTemp);
+    //this->myDisplay.addElement(&waterTemp);
     //this->myDisplay.addElement(&waterTempRect);
     this->myDisplay.addElement(&BMSFaults);
-
+    this->myDisplay.addElement(&ReadyToDriveStatus);
     // batteryPerLapRect.updateElement(myDisplay.getDisplayDriver());
     // batteryPerLap.updateElement(myDisplay.getDisplayDriver());
     // lapNumberRect.updateElement(myDisplay.getDisplayDriver());
@@ -180,7 +181,23 @@ void TFT_PROCESSOR::waterTempInfo(etl::array<uint8_t, 8> const &data)
 
 void TFT_PROCESSOR::readyToDriveMessage(etl::array<uint8_t, 8> const &data)
 {
-    this->myDashController->readyToDrive();
+    uint16_t vehicleState = ((data[1] << 8) | data[0]);
+    Serial.printf("Received State message, state is %d\n\r", vehicleState);
+    if (vehicleState == 4)
+    {
+        this->myDashController->readyToDrive();
+        ReadyToDriveStatus.updateText("READY TO DRIVE");
+        ReadyToDriveStatus.updateTextColor(RA8875_GREEN);
+    }
+    else if (vehicleState == 5 || vehicleState == 6)
+    {
+        ReadyToDriveStatus.updateText("MOTOR POWERED");
+    }
+    else
+    {
+        ReadyToDriveStatus.updateText("NOT READY TO DRIVE");
+        ReadyToDriveStatus.updateTextColor(RA8875_RED);
+    }
 }
 
 boolean isFault(uint8_t status, uint8_t mask)
