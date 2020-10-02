@@ -16,17 +16,18 @@ void TFT_PROCESSOR::updateScreen()
 TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashController(dashController),
                                                                      myDisplay(10, 9),
                                                                      //Element(TFT_TEXT_ITEM(font_size, xCoordinate, yCoordinate, foreColor, BackgroundColor, text), TFT_RECTANGLE_ITEM(xCoordinate, yCoordinate, width, height, color))
-                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 150, 125, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(148, 123, 175, 20, RA8875_BLACK)),
+                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 0, 150, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 150, 480, 50, RA8875_BLACK)),
                                                                      motorSpeed(TFT_TEXT_ITEM(0, 90, 0, RA8875_WHITE, RA8875_RED, "Motor Speed = 000"), TFT_RECTANGLE_ITEM(87, 0, 150, 20, RA8875_RED)),
                                                                      busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(295, 0, 150, 20, RA8875_BLUE)),
                                                                      outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 28, 140, 20, RA8875_BLACK)),
-                                                                     maxTemp(TFT_TEXT_ITEM(1, 205, 225, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(295, 223, 60, 40, RA8875_BLACK)),
+                                                                     maxTemp(TFT_TEXT_ITEM(1, 175, 235, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(295, 223, 60, 40, RA8875_BLACK)),
                                                                      packVoltage(TFT_TEXT_ITEM(1, 25, 225, RA8875_WHITE, RA8875_RED, "Vtotal: 000"), TFT_RECTANGLE_ITEM(168, 223, 60, 40, RA8875_BLACK)),
                                                                      batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(175, 58, 50, 40, RA8875_BLACK)),
                                                                      lapNumber(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(318, 58, 50, 45, RA8875_BLACK)),
                                                                      batteryPerLap(TFT_TEXT_ITEM(2, 0, 0, RA8875_WHITE, RA8875_RED, "Bat/Lap: 0"), TFT_RECTANGLE_ITEM(200, 0, 125, 50, RA8875_BLACK)),
-                                                                     waterTemp(TFT_TEXT_ITEM(0, 150, 100, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(148, 98, 175, 20, RA8875_BLACK)),
-                                                                     BMSFaults(TFT_TEXT_ITEM(0, 150, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(148, 98, 175, 20, RA8875_BLACK))
+                                                                     waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
+                                                                     BMSFaults(TFT_TEXT_ITEM(0, 0, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 100, 480, 50, RA8875_BLACK)),
+                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 480, 150, RA8875_BLACK))
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
@@ -59,10 +60,10 @@ void TFT_PROCESSOR::initializeCallbacks()
     //this->myDisplay.addElement(&lapNumberRect);
     this->myDisplay.addElement(&batteryPerLap); //Instead of updating every cycle, try not adding to elements array but only update when get message?
     //this->myDisplay.addElement(&batteryPerLapRect);
-    this->myDisplay.addElement(&waterTemp);
+    //this->myDisplay.addElement(&waterTemp);
     //this->myDisplay.addElement(&waterTempRect);
     this->myDisplay.addElement(&BMSFaults);
-
+    this->myDisplay.addElement(&ReadyToDriveStatus);
     // batteryPerLapRect.updateElement(myDisplay.getDisplayDriver());
     // batteryPerLap.updateElement(myDisplay.getDisplayDriver());
     // lapNumberRect.updateElement(myDisplay.getDisplayDriver());
@@ -75,45 +76,23 @@ void TFT_PROCESSOR::initializeCallbacks()
 
 void TFT_PROCESSOR::updateMCFaultText(etl::array<uint8_t, 8> const &data)
 {
-
-    // int numberFaults = 0;
-    // for (int i = 0; i <= 7; i++)
-    // {
-    //     uint8_t thisByte = data[i];
-    //     int thisBit = 0;
-    //     while (thisBit <= 7)
-    //     {
-    //         if (thisByte & 0x01)
-    //         {
-    //             numberFaults++;
-    //         }
-    //         thisByte >> 1;
-    //         thisBit++;
-    //     }
-    // }
-    // if (numberFaults > 0)
-    // {
-    //     //sprintf(text, "Number of Faults: ", numberFaults);
-    //     // motorControllerFaults.updateText(text);
-    // }
-
     char faultsString[MAX_STRING_SIZE] = "Motor Controller Faults: ";
 
     //Use each byte of CAN data and List of fault messages to check all of the motor controller faults
-    strncat(faultsString, checkMCFaults(data[0], MCByteZero), MAX_STRING_SIZE);
-    strncat(faultsString, checkMCFaults(data[1], MCByteOne), MAX_STRING_SIZE);
-    strncat(faultsString, checkMCFaults(data[2], MCByteTwo), MAX_STRING_SIZE);
-    strncat(faultsString, checkMCFaults(data[3], MCByteThree), MAX_STRING_SIZE);
-    strncat(faultsString, checkMCFaults(data[4], MCByteFour), MAX_STRING_SIZE);
-    strncat(faultsString, checkMCFaults(data[5], MCByteFive), MAX_STRING_SIZE);
-    strncat(faultsString, checkMCFaults(data[6], MCByteSix), MAX_STRING_SIZE);
-    strncat(faultsString, checkMCFaults(data[7], MCByteSeven), MAX_STRING_SIZE);
+    checkFaults(data[0], MCByteZero, faultsString);
+    checkFaults(data[1], MCByteOne, faultsString);
+    checkFaults(data[2], MCByteTwo, faultsString);
+    checkFaults(data[3], MCByteThree, faultsString);
+    checkFaults(data[4], MCByteFour, faultsString);
+    checkFaults(data[5], MCByteFive, faultsString);
+    checkFaults(data[6], MCByteSix, faultsString);
+    checkFaults(data[7], MCByteSeven, faultsString);
 
     //Only update string if faults have changed
-    if (strcmp(faultsString, previoustMCFaultString) != 0)
-    {
-        BMSFaults.updateText(faultsString);
-    }
+    //if (strcmp(faultsString, previoustMCFaultString) != 0)
+    //{
+    motorControllerFaults.updateText(faultsString);
+    //}
     previoustMCFaultString = faultsString;
 
     //If accumulator temp is 16 bit value, send 16 bits ntoh function to corrtect endianess
@@ -202,7 +181,23 @@ void TFT_PROCESSOR::waterTempInfo(etl::array<uint8_t, 8> const &data)
 
 void TFT_PROCESSOR::readyToDriveMessage(etl::array<uint8_t, 8> const &data)
 {
-    this->myDashController->readyToDrive();
+    uint16_t vehicleState = ((data[1] << 8) | data[0]);
+    Serial.printf("Received State message, state is %d\n\r", vehicleState);
+    if (vehicleState == 4)
+    {
+        this->myDashController->readyToDrive();
+        ReadyToDriveStatus.updateText("READY TO DRIVE");
+        ReadyToDriveStatus.updateTextColor(RA8875_GREEN);
+    }
+    else if (vehicleState == 5 || vehicleState == 6)
+    {
+        ReadyToDriveStatus.updateText("MOTOR POWERED");
+    }
+    else
+    {
+        ReadyToDriveStatus.updateText("NOT READY TO DRIVE");
+        ReadyToDriveStatus.updateTextColor(RA8875_RED);
+    }
 }
 
 boolean isFault(uint8_t status, uint8_t mask)
@@ -212,148 +207,32 @@ boolean isFault(uint8_t status, uint8_t mask)
 
 void TFT_PROCESSOR::updateBMSFaults(etl::array<uint8_t, 8> const &data)
 {
-    // if(data[0] != 0)
-    // {
-    //     if (isFault(data[0], 0x01))
-    //     {
-    //         BMSFaults.addText("Master in Fault State");
-    //     }
-    //     //Didn't add bits 1-3, didn't know what they mean
-    //     if(isFault(data[0], 0x04)){
-    //         BMSFaults.addText("Relay Fault");
-    //     }
-    // }
+    char BMSFaultsString[MAX_STRING_SIZE] = "BMS Faults: ";
 
-    //Don't know what exactly is in this byte
-    // if(data[4] != 0)
-    // {
-    //     if(isFault(data[4], 0x01))
-    //     {
-    //         BMSFaults.addText("Driving while pligged in");
-    //     }
-    //     if(isFault(data[4], 0x02)){
-    //         BMSFaults.addText("Interlock tripped");
-    //     }
-    //     if(isFault(data[4], 0x04))
-    //     {
-    //         BMSFaults.addText("Communication fault with cell");
-    //     }
-    //     if(isFault(data[4], 0x08))
-    //     {
-    //         BMSFaults.addText("Charge overcurrent");
-    //     }
-    //     if(isFault(data[4], 0x05))
-    //     {
-    //         BMSFaults.addText("Driving while pligged in");
-    //     }
-    // }
-
-    char BMSFaultsString[MAX_STRING_SIZE] = " ";
-
-    strncat(BMSFaultsString, checkBMSFaults(data[0], stateOfSystem), MAX_STRING_SIZE);
+    checkFaults(data[0], stateOfSystem, BMSFaultsString);
     //Don't know how to decode Fault Codes byte
-    strncat(BMSFaultsString, checkBMSFaults(data[4], faultFlags), MAX_STRING_SIZE);
+    checkFaults(data[5], faultFlags, BMSFaultsString);
+    Serial.println(BMSFaultsString);
+    BMSFaults.updateText(BMSFaultsString);
     //Didn't add warnings
 }
 
 //Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
-char *TFT_PROCESSOR::checkBMSFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
+void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages, char faultOutString[MAX_STRING_SIZE])
 {
-    char faults[MAX_STRING_SIZE];
     //Only check each bit if one is set
     if (data != 0)
     {
-        if (data && 0x01)
+        for (int i = 0; i < 8; i++)
         {
-            strncat(faults, messages[0], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x02)
-        {
-            strncat(faults, messages[1], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x04)
-        {
-            strncat(faults, messages[2], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x08)
-        {
-            strncat(faults, messages[3], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x10)
-        {
-            strncat(faults, messages[4], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x20)
-        {
-            strncat(faults, messages[5], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x40)
-        {
-            strncat(faults, messages[6], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x80)
-        {
-            strncat(faults, messages[7], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
+            if ((data & (0x1 << i)) > 0)
+            {
+                //char msg[MAX_STRING_SIZE];
+                //snprintf(msg, MAX_STRING_SIZE, "Fault for index %d of msg %d\n\r", i, data);
+                strncat(faultOutString, messages[i], MAX_STRING_SIZE - strlen(faultOutString));
+                strncat(faultOutString, ", ", MAX_STRING_SIZE - strlen(faultOutString));
+                //Serial.println(faults);
+            }
         }
     }
-    return faults;
-}
-
-//Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
-char *TFT_PROCESSOR::checkMCFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages)
-{
-    char faults[MAX_STRING_SIZE];
-    //Only check each bit if one is set
-    if (data != 0)
-    {
-        if (data && 0x01)
-        {
-            strncat(faults, messages[0], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x02)
-        {
-            strncat(faults, messages[1], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x04)
-        {
-            strncat(faults, messages[2], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x08)
-        {
-            strncat(faults, messages[3], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x10)
-        {
-            strncat(faults, messages[4], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x20)
-        {
-            strncat(faults, messages[5], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x40)
-        {
-            strncat(faults, messages[6], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-        if (data && 0x80)
-        {
-            strncat(faults, messages[7], MAX_STRING_SIZE);
-            strncat(faults, ", ", MAX_STRING_SIZE);
-        }
-    }
-    return faults;
 }

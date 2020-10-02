@@ -37,26 +37,10 @@ void DATA_PROCESSOR::processData()
     // messages left
     if (readingCAN)
     {
-      Serial.print("ID = ");
-      Serial.println(message.id, HEX);
-      Serial.print("Data:");
-      for (int i = 0; i <= 7; i++)
-      {
-        Serial.print(i);
-        Serial.print(" = ");
-        Serial.println(message.data[i], HEX);
-      }
-      Serial.println(this->my_callback_map.find(message.id) == this->my_callback_map.end());
-      Serial.println(this->my_callback_map.size());
       if (this->my_callback_map.find(message.id) != this->my_callback_map.end())
       {
         etl::delegate<void(etl::array<uint8_t, 8> const &)> func =
             this->my_callback_map.at(message.id);
-
-        for (int i = 0; i < 8; i++)
-        {
-          Serial.printf("Byte %d=%02X\n", i, message.data[i]);
-        }
         if (func.is_valid())
         {
           func(message.data);
