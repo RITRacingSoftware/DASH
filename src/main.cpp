@@ -26,17 +26,10 @@ void setup()
 
 void loop()
 {
-<<<<<<< HEAD
-  // Serial.print("message recieved = ");
-  // Serial.println(controller.driveReady);
-  // Serial.print("Button = ");
-  // Serial.println(digitalRead(START_BUTTON_PIN));
-=======
   //Serial.print("message recieved = ");
   //Serial.println(controller.driveReady);
   //Serial.print("Button = ");
   //Serial.println(digitalRead(START_BUTTON_PIN));
->>>>>>> 9d49d11b8a4bc927abf44b13d4d5bf18c3bce9cf
   if (controller.driveReady && (digitalRead(START_BUTTON_PIN) == HIGH))
   {
     digitalWrite(START_SOUND_SIGNAL, HIGH);
