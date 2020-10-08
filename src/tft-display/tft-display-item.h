@@ -25,6 +25,10 @@ public:
 
     void updateTextLocation(uint32_t xCoord, uint32_t yCoord);
 
+    void updateRectangleSize(uint32_t width, uint32_t height);
+
+    void updateRectangleLocation(uint32_t xCoord, uint32_t yCoord);
+
     bool getChanged();
 
     //bool operator==(TFT_DISPLAY_ITEM const *otherItemIntf);

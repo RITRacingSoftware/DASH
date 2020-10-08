@@ -71,6 +71,10 @@ private:
 
     TFT_DISPLAY_ITEM ReadyToDriveStatus;
 
+    TFT_DISPLAY_ITEM MotorSpeedBar;
+
+    TFT_DISPLAY_ITEM BlackMotorSpeedBar;
+
     const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", "??", "??", "??", "Relay Fault", "??", "??", "??"}};
     const etl::array<char[MAX_STRING_SIZE], 8> faultFlags = {{"Driving while plugged in", "Interlock tripped", "Communication fault with cell",
                                                               "Charge overcurrent", "Discharge overcurrent", "Over-temperature", "Under voltage", "Over voltage"}};

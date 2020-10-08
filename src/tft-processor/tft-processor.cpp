@@ -71,6 +71,8 @@ void TFT_PROCESSOR::initializeCallbacks()
     // lapNumberRect.updateElement(myDisplay.getDisplayDriver());
     // lapNumber.updateElement(myDisplay.getDisplayDriver());
 
+    this->myDisplay.addElement(&MotorSpeedBar);
+    this->myDisplay.addElement(&BlackMotorSpeedBar);
     //Register callbacks. Callbacks must be registered in DASH_CONTROLLER::registerCallbacks
     //for callbacks to be called
     myDashController->registerCallback();
