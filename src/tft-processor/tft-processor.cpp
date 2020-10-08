@@ -27,7 +27,9 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      batteryPerLap(TFT_TEXT_ITEM(2, 0, 0, RA8875_WHITE, RA8875_RED, "Bat/Lap: 0"), TFT_RECTANGLE_ITEM(200, 0, 125, 50, RA8875_BLACK)),
                                                                      waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
                                                                      BMSFaults(TFT_TEXT_ITEM(0, 0, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 100, 480, 50, RA8875_BLACK)),
-                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 480, 150, RA8875_BLACK))
+                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 480, 150, RA8875_BLACK)),
+                                                                     MotorSpeedBar(TFT_TEXT_ITEM(1, 5, 5, RA8875_WHITE, RA8875_RED, ""), TFT_RECTANGLE_ITEM(5, 5, 0, 30, RA8875_GREEN)),
+                                                                     BlackMotorSpeedBar(TFT_TEXT_ITEM(1, 5, 5, RA8875_WHITE, RA8875_RED, ""), TFT_RECTANGLE_ITEM(5, 5, 310, 30, RA8875_GREEN))
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
@@ -56,9 +58,9 @@ void TFT_PROCESSOR::initializeCallbacks()
     // this->myDisplay.addElement(&packVoltageRect);
     this->myDisplay.addElement(&batteryPercentage);
     // this->myDisplay.addElement(&batteryPercentageRect);
-    this->myDisplay.addElement(&lapNumber);
+    //this->myDisplay.addElement(&lapNumber);
     //this->myDisplay.addElement(&lapNumberRect);
-    this->myDisplay.addElement(&batteryPerLap); //Instead of updating every cycle, try not adding to elements array but only update when get message?
+    //this->myDisplay.addElement(&batteryPerLap); //Instead of updating every cycle, try not adding to elements array but only update when get message?
     //this->myDisplay.addElement(&batteryPerLapRect);
     //this->myDisplay.addElement(&waterTemp);
     //this->myDisplay.addElement(&waterTempRect);
@@ -108,6 +110,10 @@ void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
     }
     sprintf(motorSpeedNum, "Motor Speed = %d", number);
     motorSpeed.updateText(motorSpeedNum);
+    uint16_t barWidth = number / 4000 * 310;
+    MotorSpeedBar.updateRectangleSize(barWidth, 30);
+    MotorSpeedBar.updateRectangleSize(310 - barWidth, 30);
+    MotorSpeedBar.updateTextLocation(barWidth, 5);
 }
 
 void TFT_PROCESSOR::VoltageInfo(etl::array<uint8_t, 8> const &data)

@@ -48,3 +48,15 @@ bool TFT_DISPLAY_ITEM::getChanged()
 //     return false;
 
 // }
+
+void TFT_DISPLAY_ITEM::updateRectangleSize(uint32_t width, uint32_t height)
+{
+    myRectangle.updateSize(width, height);
+    this->changed = true;
+}
+
+void TFT_DISPLAY_ITEM::updateRectangleLocation(uint32_t xCoord, uint32_t yCoord)
+{
+    myRectangle.updateLocation(xCoord, yCoord);
+    this->changed = true;
+}

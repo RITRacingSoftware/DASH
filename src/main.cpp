@@ -21,7 +21,7 @@ void setup()
   controller.initialize();
   //digitalWrite(19, HIGH);
   //digitalWrite(16, HIGH); //for testing RTDS
-  digitalWrite(START_SOUND_SIGNAL, LOW);
+  digitalWrite(START_SOUND_SIGNAL, HIGH);
 }
 
 void loop()
@@ -32,7 +32,7 @@ void loop()
   //Serial.println(digitalRead(START_BUTTON_PIN));
   if (controller.driveReady && (digitalRead(START_BUTTON_PIN) == HIGH))
   {
-    digitalWrite(START_SOUND_SIGNAL, HIGH);
+    digitalWrite(START_SOUND_SIGNAL, LOW);
   }
   //digitalWrite(19, HIGH);
   controller.updateModel();
