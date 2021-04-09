@@ -17,6 +17,7 @@ public:
     virtual bool registerCallback() = 0;
 
     virtual void readyToDrive() = 0;
+
 };
 
 #endif

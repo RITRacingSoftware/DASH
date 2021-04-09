@@ -35,8 +35,9 @@ public:
   void addText(char my_text[MAX_STRING_SIZE]); //Adds onto the end of the previous string instead of creating new string
 
   
+  bool getChanged() override;
 
-  bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const override;
+  //bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const override;
 };
 
 #endif /* TFT_TEXT_ITEM_H_ */

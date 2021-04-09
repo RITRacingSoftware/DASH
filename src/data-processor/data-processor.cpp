@@ -43,6 +43,7 @@ void DATA_PROCESSOR::processData()
             this->my_callback_map.at(message.id);
         if (func.is_valid())
         {
+          Serial.printf("Running callback for id %02X\n\r", message.id);
           func(message.data);
         } // Call the function with the data from the can
       }

@@ -13,7 +13,8 @@ private:
   uint32_t my_width;
   uint32_t my_height;
   uint16_t my_color;
-
+  uint32_t my_prev_width;
+  uint32_t my_prev_height;
 
 
 public:
@@ -30,7 +31,9 @@ public:
 
   void updateElement(Adafruit_RA8875 *const displayDriver) override;
 
-  bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const override;
+  //bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const override;
+
+  bool getChanged() override;
 
 };
 

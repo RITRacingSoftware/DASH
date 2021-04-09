@@ -4,7 +4,7 @@
 #include "text-item/tft-text-item.h"
 #include "rectangle-item/tft-rectangle-item.h"
 
-class TFT_DISPLAY_ITEM
+class TFT_DISPLAY_ITEM : public DISPLAY_ITEM_INTF
 {
 private:
     TFT_TEXT_ITEM myText;
@@ -12,6 +12,10 @@ private:
     bool changed;
 
 public:
+    TFT_DISPLAY_ITEM(const uint8_t fontSize, uint32_t xCoord, uint32_t yCoord, 
+        uint32_t textBoxWidth, uint32_t textBoxHeight, uint16_t foreColor, uint16_t bgColor,
+        char text[MAX_STRING_SIZE]);
+
     TFT_DISPLAY_ITEM(TFT_TEXT_ITEM text, TFT_RECTANGLE_ITEM rectangle);
     ~TFT_DISPLAY_ITEM() = default;
 
@@ -31,7 +35,7 @@ public:
 
     bool getChanged();
 
-    //bool operator==(TFT_DISPLAY_ITEM const *otherItemIntf);
+    //bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf);
 };
 
 #endif /* TFT_DISPLAY_ITEM_H_ */

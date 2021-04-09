@@ -22,7 +22,7 @@ TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin)
   this->my_display_driver.textMode(); // Temporary
 }
 
-void TFT_DISPLAY::addElement(TFT_DISPLAY_ITEM *element)
+void TFT_DISPLAY::addElement(DISPLAY_ITEM_INTF *element)
 {
 
   this->my_elements.push_back(element);
@@ -34,13 +34,14 @@ void TFT_DISPLAY::updateScreen()
   // Going in reverse order since the item at the front should be on top
   //Check if text item has changed, if it has then update the associated recangle,
   //then update text element
+  //this->clearScreen();
   for (int i = this->my_elements.size() - 1; i >= 0; i--)
   {
     bool print = this->my_elements[i]->getChanged();
-    if (this->cycles % 75 == 0)
-    {
-      print = true;
-    }
+    // if (this->cycles % 75 == 0)
+    // {
+    //   print = true;
+    // }
     if (print)
     {
       this->my_elements[i]->updateElement(&this->my_display_driver);
@@ -49,7 +50,7 @@ void TFT_DISPLAY::updateScreen()
   }
 }
 
-bool TFT_DISPLAY::removeElement(TFT_DISPLAY_ITEM *element)
+bool TFT_DISPLAY::removeElement(DISPLAY_ITEM_INTF *element)
 {
   for (auto i = this->my_elements.begin(); i != this->my_elements.end(); i++)
   {
@@ -63,8 +64,13 @@ bool TFT_DISPLAY::removeElement(TFT_DISPLAY_ITEM *element)
   return false;
 }
 
-etl::vector<TFT_DISPLAY_ITEM *, MAX_ELEMENTS>
+etl::vector<DISPLAY_ITEM_INTF *, MAX_ELEMENTS>
 TFT_DISPLAY::getElements() const
 {
   return this->my_elements;
+}
+
+void TFT_DISPLAY::clearScreen()
+{
+  this->my_display_driver.fillScreen(RA8875_BLACK);
 }

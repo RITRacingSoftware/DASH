@@ -48,22 +48,22 @@ void TFT_TEXT_ITEM::updateLocation(uint32_t xCoord, uint32_t yCoord)
   this->my_y = yCoord;
 }
 
-bool TFT_TEXT_ITEM::operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const
-{
+// bool TFT_TEXT_ITEM::operator==(DISPLAY_ITEM_INTF const *otherItemIntf) const
+// {
 
-  TFT_TEXT_ITEM *otherItem = dynamic_cast<TFT_TEXT_ITEM *>(otherItem);
+//   TFT_TEXT_ITEM *otherItem = dynamic_cast<TFT_TEXT_ITEM *>(otherItem);
 
-  if (otherItem)
-  {
-    return (this->my_font_size == otherItem->my_font_size &&
-            this->my_x == otherItem->my_x && this->my_y == otherItem->my_y &&
-            this->my_text == otherItem->my_text &&
-            this->my_bg_color == otherItem->my_bg_color &&
-            this->my_fore_color == otherItem->my_fore_color);
-  }
+//   if (otherItem)
+//   {
+//     return (this->my_font_size == otherItem->my_font_size &&
+//             this->my_x == otherItem->my_x && this->my_y == otherItem->my_y &&
+//             this->my_text == otherItem->my_text &&
+//             this->my_bg_color == otherItem->my_bg_color &&
+//             this->my_fore_color == otherItem->my_fore_color);
+//   }
 
-  return false;
-}
+//   return false;
+// }
 
 void TFT_TEXT_ITEM::addText(char text[MAX_STRING_SIZE])
 {
@@ -75,4 +75,9 @@ void TFT_TEXT_ITEM::addText(char text[MAX_STRING_SIZE])
   {
     strncat(this->my_text, text, MAX_STRING_SIZE);
   }
+}
+
+bool TFT_TEXT_ITEM::getChanged()
+{
+  return true;
 }

@@ -9,6 +9,7 @@
 #include "../tft-display/rectangle-item/tft-rectangle-item.h"
 #include "../tft-display/tft-display-item.h"
 #include "etl/list.h"
+#include <string.h>
 
 // struct displayItem{
 //     TFT_TEXT_ITEM text;
@@ -28,52 +29,31 @@ private:
     TFT_DISPLAY myDisplay; //PROBLEM IS WITH THE DISPLAY
 
     TFT_DISPLAY_ITEM motorControllerFaults;
-    // TFT_TEXT_ITEM faultText;
-    // TFT_RECTANGLE_ITEM faultTextRect;
 
     TFT_DISPLAY_ITEM motorSpeed;
-    // TFT_TEXT_ITEM motorSpeed;
-    // TFT_RECTANGLE_ITEM motorSpeedRect;
 
     TFT_DISPLAY_ITEM busVoltage;
-    // TFT_TEXT_ITEM busVoltage;
-    // TFT_RECTANGLE_ITEM busVoltRect;
 
     TFT_DISPLAY_ITEM outputVoltage;
-    // TFT_TEXT_ITEM outputVoltage;
-    // TFT_RECTANGLE_ITEM outputVoltageRect;
 
     TFT_DISPLAY_ITEM maxTemp;
-    // TFT_TEXT_ITEM maxTemp;
-    // TFT_RECTANGLE_ITEM maxTempRect;
 
     TFT_DISPLAY_ITEM packVoltage;
-    // TFT_TEXT_ITEM packVoltage;
-    // TFT_RECTANGLE_ITEM packVoltageRect;
 
     TFT_DISPLAY_ITEM batteryPercentage;
-    // TFT_TEXT_ITEM batteryPercentage;
-    // TFT_RECTANGLE_ITEM batteryPercentageRect;
 
     TFT_DISPLAY_ITEM batteryPerLap;
-    // TFT_TEXT_ITEM batteryPerLap;
-    // TFT_RECTANGLE_ITEM batteryPerLapRect;
 
     TFT_DISPLAY_ITEM lapNumber;
-    // TFT_TEXT_ITEM lapNumber;
-    // TFT_RECTANGLE_ITEM lapNumberRect;
 
     TFT_DISPLAY_ITEM waterTemp;
-    // TFT_TEXT_ITEM waterTemp;
-    // TFT_RECTANGLE_ITEM waterTempRect;
 
     TFT_DISPLAY_ITEM BMSFaults;
 
     TFT_DISPLAY_ITEM ReadyToDriveStatus;
 
-    TFT_DISPLAY_ITEM MotorSpeedBar;
-
-    TFT_DISPLAY_ITEM BlackMotorSpeedBar;
+    TFT_RECTANGLE_ITEM MotorSpeedBar;
+     
 
     const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", "??", "??", "??", "Relay Fault", "??", "??", "??"}};
     const etl::array<char[MAX_STRING_SIZE], 8> faultFlags = {{"Driving while plugged in", "Interlock tripped", "Communication fault with cell",
@@ -123,6 +103,9 @@ public:
     void updateBMSFaults(etl::array<uint8_t, 8> const &data);
 
     void checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> message, char faultOutString[MAX_STRING_SIZE]);
+
+    void clearScreen() override;
+
 };
 
 #endif /* TFT_PROCESSOR_H_ */

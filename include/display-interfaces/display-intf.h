@@ -14,14 +14,16 @@ public:
   DISPLAY_INTF() = default;
   virtual ~DISPLAY_INTF() = default;
 
-  virtual void addElement(TFT_DISPLAY_ITEM *element) = 0;
+  virtual void addElement(DISPLAY_ITEM_INTF *element) = 0;
 
   virtual void updateScreen() = 0;
 
-  virtual bool removeElement(TFT_DISPLAY_ITEM *element) = 0; //removed const
+  virtual bool removeElement(DISPLAY_ITEM_INTF *element) = 0; //removed const
 
-  virtual etl::vector<TFT_DISPLAY_ITEM *, MAX_ELEMENTS>
+  virtual etl::vector<DISPLAY_ITEM_INTF *, MAX_ELEMENTS>
   getElements() const = 0;
+
+  virtual void clearScreen() = 0;
 };
 
 #endif /* DISPLAY_INTF_H_ */

@@ -16,20 +16,19 @@ void TFT_PROCESSOR::updateScreen()
 TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashController(dashController),
                                                                      myDisplay(10, 9),
                                                                      //Element(TFT_TEXT_ITEM(font_size, xCoordinate, yCoordinate, foreColor, BackgroundColor, text), TFT_RECTANGLE_ITEM(xCoordinate, yCoordinate, width, height, color))
-                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 0, 150, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 150, 480, 50, RA8875_BLACK)),
-                                                                     motorSpeed(TFT_TEXT_ITEM(0, 90, 0, RA8875_WHITE, RA8875_RED, "Motor Speed = 000"), TFT_RECTANGLE_ITEM(87, 0, 150, 20, RA8875_RED)),
-                                                                     busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(295, 0, 150, 20, RA8875_BLUE)),
-                                                                     outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 28, 140, 20, RA8875_BLACK)),
-                                                                     maxTemp(TFT_TEXT_ITEM(1, 175, 235, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(295, 223, 60, 40, RA8875_BLACK)),
-                                                                     packVoltage(TFT_TEXT_ITEM(1, 25, 225, RA8875_WHITE, RA8875_RED, "Vtotal: 000"), TFT_RECTANGLE_ITEM(168, 223, 60, 40, RA8875_BLACK)),
-                                                                     batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(175, 58, 50, 40, RA8875_BLACK)),
-                                                                     lapNumber(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(318, 58, 50, 45, RA8875_BLACK)),
+                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 0, 150, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 150, 600, 50, RA8875_BLACK)),
+                                                                     motorSpeed(TFT_TEXT_ITEM(0, 0, 40, RA8875_WHITE, RA8875_RED, "Motor Speed = 000"), TFT_RECTANGLE_ITEM(0, 40, 150, 20, RA8875_BLACK)),
+                                                                     busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(300, 0, 250, 20, RA8875_BLACK)),
+                                                                     outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 30, 140, 20, RA8875_BLACK)),
+                                                                     maxTemp(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(250, 60, 150, 40, RA8875_BLACK)),
+                                                                     packVoltage(TFT_TEXT_ITEM(1, 25, 225, RA8875_WHITE, RA8875_RED, "Vtotal: 000"), TFT_RECTANGLE_ITEM(25, 225, 60, 40, RA8875_BLACK)),
+                                                                     batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(0, 60, 225, 40, RA8875_BLACK)),
+                                                                     lapNumber(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(250, 60, 50, 45, RA8875_BLACK)),
                                                                      batteryPerLap(TFT_TEXT_ITEM(2, 0, 0, RA8875_WHITE, RA8875_RED, "Bat/Lap: 0"), TFT_RECTANGLE_ITEM(200, 0, 125, 50, RA8875_BLACK)),
                                                                      waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
                                                                      BMSFaults(TFT_TEXT_ITEM(0, 0, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 100, 480, 50, RA8875_BLACK)),
-                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 480, 150, RA8875_BLACK)),
-                                                                     MotorSpeedBar(TFT_TEXT_ITEM(1, 5, 5, RA8875_WHITE, RA8875_RED, ""), TFT_RECTANGLE_ITEM(5, 5, 0, 30, RA8875_GREEN)),
-                                                                     BlackMotorSpeedBar(TFT_TEXT_ITEM(1, 5, 5, RA8875_WHITE, RA8875_RED, ""), TFT_RECTANGLE_ITEM(5, 5, 310, 30, RA8875_GREEN))
+                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 300, 36, RA8875_BLACK)),
+                                                                     MotorSpeedBar(5, 5, 0, 30, RA8875_GREEN)
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
@@ -43,36 +42,15 @@ void TFT_PROCESSOR::initializeCallbacks()
     //create callbacks and then register them
     //Create elements and send pointer to addElemnt to register it
 
-    this->myDisplay.addElement(&motorControllerFaults);
-    // this->myDisplay.addElement(&faultTextRect);
-    // this->myDisplay.addElement(&motorSpeed);
-    // this->myDisplay.addElement(&motorSpeedRect);
-    // this->myDisplay.addElement(&busVoltage);
-    // this->myDisplay.addElement(&busVoltRect);
-    // this->myDisplay.addElement(&outputVoltage);
-    // this->myDisplay.addElement(&outputVoltageRect);
-
     this->myDisplay.addElement(&maxTemp);
-    //this->myDisplay.addElement(&maxTempRect);
-    // this->myDisplay.addElement(&packVoltage);
-    // this->myDisplay.addElement(&packVoltageRect);
-    this->myDisplay.addElement(&batteryPercentage);
-    // this->myDisplay.addElement(&batteryPercentageRect);
-    //this->myDisplay.addElement(&lapNumber);
-    //this->myDisplay.addElement(&lapNumberRect);
-    //this->myDisplay.addElement(&batteryPerLap); //Instead of updating every cycle, try not adding to elements array but only update when get message?
-    //this->myDisplay.addElement(&batteryPerLapRect);
-    //this->myDisplay.addElement(&waterTemp);
-    //this->myDisplay.addElement(&waterTempRect);
-    this->myDisplay.addElement(&BMSFaults);
     this->myDisplay.addElement(&ReadyToDriveStatus);
-    // batteryPerLapRect.updateElement(myDisplay.getDisplayDriver());
-    // batteryPerLap.updateElement(myDisplay.getDisplayDriver());
-    // lapNumberRect.updateElement(myDisplay.getDisplayDriver());
-    // lapNumber.updateElement(myDisplay.getDisplayDriver());
+    this->myDisplay.addElement(&motorControllerFaults);
+    this->myDisplay.addElement(&motorSpeed);
+    this->myDisplay.addElement(&batteryPercentage);
+    this->myDisplay.addElement(&BMSFaults);
 
     this->myDisplay.addElement(&MotorSpeedBar);
-    this->myDisplay.addElement(&BlackMotorSpeedBar);
+    //this->myDisplay.addElement(&BlackMotorSpeedBar);
     //Register callbacks. Callbacks must be registered in DASH_CONTROLLER::registerCallbacks
     //for callbacks to be called
     myDashController->registerCallback();
@@ -111,11 +89,13 @@ void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
         //motorSpeedRect.updateColor(RA8875_RED);
     }
     sprintf(motorSpeedNum, "Motor Speed = %d", number);
+    Serial.println(motorSpeedNum);
     motorSpeed.updateText(motorSpeedNum);
-    uint16_t barWidth = number / 4000 * 310;
-    MotorSpeedBar.updateRectangleSize(barWidth, 30);
-    MotorSpeedBar.updateRectangleSize(310 - barWidth, 30);
-    MotorSpeedBar.updateTextLocation(barWidth, 5);
+    uint16_t barWidth = (uint16_t)((number / 4000.0) * 470.0);
+    //MotorSpeedBar.updateRectangleSize(barWidth, 30);
+    Serial.printf("Motor speed bar width: %d\n\r", barWidth);
+    MotorSpeedBar.updateSize(barWidth, 30);
+    //MotorSpeedBar.updateTextLocation(barWidth, 5);
 }
 
 void TFT_PROCESSOR::VoltageInfo(etl::array<uint8_t, 8> const &data)
@@ -136,6 +116,19 @@ void TFT_PROCESSOR::AccumTemp(etl::array<uint8_t, 8> const &data)
     char maxTempNum[MAX_STRING_SIZE];
     uint16_t number = data[4];
     sprintf(maxTempNum, "Tmax: %d", number);
+    if (number > 50)
+    {
+        maxTemp.updateTextColor(RA8875_RED);
+    }
+    else if (number > 40)
+    {
+        maxTemp.updateTextColor(RA8875_YELLOW);
+    }
+    else
+    {
+        maxTemp.updateTextColor(RA8875_WHITE);
+    }
+    
     maxTemp.updateText(maxTempNum);
 }
 
@@ -243,4 +236,9 @@ void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 
             }
         }
     }
+}
+
+void TFT_PROCESSOR::clearScreen()
+{
+    this->myDisplay.clearScreen();
 }

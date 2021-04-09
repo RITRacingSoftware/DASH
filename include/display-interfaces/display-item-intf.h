@@ -13,7 +13,8 @@ public:
 
   virtual void updateElement(Adafruit_RA8875 *const) = 0;
 
-  virtual bool operator==(DISPLAY_ITEM_INTF const *) const = 0;
+  virtual bool getChanged() = 0;
+  //virtual bool operator==(DISPLAY_ITEM_INTF const *) const = 0;
 };
 
 #endif /* DISPLAY_ITEM_INTF_H_ */
