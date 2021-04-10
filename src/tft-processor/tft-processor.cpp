@@ -6,6 +6,7 @@
 #include "etl/cstring.h"
 #include "Arduino.h"
 #include "../controller/dash-controller.h"
+#include "f29bms_dbc.h"
 
 void TFT_PROCESSOR::updateScreen()
 {
@@ -28,7 +29,9 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
                                                                      BMSFaults(TFT_TEXT_ITEM(0, 0, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 100, 480, 50, RA8875_BLACK)),
                                                                      ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 300, 36, RA8875_BLACK)),
-                                                                     MotorSpeedBar(5, 5, 0, 30, RA8875_GREEN)
+                                                                     MotorSpeedBar(5, 5, 0, 30, RA8875_GREEN),
+                                                                     BMSMaxCurrent(TFT_TEXT_ITEM(0, 20, 100, RA8875_WHITE, RA8875_RED, "Max Current: "), TFT_RECTANGLE_ITEM(20, 100, 100, 25, RA8875_BLACK)),
+                                                                     BMSMinVoltage(TFT_TEXT_ITEM(0, 40, 100, RA8875_WHITE, RA8875_RED, "Min Voltage: "), TFT_RECTANGLE_ITEM(40, 100, 100, 25, RA8875_BLACK))
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
@@ -236,6 +239,43 @@ void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 
             }
         }
     }
+}
+
+void TFT_PROCESSOR::bmsFaults(etl::array<uint8_t, 8> const &data)
+{
+    //TO DO
+}
+
+void TFT_PROCESSOR::bmsCurrent(etl::array<uint8_t, 8> const &data)
+{
+    29bms_dbc_bms_current_unpack(&canBus.bms_current, data, 8);
+    double curCurrent = f29bms_dbc_bms_current_bms_inst_current_filt_decode(canBus.bms_current.bms_inst_current_filt);
+    if(curCurrent > maxCurrent){
+        maxCurrent = curCurrent;
+        char maxCurrentString[MAX_STRING_SIZE];
+        sprintf(maxCurrentString, "Max Current: %f", maxCurrent);
+        BMSMaxCurrent.updateText(maxCurrentString);
+    }
+}
+
+void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
+{
+    f29bms_dbc_bms_voltages_unpack(&canBus.bms_voltages, data, 8);
+    //check if any just got are lower, if so, update
+    uint64_t rawData;
+    uint16_t mask = 0x1FF;
+    for(int i = 0; i < 6 i ++){
+        uint16_t thisRawVoltage = (rawData >> (8 + (9*i))) && mask;
+        double thisVoltage = f29bms_dbc_bms_voltages_bms_voltages_cell0_decode(thisRawVoltage);
+        if(thisVoltage < minVoltage){
+            minVoltage = thisVoltage;
+            char minVoltageString[MAX_STRING_SIZE];
+            sprintf(minVoltageString, "Min Voltage: %f", minVoltage);
+            BMSMinVoltage.updateText(minVoltageString);
+        }
+    }
+
+
 }
 
 void TFT_PROCESSOR::clearScreen()

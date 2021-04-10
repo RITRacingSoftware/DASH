@@ -10,11 +10,26 @@
 #include "../tft-display/tft-display-item.h"
 #include "etl/list.h"
 #include <string.h>
+#include "../f29bms_dbc.h"
 
 // struct displayItem{
 //     TFT_TEXT_ITEM text;
 //     TFT_RECTANGLE_ITEM rectangle;
 // };
+
+typedef struct
+{
+    struct f29bms_dbc_bms_status_t bms_status;
+    struct f29bms_dbc_bms_fault_vector_t bms_fault_vector;
+    struct f29bms_dbc_bms_fault_alert_t bms_fault_alert;
+    struct f29bms_dbc_bms_voltages_t bms_voltages;
+    struct f29bms_dbc_bms_thermistor_voltages_t bms_thermistor_voltages;
+    struct f29bms_dbc_bms_temperatures_t bms_temperatures;
+    struct f29bms_dbc_bms_drain_status_a_t bms_drain_status_a;
+    struct f29bms_dbc_bms_drain_status_b_t bms_drain_status_b;
+    struct f29bms_dbc_bms_current_t bms_current;
+    struct f29bms_dbc_bms_charge_request_t bms_charge_request;
+} CAN_BUS;
 
 class TFT_PROCESSOR : public TFT_PROCESSOR_INTF
 {
@@ -22,8 +37,13 @@ private:
     int lap;
     int batteryBeforeLap;
     int batteryPercent;
+    double maxCurrent;
+    double minVoltage;
     char *previoustMCFaultString;
     char *previousBMSFaultString;
+
+    CAN_BUS canBus;
+
 
     DASH_CONTROLLER_INTF *myDashController;
     TFT_DISPLAY myDisplay; //PROBLEM IS WITH THE DISPLAY
@@ -53,6 +73,10 @@ private:
     TFT_DISPLAY_ITEM ReadyToDriveStatus;
 
     TFT_RECTANGLE_ITEM MotorSpeedBar;
+
+    TFT_DISPLAY_ITEM BMSMaxCurrent;
+
+    TFT_DISPLAY_ITEM BMSMinVoltage;
      
 
     const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", "??", "??", "??", "Relay Fault", "??", "??", "??"}};
@@ -101,6 +125,26 @@ public:
     void readyToDriveMessage(etl::array<uint8_t, 8> const &data);
 
     void updateBMSFaults(etl::array<uint8_t, 8> const &data);
+
+    void bmsFaults(etl::array<uint8_t, 8> const &data);
+
+    void bmsCurrent(etl::array<uint8_t, 8> const &data);
+
+    void bmcCharge(etl::array<uint8_t, 8> const &data);
+
+    void bmsStatus(etl::array<uint8_t, 8> const &data);
+
+    void bmsFaultAlert(etl::array<uint8_t, 8> const &data);
+
+    void bmsVoltages(etl::array<uint8_t, 8> const &data);
+
+    void bmsThermistorVoltages(etl::array<uint8_t, 8> const &data);
+
+    void bmsTemperatures(etl::array<uint8_t, 8> const &data);
+
+    void bmsDrainStatusA(etl::array<uint8_t, 8> const &data);
+
+    void bmsDrainSatatusB(etl::array<uint8_t, 8> const &data);
 
     void checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> message, char faultOutString[MAX_STRING_SIZE]);
 
