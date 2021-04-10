@@ -10,7 +10,7 @@
 #include "../tft-display/tft-display-item.h"
 #include "etl/list.h"
 #include <string.h>
-#include "../../f29bms_dbc.h"
+#include "../f29bms_dbc.h"
 
 // struct displayItem{
 //     TFT_TEXT_ITEM text;
@@ -36,7 +36,7 @@ class TFT_PROCESSOR : public TFT_PROCESSOR_INTF
 private:
     int lap;
     int batteryBeforeLap;
-    int batteryPercent;
+    // int batteryPercent;
     double maxCurrent;
     double maxVoltage;
     double minVoltage;
@@ -57,15 +57,15 @@ private:
 
     TFT_DISPLAY_ITEM motorSpeed;
 
-    TFT_DISPLAY_ITEM busVoltage;
+    //TFT_DISPLAY_ITEM busVoltage;
 
-    TFT_DISPLAY_ITEM outputVoltage;
+    //TFT_DISPLAY_ITEM outputVoltage;
 
-    TFT_DISPLAY_ITEM maxTemp;
+    //TFT_DISPLAY_ITEM maxTemp;
 
     //TFT_DISPLAY_ITEM packVoltage;
 
-    TFT_DISPLAY_ITEM batteryPercentage;
+    //TFT_DISPLAY_ITEM batteryPercentage;
 
     TFT_DISPLAY_ITEM batteryPerLap;
 
@@ -96,9 +96,9 @@ private:
     TFT_DISPLAY_ITEM BMSPackVoltage;
      
 
-    const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", "??", "??", "??", "Relay Fault", "??", "??", "??"}};
-    const etl::array<char[MAX_STRING_SIZE], 8> faultFlags = {{"Driving while plugged in", "Interlock tripped", "Communication fault with cell",
-                                                              "Charge overcurrent", "Discharge overcurrent", "Over-temperature", "Under voltage", "Over voltage"}};
+    // const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", "??", "??", "??", "Relay Fault", "??", "??", "??"}};
+    // const etl::array<char[MAX_STRING_SIZE], 8> faultFlags = {{"Driving while plugged in", "Interlock tripped", "Communication fault with cell",
+                                                            //   "Charge overcurrent", "Discharge overcurrent", "Over-temperature", "Under voltage", "Over voltage"}};
     const etl::array<char[MAX_STRING_SIZE], 8> MCByteZero = {{"Hardware Gate/Desaturation Fault", "HW Over-current Fault", "Accelerator Shorted",
                                                               "Accelerator Open", "Current Sensor Low", "Current Sensor High", "Module Temperature Low", "Module Temperature High"}};
     const etl::array<char[MAX_STRING_SIZE], 8> MCByteOne = {{"Control PCB Temperature Low", "Control PCB Temperature High", "Gate Drive PCB Temperature Low",
@@ -127,13 +127,13 @@ public:
 
     void MotorPositionInformation(etl::array<uint8_t, 8> const &data);
 
-    void VoltageInfo(etl::array<uint8_t, 8> const &data);
+    //void VoltageInfo(etl::array<uint8_t, 8> const &data);
 
-    void AccumTemp(etl::array<uint8_t, 8> const &data);
+    //void AccumTemp(etl::array<uint8_t, 8> const &data);
 
-    void AccumVoltage(etl::array<uint8_t, 8> const &data);
+    //void AccumVoltage(etl::array<uint8_t, 8> const &data);
 
-    void AccumCharge(etl::array<uint8_t, 8> const &data);
+    //void AccumCharge(etl::array<uint8_t, 8> const &data);
 
     void IncrementLap(etl::array<uint8_t, 8> const &data);
 
@@ -141,7 +141,7 @@ public:
 
     void readyToDriveMessage(etl::array<uint8_t, 8> const &data);
 
-    void updateBMSFaults(etl::array<uint8_t, 8> const &data);
+    //void updateBMSFaults(etl::array<uint8_t, 8> const &data);
 
     void bmsFaults(etl::array<uint8_t, 8> const &data);
 

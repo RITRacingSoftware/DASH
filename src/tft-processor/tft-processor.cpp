@@ -7,6 +7,8 @@
 #include "etl/cstring.h"
 #include "Arduino.h"
 #include "../controller/dash-controller.h"
+#include "../f29bms_dbc.h"
+
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
 #define BYTE_TO_BINARY(byte)  \
@@ -28,40 +30,43 @@ void TFT_PROCESSOR::updateScreen()
 TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashController(dashController),
                                                                      myDisplay(10, 9),
                                                                      //Element(TFT_TEXT_ITEM(font_size, xCoordinate, yCoordinate, foreColor, BackgroundColor, text), TFT_RECTANGLE_ITEM(xCoordinate, yCoordinate, width, height, color))
-                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 0, 150, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 150, 600, 50, RA8875_BLACK)),
-                                                                     motorSpeed(TFT_TEXT_ITEM(0, 0, 40, RA8875_WHITE, RA8875_RED, "Motor Speed = 000"), TFT_RECTANGLE_ITEM(0, 40, 150, 20, RA8875_BLACK)),
-                                                                     busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(300, 0, 250, 20, RA8875_BLACK)),
-                                                                     outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 30, 140, 20, RA8875_BLACK)),
-                                                                     maxTemp(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(250, 60, 150, 40, RA8875_BLACK)),
+                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 0, 180, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 180, 600, 50, RA8875_BLACK)),
+                                                                     motorSpeed(TFT_TEXT_ITEM(0, 0, 40, RA8875_WHITE, RA8875_RED, "Motor Speed: 000"), TFT_RECTANGLE_ITEM(0, 40, 150, 20, RA8875_BLACK)),
+                                                                     //busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(300, 0, 250, 20, RA8875_BLACK)),
+                                                                     //outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 30, 140, 20, RA8875_BLACK)),
+                                                                     //maxTemp(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(250, 60, 150, 40, RA8875_BLACK)),
                                                                      //packVoltage(TFT_TEXT_ITEM(1, 25, 225, RA8875_WHITE, RA8875_RED, "Vtotal: 000"), TFT_RECTANGLE_ITEM(25, 225, 60, 40, RA8875_BLACK)),
-                                                                     batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(0, 60, 225, 40, RA8875_BLACK)),
+                                                                     //batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(0, 60, 225, 40, RA8875_BLACK)),
                                                                      lapNumber(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(250, 60, 50, 45, RA8875_BLACK)),
                                                                      batteryPerLap(TFT_TEXT_ITEM(2, 0, 0, RA8875_WHITE, RA8875_RED, "Bat/Lap: 0"), TFT_RECTANGLE_ITEM(200, 0, 125, 50, RA8875_BLACK)),
                                                                      waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
-                                                                     BMSFaults(TFT_TEXT_ITEM(0, 0, 100, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 100, 480, 50, RA8875_BLACK)),
-                                                                     BMSFaultVector(TFT_TEXT_ITEM(0, 15, 100, RA8875_WHITE, RA8875_RED, "BMS Fault Vector: "), TFT_RECTANGLE_ITEM(15, 100, 480, 50, RA8875_BLACK)),
-                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 200, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 200, 300, 36, RA8875_BLACK)),
+                                                                     BMSFaults(TFT_TEXT_ITEM(0, 0, 130, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 130, 480, 50, RA8875_BLACK)),
+                                                                     BMSFaultVector(TFT_TEXT_ITEM(0, 0, 110, RA8875_WHITE, RA8875_RED, "BMS Fault Vector: 1111111111111111"), TFT_RECTANGLE_ITEM(0, 110, 280, 50, RA8875_BLACK)),
+                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 230, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 230, 300, 36, RA8875_BLACK)),
                                                                      MotorSpeedBar(5, 5, 0, 30, RA8875_GREEN),
-                                                                     BMSMaxCurrent(TFT_TEXT_ITEM(0, 20, 100, RA8875_WHITE, RA8875_RED, "Max Current: "), TFT_RECTANGLE_ITEM(20, 100, 100, 25, RA8875_BLACK)),
-                                                                     BMSMinVoltage(TFT_TEXT_ITEM(0, 40, 100, RA8875_WHITE, RA8875_RED, "Min Voltage: "), TFT_RECTANGLE_ITEM(40, 100, 100, 25, RA8875_BLACK)),
-                                                                     BMSMaxVoltage(TFT_TEXT_ITEM(0, 40, 140, RA8875_WHITE, RA8875_RED, "Max Voltage: "), TFT_RECTANGLE_ITEM(40, 140, 100, 25, RA8875_BLACK)),
-                                                                     BMSCurrentCurrent(TFT_TEXT_ITEM(0, 20, 140, RA8875_WHITE, RA8875_RED, "Current: "), TFT_RECTANGLE_ITEM(20, 140, 100, 25, RA8875_BLACK)),
-                                                                     BMSSOC(TFT_TEXT_ITEM(0, 140, 180, RA8875_WHITE, RA8875_RED, "SOC: "), TFT_RECTANGLE_ITEM(140, 180, 100, 25, RA8875_BLACK)),
-                                                                     BMSSOCRaw(TFT_TEXT_ITEM(0, 180, 180, RA8875_WHITE, RA8875_RED, "SOC(raw): "), TFT_RECTANGLE_ITEM(180, 180, 100, 25, RA8875_BLACK)),
-                                                                     BMSPackVoltage(TFT_TEXT_ITEM(0, 240, 180, RA8875_WHITE, RA8875_RED, "Pack Voltage: "), TFT_RECTANGLE_ITEM(240, 180, 100, 25, RA8875_BLACK))
+                                                                     BMSMaxCurrent(TFT_TEXT_ITEM(0, 0, 65, RA8875_WHITE, RA8875_RED, "Max Current: "), TFT_RECTANGLE_ITEM(0, 65, 160, 20, RA8875_BLACK)),
+                                                                     BMSMinVoltage(TFT_TEXT_ITEM(0, 317, 40, RA8875_WHITE, RA8875_RED, "Min Voltage: "), TFT_RECTANGLE_ITEM(317, 40, 160, 25, RA8875_BLACK)),
+                                                                     BMSMaxVoltage(TFT_TEXT_ITEM(0, 317, 90, RA8875_WHITE, RA8875_RED, "Max Voltage: "), TFT_RECTANGLE_ITEM(317, 90, 160, 25, RA8875_BLACK)),
+                                                                     BMSCurrentCurrent(TFT_TEXT_ITEM(0, 32, 85, RA8875_WHITE, RA8875_RED, "Current: "), TFT_RECTANGLE_ITEM(32, 85, 130, 25, RA8875_BLACK)),
+                                                                     BMSSOC(TFT_TEXT_ITEM(0, 205, 65, RA8875_WHITE, RA8875_RED, "SOC: "), TFT_RECTANGLE_ITEM(205, 65, 100, 20, RA8875_BLACK)),
+                                                                     BMSSOCRaw(TFT_TEXT_ITEM(0, 165, 40, RA8875_WHITE, RA8875_RED, "SOC(raw): "), TFT_RECTANGLE_ITEM(165, 40, 100, 25, RA8875_BLACK)),
+                                                                     BMSPackVoltage(TFT_TEXT_ITEM(0, 310, 65, RA8875_WHITE, RA8875_RED, "Pack Voltage: "), TFT_RECTANGLE_ITEM(310, 65, 160, 25, RA8875_BLACK))
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
-    this->batteryPercent = 100;
+    //this->batteryPercent = 100;
     this->previoustMCFaultString = "Motor Controller Faults: ";
     this->previousBMSFaultString = "BMS Faults: ";
-    this->prevFaultVector = 0;
+    this->prevFaultVector = 0xFFFFFFFFFFFFFFFF;
     this->minVoltage = DBL_MAX;
     this->maxCurrent = DBL_MIN;
     this->maxVoltage = DBL_MIN;
     this->SOC = 0;
     this->SOCRaw = 0;
     this->packVoltage = 0;
+    char testString[MAX_STRING_SIZE];
+    sprintf(testString, "Max Current: %f", 5.5);
+    BMSMaxCurrent.updateText(testString);
 }
 
 void TFT_PROCESSOR::initializeCallbacks()
@@ -127,7 +132,7 @@ void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
     {
         //motorSpeedRect.updateColor(RA8875_RED);
     }
-    sprintf(motorSpeedNum, "Motor Speed = %d", number);
+    sprintf(motorSpeedNum, "Motor Speed: %d", number);
     Serial.println(motorSpeedNum);
     motorSpeed.updateText(motorSpeedNum);
     uint16_t barWidth = (uint16_t)((number / 4000.0) * 470.0);
@@ -137,57 +142,57 @@ void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
     //MotorSpeedBar.updateTextLocation(barWidth, 5);
 }
 
-void TFT_PROCESSOR::VoltageInfo(etl::array<uint8_t, 8> const &data)
-{
-    char outputVoltageNum[MAX_STRING_SIZE];
-    uint16_t number = data[2] | (data[3] << 8);
-    sprintf(outputVoltageNum, "Output Voltage = %d", number);
-    outputVoltage.updateText(outputVoltageNum);
+// void TFT_PROCESSOR::VoltageInfo(etl::array<uint8_t, 8> const &data)
+// {
+//     char outputVoltageNum[MAX_STRING_SIZE];
+//     uint16_t number = data[2] | (data[3] << 8);
+//     sprintf(outputVoltageNum, "Output Voltage = %d", number);
+//     outputVoltage.updateText(outputVoltageNum);
 
-    char busVoltageNum[MAX_STRING_SIZE];
-    number = data[0] | (data[1] << 8);
-    sprintf(busVoltageNum, "Bus Voltage = %d", number);
-    busVoltage.updateText(busVoltageNum);
-}
+//     char busVoltageNum[MAX_STRING_SIZE];
+//     number = data[0] | (data[1] << 8);
+//     sprintf(busVoltageNum, "Bus Voltage = %d", number);
+//     busVoltage.updateText(busVoltageNum);
+// }
 
-void TFT_PROCESSOR::AccumTemp(etl::array<uint8_t, 8> const &data)
-{
-    char maxTempNum[MAX_STRING_SIZE];
-    uint16_t number = data[4];
-    sprintf(maxTempNum, "Tmax: %d", number);
-    if (number > 50)
-    {
-        maxTemp.updateTextColor(RA8875_RED);
-    }
-    else if (number > 40)
-    {
-        maxTemp.updateTextColor(RA8875_YELLOW);
-    }
-    else
-    {
-        maxTemp.updateTextColor(RA8875_WHITE);
-    }
+// void TFT_PROCESSOR::AccumTemp(etl::array<uint8_t, 8> const &data)
+// {
+//     char maxTempNum[MAX_STRING_SIZE];
+//     uint16_t number = data[4];
+//     sprintf(maxTempNum, "Tmax: %d", number);
+//     if (number > 50)
+//     {
+//         maxTemp.updateTextColor(RA8875_RED);
+//     }
+//     else if (number > 40)
+//     {
+//         maxTemp.updateTextColor(RA8875_YELLOW);
+//     }
+//     else
+//     {
+//         maxTemp.updateTextColor(RA8875_WHITE);
+//     }
     
-    maxTemp.updateText(maxTempNum);
-}
+//     maxTemp.updateText(maxTempNum);
+// }
 
-void TFT_PROCESSOR::AccumVoltage(etl::array<uint8_t, 8> const &data)
-{
-    char packVoltageNum[MAX_STRING_SIZE];
-    uint16_t number = data[0] | (data[1] << 8);
-    sprintf(packVoltageNum, "Vtotal: %d", number);
-    //packVoltage.updateText(packVoltageNum);
-}
+// void TFT_PROCESSOR::AccumVoltage(etl::array<uint8_t, 8> const &data)
+// {
+//     char packVoltageNum[MAX_STRING_SIZE];
+//     uint16_t number = data[0] | (data[1] << 8);
+//     sprintf(packVoltageNum, "Vtotal: %d", number);
+//     //packVoltage.updateText(packVoltageNum);
+// }
 
-void TFT_PROCESSOR::AccumCharge(etl::array<uint8_t, 8> const &data)
-{
-    char batteryPercentNum[MAX_STRING_SIZE];
-    uint16_t number = data[0];
-    batteryPercent = number; //Update current battery percentage for battery/lap
-    sprintf(batteryPercentNum, "Battery  = %d", number);
-    Serial.println(batteryPercentNum);
-    batteryPercentage.updateText(batteryPercentNum);
-}
+// void TFT_PROCESSOR::AccumCharge(etl::array<uint8_t, 8> const &data)
+// {
+//     char batteryPercentNum[MAX_STRING_SIZE];
+//     uint16_t number = data[0];
+//     batteryPercent = number; //Update current battery percentage for battery/lap
+//     sprintf(batteryPercentNum, "Battery  = %d", number);
+//     Serial.println(batteryPercentNum);
+//     batteryPercentage.updateText(batteryPercentNum);
+// }
 
 void TFT_PROCESSOR::IncrementLap(etl::array<uint8_t, 8> const &data)
 {
@@ -199,16 +204,16 @@ void TFT_PROCESSOR::IncrementLap(etl::array<uint8_t, 8> const &data)
 
     //Determine battery used last lap
     char batPerLapNum[MAX_STRING_SIZE];
-    int difference = batteryPercent - batteryBeforeLap; //Calulate battery used
+    int difference = packVoltage - batteryBeforeLap; //Calulate battery used
     Serial.print("Differnce");
     Serial.println(number);
     Serial.print("Percent");
-    Serial.println(batteryPercent);
+    //Serial.println(batteryPercent);
     Serial.print("old");
     Serial.println(batteryBeforeLap);
     sprintf(batPerLapNum, "Bat/Lap: %d", difference);
     batteryPerLap.updateText(batPerLapNum);
-    batteryBeforeLap = batteryPercent; //Set new starting percentage
+    //batteryBeforeLap = batteryPercent; //Set new starting percentage
 }
 
 void TFT_PROCESSOR::waterTempInfo(etl::array<uint8_t, 8> const &data)
@@ -245,17 +250,17 @@ boolean isFault(uint8_t status, uint8_t mask)
     return (status && mask) != 0;
 }
 
-void TFT_PROCESSOR::updateBMSFaults(etl::array<uint8_t, 8> const &data)
-{
-    char BMSFaultsString[MAX_STRING_SIZE] = "BMS Faults: ";
+// void TFT_PROCESSOR::updateBMSFaults(etl::array<uint8_t, 8> const &data)
+// {
+//     char BMSFaultsString[MAX_STRING_SIZE] = "BMS Faults: ";
 
-    checkFaults(data[0], stateOfSystem, BMSFaultsString);
-    //Don't know how to decode Fault Codes byte
-    checkFaults(data[5], faultFlags, BMSFaultsString);
-    Serial.println(BMSFaultsString);
-    BMSFaults.updateText(BMSFaultsString);
-    //Didn't add warnings
-}
+//     checkFaults(data[0], stateOfSystem, BMSFaultsString);
+//     //Don't know how to decode Fault Codes byte
+//     checkFaults(data[5], faultFlags, BMSFaultsString);
+//     Serial.println(BMSFaultsString);
+//     BMSFaults.updateText(BMSFaultsString);
+//     //Didn't add warnings
+// }
 
 //Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
 void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages, char faultOutString[MAX_STRING_SIZE])
