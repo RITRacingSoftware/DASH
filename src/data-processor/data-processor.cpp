@@ -6,10 +6,10 @@
 #include "Arduino.h"
 #include "data-processor/data-processor.h"
 
-static bool isBMSmessage(uint16_t id){
-  return ((id = BMS_FAULTS_ID) || (id = BMS_CHARGE_REQUEST_ID) || (id = BMS_CURRENT_ID) || (id = BMS_STATUS_ID) || (id = BMS_FAULT_ALERT_ID) || 
-      (id = BMS_VOLTAGES_ID) || (id = BMS_THERMISTOR_VOLTAGES_ID ) || (id = BMS_TEMPERATURES_ID) || (id = BMS_DRAIN_STATUS_A_ID) || (id = BMS_DRAIN_STATUS_B_ID));
-}
+// static bool isBMSmessage(uint16_t id){
+//   return ((id = BMS_FAULTS_ID) || (id = BMS_CHARGE_REQUEST_ID) || (id = BMS_CURRENT_ID) || (id = BMS_STATUS_ID) || (id = BMS_FAULT_ALERT_ID) || 
+//       (id = BMS_VOLTAGES_ID) || (id = BMS_THERMISTOR_VOLTAGES_ID ) || (id = BMS_TEMPERATURES_ID) || (id = BMS_DRAIN_STATUS_A_ID) || (id = BMS_DRAIN_STATUS_B_ID));
+// }
 
 DATA_PROCESSOR::DATA_PROCESSOR(DASH_CONTROLLER_INTF *dashController)
 {
@@ -43,7 +43,9 @@ void DATA_PROCESSOR::processData()
     // messages left
     if (readingCAN)
     {
+      // if(isBMSmessage(message.id)){
 
+      // }
       if (this->my_callback_map.find(message.id) != this->my_callback_map.end())
       {
         etl::delegate<void(etl::array<uint8_t, 8> const &)> func =

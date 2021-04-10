@@ -21,7 +21,7 @@
 #define BMS_CHARGE_REQUEST_ID 0x0x1806e5f4u
 #define BMS_CURRENT_ID 0x384
 #define BMS_STATUS_ID 0x258
-#define BMS_FAULT_ALERT_ID 0x2bd
+#define BMS_FAULT_ALERT_ID 0x2bd  //Don't need to use
 #define BMS_VOLTAGES_ID 0x2be
 #define BMS_THERMISTOR_VOLTAGES_ID 0x2bf
 #define BMS_TEMPERATURES_ID 0x2c0

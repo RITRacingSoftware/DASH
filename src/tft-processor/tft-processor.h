@@ -10,7 +10,7 @@
 #include "../tft-display/tft-display-item.h"
 #include "etl/list.h"
 #include <string.h>
-#include "../f29bms_dbc.h"
+#include "../../f29bms_dbc.h"
 
 // struct displayItem{
 //     TFT_TEXT_ITEM text;
@@ -38,15 +38,20 @@ private:
     int batteryBeforeLap;
     int batteryPercent;
     double maxCurrent;
+    double maxVoltage;
     double minVoltage;
     char *previoustMCFaultString;
     char *previousBMSFaultString;
+    uint64_t prevFaultVector;
+    double SOC;
+    double SOCRaw;
+    double packVoltage;
 
     CAN_BUS canBus;
 
 
     DASH_CONTROLLER_INTF *myDashController;
-    TFT_DISPLAY myDisplay; //PROBLEM IS WITH THE DISPLAY
+    TFT_DISPLAY myDisplay; 
 
     TFT_DISPLAY_ITEM motorControllerFaults;
 
@@ -58,7 +63,7 @@ private:
 
     TFT_DISPLAY_ITEM maxTemp;
 
-    TFT_DISPLAY_ITEM packVoltage;
+    //TFT_DISPLAY_ITEM packVoltage;
 
     TFT_DISPLAY_ITEM batteryPercentage;
 
@@ -70,6 +75,8 @@ private:
 
     TFT_DISPLAY_ITEM BMSFaults;
 
+    TFT_DISPLAY_ITEM BMSFaultVector;
+
     TFT_DISPLAY_ITEM ReadyToDriveStatus;
 
     TFT_RECTANGLE_ITEM MotorSpeedBar;
@@ -77,6 +84,16 @@ private:
     TFT_DISPLAY_ITEM BMSMaxCurrent;
 
     TFT_DISPLAY_ITEM BMSMinVoltage;
+
+    TFT_DISPLAY_ITEM BMSMaxVoltage;
+
+    TFT_DISPLAY_ITEM BMSCurrentCurrent;
+
+    TFT_DISPLAY_ITEM BMSSOC;
+    
+    TFT_DISPLAY_ITEM BMSSOCRaw;
+
+    TFT_DISPLAY_ITEM BMSPackVoltage;
      
 
     const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", "??", "??", "??", "Relay Fault", "??", "??", "??"}};
