@@ -33,6 +33,8 @@ public:
 
     void updateRectangleLocation(uint32_t xCoord, uint32_t yCoord);
 
+    void updateRectangleColor(uint16_t color);
+
     bool getChanged();
 
     //bool operator==(DISPLAY_ITEM_INTF const *otherItemIntf);

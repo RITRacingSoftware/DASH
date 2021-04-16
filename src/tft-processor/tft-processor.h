@@ -43,8 +43,8 @@ private:
     char *previoustMCFaultString;
     char *previousBMSFaultString;
     uint64_t prevFaultVector;
-    double SOC;
-    double SOCRaw;
+    int SOC;
+    int SOCRaw;
     double packVoltage;
 
     CAN_BUS canBus;
@@ -166,6 +166,8 @@ public:
     void checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> message, char faultOutString[MAX_STRING_SIZE]);
 
     void clearScreen() override;
+
+    void test();
 
 };
 

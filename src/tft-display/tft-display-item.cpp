@@ -65,3 +65,8 @@ void TFT_DISPLAY_ITEM::updateRectangleLocation(uint32_t xCoord, uint32_t yCoord)
     myRectangle.updateLocation(xCoord, yCoord);
     this->changed = true;
 }
+
+void TFT_DISPLAY_ITEM::updateRectangleColor(uint16_t color){
+    myRectangle.updateColor(color);
+    this->changed = true;
+}

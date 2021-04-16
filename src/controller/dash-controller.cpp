@@ -18,6 +18,7 @@ void DASH_CONTROLLER::initialize()
 {
   this->my_tft_processor.initializeCallbacks();
   this->my_tft_processor.clearScreen();
+  this->my_tft_processor.test();
 }
 
 void DASH_CONTROLLER::updateView()
@@ -39,6 +40,7 @@ bool DASH_CONTROLLER::registerCallback()
   my_data_processor.registerCallback(BMS_CURRENT_ID, etl::delegate<void(etl::array<uint8_t, 8> const &data)>::create<TFT_PROCESSOR, &TFT_PROCESSOR::bmsCurrent>(my_tft_processor));
   my_data_processor.registerCallback(BMS_STATUS_ID, etl::delegate<void(etl::array<uint8_t, 8> const &data)>::create<TFT_PROCESSOR, &TFT_PROCESSOR::bmsStatus>(my_tft_processor));
   my_data_processor.registerCallback(BMS_VOLTAGES_ID, etl::delegate<void(etl::array<uint8_t, 8> const &data)>::create<TFT_PROCESSOR, &TFT_PROCESSOR::bmsVoltages>(my_tft_processor));
+  
 
   return true;
 }

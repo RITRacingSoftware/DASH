@@ -11,13 +11,14 @@ DASH_CONTROLLER controller;
 void setup()
 {
 
-  Serial.print("startingg");
+  //Serial.print("startingg");
   pinMode(START_BUTTON_PIN, INPUT);
   pinMode(START_SOUND_SIGNAL, OUTPUT);
   //inMode(19, OUTPUT);
   //pinMode(16, OUTPUT); //for testing
   // put your setup code here, to run once:
   Serial.begin(9600);
+  delay(10000);
   controller.initialize();
   //digitalWrite(19, HIGH);
   //digitalWrite(16, HIGH); //for testing RTDS
