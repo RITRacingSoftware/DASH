@@ -24,13 +24,22 @@
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
 
-#define CURRRENT_CURRENT_X 32
+#define CURRRENT_CURRENT_X 0
 #define CURRRENT_CURRENT_Y 110
 #define MAX_CURRENT_X 0
 #define MAX_CURRENT_Y 80
 #define MOTOR_SPEED_X 0
 #define MOTOR_SPEED_Y 40
-
+#define PACK_VOLTAGE_X 320
+#define PACK_VOLTAGE_Y 75
+#define MIN_VOLTAGE_X 330
+#define MIN_VOLTAGE_Y 40
+#define MAX_VOLTAGE_X 330
+#define MAX_VOLTAGE_Y 110
+#define SOC_X 210
+#define SOC_Y 80
+#define SOC_RAW_X 185
+#define SOC_RAW_Y 50
 
 
 
@@ -58,15 +67,20 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      BMSFaultVector(TFT_TEXT_ITEM(0, 0, 155, RA8875_WHITE, RA8875_RED, "BMS Fault Vector: "), TFT_RECTANGLE_ITEM(0, 155, 280, 25, RA8875_BLACK)),
                                                                      ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 230, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 230, 300, 36, RA8875_BLACK)),
                                                                      MotorSpeedBar(5, 5, 0, 30, RA8875_GREEN),
-                                                                     BMSMaxCurrent(TFT_TEXT_ITEM(1, MAX_CURRENT_X+60, MAX_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(MAX_CURRENT_X+60, MAX_CURRENT_Y, 135, 30, RA8875_BLACK)),
-                                                                     BMSMaxCurrentLabel(TFT_TEXT_ITEM(0, MAX_CURRENT_X, MAX_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Max Cur.: "), TFT_RECTANGLE_ITEM(MAX_CURRENT_X, MAX_CURRENT_Y+10, 60, 30, RA8875_BLACK)),
-                                                                     BMSMinVoltage(TFT_TEXT_ITEM(0, 317, 40, RA8875_WHITE, RA8875_RED, "Min Voltage: "), TFT_RECTANGLE_ITEM(317, 40, 160, 25, RA8875_BLACK)),
-                                                                     BMSMaxVoltage(TFT_TEXT_ITEM(0, 317, 90, RA8875_WHITE, RA8875_RED, "Max Voltage: "), TFT_RECTANGLE_ITEM(317, 90, 160, 25, RA8875_BLACK)),
-                                                                     BMSCurrentCurrent(TFT_TEXT_ITEM(1, CURRRENT_CURRENT_X+28, CURRRENT_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X+28, CURRRENT_CURRENT_Y+5, 135, 30, RA8875_BLACK)),
-                                                                     BMSCurrentCurrentLabel(TFT_TEXT_ITEM(0, CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Cur.: "), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+5, 50, 30, RA8875_BLACK)),
-                                                                     BMSSOC(TFT_TEXT_ITEM(0, 205, 65, RA8875_WHITE, RA8875_RED, "SOC: "), TFT_RECTANGLE_ITEM(205, 65, 100, 20, RA8875_BLACK)),
-                                                                     BMSSOCRaw(TFT_TEXT_ITEM(0, 165, 40, RA8875_WHITE, RA8875_RED, "SOC(raw): "), TFT_RECTANGLE_ITEM(165, 40, 100, 25, RA8875_BLACK)),
-                                                                     BMSPackVoltage(TFT_TEXT_ITEM(0, 310, 65, RA8875_WHITE, RA8875_RED, "Pack Voltage: "), TFT_RECTANGLE_ITEM(310, 65, 160, 25, RA8875_BLACK))
+                                                                     BMSMaxCurrent(TFT_TEXT_ITEM(1, MAX_CURRENT_X+40, MAX_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(MAX_CURRENT_X+40, MAX_CURRENT_Y, 135, 30, RA8875_BLACK)),
+                                                                     BMSMaxCurrentLabel(TFT_TEXT_ITEM(0, MAX_CURRENT_X, MAX_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Max: "), TFT_RECTANGLE_ITEM(MAX_CURRENT_X, MAX_CURRENT_Y+10, 38, 30, RA8875_BLACK)),
+                                                                     BMSMinVoltage(TFT_TEXT_ITEM(1, MIN_VOLTAGE_X+40, MIN_VOLTAGE_Y, RA8875_WHITE, RA8875_RED, "0.00V"), TFT_RECTANGLE_ITEM(MIN_VOLTAGE_X+40, MIN_VOLTAGE_Y, 160, 30, RA8875_BLACK)),
+                                                                     BMSMinVoltageLabel(TFT_TEXT_ITEM(0, MIN_VOLTAGE_X, MIN_VOLTAGE_Y+10, RA8875_WHITE, RA8875_RED, "Min: "), TFT_RECTANGLE_ITEM(MIN_VOLTAGE_X, MIN_VOLTAGE_Y, 40, 25, RA8875_BLACK)),
+                                                                     BMSMaxVoltage(TFT_TEXT_ITEM(1, MAX_VOLTAGE_X+40, MAX_VOLTAGE_Y, RA8875_WHITE, RA8875_RED, "0.00V"), TFT_RECTANGLE_ITEM(MAX_VOLTAGE_X+40, MAX_VOLTAGE_Y, 160, 30, RA8875_BLACK)),
+                                                                     BMSMaxVoltageLabel(TFT_TEXT_ITEM(0, MAX_VOLTAGE_X, MAX_VOLTAGE_Y+10, RA8875_WHITE, RA8875_RED, "Max: "), TFT_RECTANGLE_ITEM(MAX_VOLTAGE_X, MAX_VOLTAGE_Y, 40, 25, RA8875_BLACK)),
+                                                                     BMSCurrentCurrent(TFT_TEXT_ITEM(1, CURRRENT_CURRENT_X+40, CURRRENT_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X+40, CURRRENT_CURRENT_Y+5, 135, 30, RA8875_BLACK)),
+                                                                     BMSCurrentCurrentLabel(TFT_TEXT_ITEM(0, CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Cur: "), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+5, 38, 30, RA8875_BLACK)),
+                                                                     BMSSOC(TFT_TEXT_ITEM(1, SOC_X+38, SOC_Y, RA8875_WHITE, RA8875_RED, "00%"), TFT_RECTANGLE_ITEM(SOC_X+38, SOC_Y, 50, 35, RA8875_BLACK)),
+                                                                     BMSSOCLabel(TFT_TEXT_ITEM(0, SOC_X, SOC_Y+10, RA8875_WHITE, RA8875_RED, "SOC: "), TFT_RECTANGLE_ITEM(SOC_X, SOC_Y+10, 36, 20, RA8875_BLACK)),
+                                                                     BMSSOCRaw(TFT_TEXT_ITEM(1, SOC_RAW_X+60, SOC_RAW_Y, RA8875_WHITE, RA8875_RED, "00%"), TFT_RECTANGLE_ITEM(SOC_RAW_X+60, SOC_RAW_Y, 50, 35, RA8875_BLACK)),
+                                                                     BMSSOCRawLabel(TFT_TEXT_ITEM(0, SOC_RAW_X, SOC_RAW_Y+10, RA8875_WHITE, RA8875_RED, "SOC(r): "), TFT_RECTANGLE_ITEM(SOC_RAW_X, SOC_RAW_Y+10, 58, 25, RA8875_BLACK)),
+                                                                     BMSPackVoltage(TFT_TEXT_ITEM(1, PACK_VOLTAGE_X+50, PACK_VOLTAGE_Y, RA8875_WHITE, RA8875_RED, "000.0V"), TFT_RECTANGLE_ITEM(PACK_VOLTAGE_X+50, PACK_VOLTAGE_Y, 160, 30, RA8875_BLACK)),
+                                                                     BMSPackVoltageLabel(TFT_TEXT_ITEM(0, PACK_VOLTAGE_X, PACK_VOLTAGE_Y+10, RA8875_WHITE, RA8875_RED, "Pack: "), TFT_RECTANGLE_ITEM(PACK_VOLTAGE_X, PACK_VOLTAGE_Y+10, 45, 25, RA8875_BLACK))
 {
     this->lap = 0;
     this->batteryBeforeLap = 100;
@@ -116,12 +130,17 @@ void TFT_PROCESSOR::initializeCallbacks()
     this->myDisplay.addElement(&BMSMaxCurrent);
     this->myDisplay.addElement(&BMSMaxCurrentLabel);
     this->myDisplay.addElement(&BMSMinVoltage);
+    this->myDisplay.addElement(&BMSMinVoltageLabel);
     this->myDisplay.addElement(&BMSMaxVoltage);
+    this->myDisplay.addElement(&BMSMaxVoltageLabel);
     this->myDisplay.addElement(&BMSCurrentCurrent);
     this->myDisplay.addElement(&BMSCurrentCurrentLabel);
     this->myDisplay.addElement(&BMSSOC);
+    this->myDisplay.addElement(&BMSSOCLabel);
     this->myDisplay.addElement(&BMSSOCRaw);
+    this->myDisplay.addElement(&BMSSOCRawLabel);
     this->myDisplay.addElement(&BMSPackVoltage);
+    this->myDisplay.addElement(&BMSPackVoltageLabel);
 
     //Register callbacks. Callbacks must be registered in DASH_CONTROLLER::registerCallbacks
     //for callbacks to be called
@@ -432,7 +451,7 @@ void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
         if(thisVoltage < this->minVoltage){
             this->minVoltage = thisVoltage;
             char minVoltageString[MAX_STRING_SIZE];
-            sprintf(minVoltageString, "Min Voltage: %.2f", this->minVoltage);
+            sprintf(minVoltageString, "%.2fV", this->minVoltage);
             BMSMinVoltage.updateText(minVoltageString);
         }
         //Do we want to change this to be max voltage of cells right now, instead of just the max voltage seen all time answer: right now
@@ -441,13 +460,13 @@ void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
         if(((6*thisMuxValue)+i) == this->maxVoltageCell){
             this->maxVoltage = thisVoltage;
             char maxVoltageString[MAX_STRING_SIZE];
-            sprintf(maxVoltageString, "Max Voltage: %.2f", this->maxVoltage);
+            sprintf(maxVoltageString, "%.2fV", this->maxVoltage);
             BMSMaxVoltage.updateText(maxVoltageString);
         }
         if(thisVoltage > this->maxVoltage){
             this->maxVoltage = thisVoltage;
             char maxVoltageString[MAX_STRING_SIZE];
-            sprintf(maxVoltageString, "Max Voltage: %.2f", this->maxVoltage);
+            sprintf(maxVoltageString, "%.2f", this->maxVoltage);
             BMSMaxVoltage.updateText(maxVoltageString);
             this->maxVoltageCell = (6*thisMuxValue) + i;
         }
@@ -461,14 +480,14 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
     if(thisSOC != SOC){
         this->SOC = thisSOC;
         char SOCstring[MAX_STRING_SIZE];
-        sprintf(SOCstring, "SOC: %d", this->SOC);
+        sprintf(SOCstring, "%d%%", this->SOC);
         BMSSOC.updateText(SOCstring);
     }
     int thisSOCRaw = data[1];
     if(thisSOCRaw != SOCRaw){
         this->SOCRaw = thisSOCRaw;
         char SOCstring[MAX_STRING_SIZE];
-        sprintf(SOCstring, "SOC(raw): %d", this->SOCRaw);
+        sprintf(SOCstring, "%d%%", this->SOCRaw);
         BMSSOCRaw.updateText(SOCstring);
     }
     uint16_t rawpackvoltage = 0;
@@ -485,7 +504,7 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
     if(thisPackVoltage != packVoltage){
         this->packVoltage = thisPackVoltage;
         char voltstring[MAX_STRING_SIZE];
-        sprintf(voltstring, "Pack Voltage: %.1f", packVoltage);
+        sprintf(voltstring, "%.1fV", packVoltage);
         BMSPackVoltage.updateText(voltstring);
     }
 }

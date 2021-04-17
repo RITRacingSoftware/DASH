@@ -87,20 +87,23 @@ private:
     TFT_DISPLAY_ITEM BMSMaxCurrentLabel;
 
     TFT_DISPLAY_ITEM BMSMinVoltage;
-    //TFT_DISPLAY_ITEM BMSMinVoltageLabel;
+    TFT_DISPLAY_ITEM BMSMinVoltageLabel;
     
 
     TFT_DISPLAY_ITEM BMSMaxVoltage;
-    //TFT_DISPLAY_ITEM BMSMaxVoltageLabel;
+    TFT_DISPLAY_ITEM BMSMaxVoltageLabel;
 
     TFT_DISPLAY_ITEM BMSCurrentCurrent;
     TFT_DISPLAY_ITEM BMSCurrentCurrentLabel;
 
     TFT_DISPLAY_ITEM BMSSOC;
+    TFT_DISPLAY_ITEM BMSSOCLabel;
     
     TFT_DISPLAY_ITEM BMSSOCRaw;
+    TFT_DISPLAY_ITEM BMSSOCRawLabel;
 
     TFT_DISPLAY_ITEM BMSPackVoltage;
+    TFT_DISPLAY_ITEM BMSPackVoltageLabel;
      
 
     // const etl::array<char[MAX_STRING_SIZE], 8> stateOfSystem = {{"BMS Master in Fault State", "??", "??", "??", "Relay Fault", "??", "??", "??"}};
