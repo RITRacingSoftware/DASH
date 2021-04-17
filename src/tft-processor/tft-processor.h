@@ -46,6 +46,7 @@ private:
     int SOC;
     int SOCRaw;
     double packVoltage;
+    int maxVoltageCell;
 
     CAN_BUS canBus;
 
@@ -56,6 +57,7 @@ private:
     TFT_DISPLAY_ITEM motorControllerFaults;
 
     TFT_DISPLAY_ITEM motorSpeed;
+    TFT_DISPLAY_ITEM motorSpeedLabel;
 
     //TFT_DISPLAY_ITEM busVoltage;
 
@@ -82,12 +84,17 @@ private:
     TFT_RECTANGLE_ITEM MotorSpeedBar;
 
     TFT_DISPLAY_ITEM BMSMaxCurrent;
+    TFT_DISPLAY_ITEM BMSMaxCurrentLabel;
 
     TFT_DISPLAY_ITEM BMSMinVoltage;
+    //TFT_DISPLAY_ITEM BMSMinVoltageLabel;
+    
 
     TFT_DISPLAY_ITEM BMSMaxVoltage;
+    //TFT_DISPLAY_ITEM BMSMaxVoltageLabel;
 
     TFT_DISPLAY_ITEM BMSCurrentCurrent;
+    TFT_DISPLAY_ITEM BMSCurrentCurrentLabel;
 
     TFT_DISPLAY_ITEM BMSSOC;
     

@@ -23,6 +23,17 @@
 
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
+
+#define CURRRENT_CURRENT_X 32
+#define CURRRENT_CURRENT_Y 110
+#define MAX_CURRENT_X 0
+#define MAX_CURRENT_Y 80
+#define MOTOR_SPEED_X 0
+#define MOTOR_SPEED_Y 40
+
+
+
+
 void TFT_PROCESSOR::updateScreen()
 {
     //Serial.println("thisUpdate");
@@ -32,24 +43,27 @@ void TFT_PROCESSOR::updateScreen()
 TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashController(dashController),
                                                                      myDisplay(10, 9),
                                                                      //Element(TFT_TEXT_ITEM(font_size, xCoordinate, yCoordinate, foreColor, BackgroundColor, text), TFT_RECTANGLE_ITEM(xCoordinate, yCoordinate, width, height, color))
-                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 0, 180, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 180, 600, 50, RA8875_BLACK)),
-                                                                     motorSpeed(TFT_TEXT_ITEM(0, 0, 40, RA8875_WHITE, RA8875_RED, "Motor Speed: 000"), TFT_RECTANGLE_ITEM(0, 40, 150, 20, RA8875_BLACK)),
+                                                                     motorControllerFaults(TFT_TEXT_ITEM(0, 0, 205, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 205, 600, 25, RA8875_BLACK)),
+                                                                     motorSpeed(TFT_TEXT_ITEM(1, MOTOR_SPEED_X+90, MOTOR_SPEED_Y, RA8875_WHITE, RA8875_RED, "0000"), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X+90, MOTOR_SPEED_Y, 75, 35, RA8875_BLACK)),
+                                                                     motorSpeedLabel(TFT_TEXT_ITEM(0, MOTOR_SPEED_X, MOTOR_SPEED_Y+10, RA8875_WHITE, RA8875_RED, "Mtr. Speed: "), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X, MOTOR_SPEED_Y, 150, 35, RA8875_BLACK)),
                                                                      //busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(300, 0, 250, 20, RA8875_BLACK)),
                                                                      //outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 30, 140, 20, RA8875_BLACK)),
                                                                      //maxTemp(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(250, 60, 150, 40, RA8875_BLACK)),
                                                                      //packVoltage(TFT_TEXT_ITEM(1, 25, 225, RA8875_WHITE, RA8875_RED, "Vtotal: 000"), TFT_RECTANGLE_ITEM(25, 225, 60, 40, RA8875_BLACK)),
                                                                      //batteryPercentage(TFT_TEXT_ITEM(1, 0, 60, RA8875_WHITE, RA8875_RED, "Battery% = 100"), TFT_RECTANGLE_ITEM(0, 60, 225, 40, RA8875_BLACK)),
-                                                                     lapNumber(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(250, 60, 50, 45, RA8875_BLACK)),
+                                                                     lapNumber(TFT_TEXT_ITEM(0, 250, 60, RA8875_WHITE, RA8875_RED, "Lap: 0"), TFT_RECTANGLE_ITEM(250, 60, 50, 45, RA8875_BLACK)),
                                                                      batteryPerLap(TFT_TEXT_ITEM(2, 0, 0, RA8875_WHITE, RA8875_RED, "Bat/Lap: 0"), TFT_RECTANGLE_ITEM(200, 0, 125, 50, RA8875_BLACK)),
                                                                      waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
-                                                                     BMSFaults(TFT_TEXT_ITEM(0, 0, 130, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 130, 480, 50, RA8875_BLACK)),
-                                                                     BMSFaultVector(TFT_TEXT_ITEM(0, 0, 110, RA8875_WHITE, RA8875_RED, "BMS Fault Vector: "), TFT_RECTANGLE_ITEM(0, 110, 280, 50, RA8875_BLACK)),
+                                                                     BMSFaults(TFT_TEXT_ITEM(0, 0, 180, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 180, 480, 25, RA8875_BLACK)),
+                                                                     BMSFaultVector(TFT_TEXT_ITEM(0, 0, 155, RA8875_WHITE, RA8875_RED, "BMS Fault Vector: "), TFT_RECTANGLE_ITEM(0, 155, 280, 25, RA8875_BLACK)),
                                                                      ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 230, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 230, 300, 36, RA8875_BLACK)),
                                                                      MotorSpeedBar(5, 5, 0, 30, RA8875_GREEN),
-                                                                     BMSMaxCurrent(TFT_TEXT_ITEM(0, 0, 65, RA8875_WHITE, RA8875_RED, "Max Current: "), TFT_RECTANGLE_ITEM(0, 65, 160, 20, RA8875_BLACK)),
+                                                                     BMSMaxCurrent(TFT_TEXT_ITEM(1, MAX_CURRENT_X+60, MAX_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(MAX_CURRENT_X+60, MAX_CURRENT_Y, 135, 30, RA8875_BLACK)),
+                                                                     BMSMaxCurrentLabel(TFT_TEXT_ITEM(0, MAX_CURRENT_X, MAX_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Max Cur.: "), TFT_RECTANGLE_ITEM(MAX_CURRENT_X, MAX_CURRENT_Y+10, 60, 30, RA8875_BLACK)),
                                                                      BMSMinVoltage(TFT_TEXT_ITEM(0, 317, 40, RA8875_WHITE, RA8875_RED, "Min Voltage: "), TFT_RECTANGLE_ITEM(317, 40, 160, 25, RA8875_BLACK)),
                                                                      BMSMaxVoltage(TFT_TEXT_ITEM(0, 317, 90, RA8875_WHITE, RA8875_RED, "Max Voltage: "), TFT_RECTANGLE_ITEM(317, 90, 160, 25, RA8875_BLACK)),
-                                                                     BMSCurrentCurrent(TFT_TEXT_ITEM(0, 32, 85, RA8875_WHITE, RA8875_RED, "Current: "), TFT_RECTANGLE_ITEM(32, 85, 130, 25, RA8875_BLACK)),
+                                                                     BMSCurrentCurrent(TFT_TEXT_ITEM(1, CURRRENT_CURRENT_X+28, CURRRENT_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X+28, CURRRENT_CURRENT_Y+5, 135, 30, RA8875_BLACK)),
+                                                                     BMSCurrentCurrentLabel(TFT_TEXT_ITEM(0, CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Cur.: "), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+5, 50, 30, RA8875_BLACK)),
                                                                      BMSSOC(TFT_TEXT_ITEM(0, 205, 65, RA8875_WHITE, RA8875_RED, "SOC: "), TFT_RECTANGLE_ITEM(205, 65, 100, 20, RA8875_BLACK)),
                                                                      BMSSOCRaw(TFT_TEXT_ITEM(0, 165, 40, RA8875_WHITE, RA8875_RED, "SOC(raw): "), TFT_RECTANGLE_ITEM(165, 40, 100, 25, RA8875_BLACK)),
                                                                      BMSPackVoltage(TFT_TEXT_ITEM(0, 310, 65, RA8875_WHITE, RA8875_RED, "Pack Voltage: "), TFT_RECTANGLE_ITEM(310, 65, 160, 25, RA8875_BLACK))
@@ -60,19 +74,20 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
     this->previoustMCFaultString = "Motor Controller Faults: ";
     this->previousBMSFaultString = "BMS Faults: ";
     this->prevFaultVector = 0x0;
-    this->minVoltage = DBL_MAX;
+    this->minVoltage = 6;
     this->maxCurrent = DBL_MIN;
-    this->maxVoltage = DBL_MIN;
+    this->maxVoltage = 0;
     this->SOC = 0;
     this->SOCRaw = 0;
     this->packVoltage = 0;
-    char testString[MAX_STRING_SIZE];
-    sprintf(testString, "Max Current: %f", 5.5);
-    this->SOCRaw = 69;
-    char SOCstring[MAX_STRING_SIZE];
-    BMSMaxCurrent.updateText(testString);
-    sprintf(SOCstring, "SOC(raw): %.1f", SOCRaw);
-    BMSSOCRaw.updateText(SOCstring);
+    // char testString[MAX_STRING_SIZE];
+    // sprintf(testString, "Max Current: %f", 5.5);
+    // this->SOCRaw = 69;
+    // char SOCstring[MAX_STRING_SIZE];
+    // BMSMaxCurrent.updateText(testString);
+    // sprintf(SOCstring, "SOC(raw): %.1f", SOCRaw);
+    // BMSSOCRaw.updateText(SOCstring);
+    this->maxVoltageCell = 100;
 
 }
 
@@ -82,22 +97,28 @@ void TFT_PROCESSOR::initializeCallbacks()
     //Create elements and send pointer to addElemnt to register it
 
     //this->myDisplay.addElement(&maxTemp);
+
     this->myDisplay.addElement(&ReadyToDriveStatus);
     this->myDisplay.addElement(&motorControllerFaults);
     this->myDisplay.addElement(&motorSpeed);
+    this->myDisplay.addElement(&motorSpeedLabel);
+
     //this->myDisplay.addElement(&batteryPercentage);
     //this->myDisplay.addElement(&BMSFaults);
 
     this->myDisplay.addElement(&MotorSpeedBar);
+
     //this->myDisplay.addElement(&BlackMotorSpeedBar);
 
     //New BMS stuff:
     this->myDisplay.addElement(&BMSFaults);
     this->myDisplay.addElement(&BMSFaultVector);
     this->myDisplay.addElement(&BMSMaxCurrent);
+    this->myDisplay.addElement(&BMSMaxCurrentLabel);
     this->myDisplay.addElement(&BMSMinVoltage);
     this->myDisplay.addElement(&BMSMaxVoltage);
     this->myDisplay.addElement(&BMSCurrentCurrent);
+    this->myDisplay.addElement(&BMSCurrentCurrentLabel);
     this->myDisplay.addElement(&BMSSOC);
     this->myDisplay.addElement(&BMSSOCRaw);
     this->myDisplay.addElement(&BMSPackVoltage);
@@ -124,6 +145,14 @@ void TFT_PROCESSOR::updateMCFaultText(etl::array<uint8_t, 8> const &data)
     //Only update string if faults have changed
     //if (strcmp(faultsString, previoustMCFaultString) != 0)
     //{
+    if((!strncmp(faultsString, previoustMCFaultString, MAX_STRING_SIZE)) && (!strncmp(faultsString, "Motor Controller Faults: ", MAX_STRING_SIZE)))
+    {
+        motorControllerFaults.updateRectangleColor(RA8875_RED);
+    }
+    else if((!strncmp(faultsString, previoustMCFaultString, MAX_STRING_SIZE)) && (strncmp(faultsString, "Motor Controller Faults: ", MAX_STRING_SIZE)))
+    {
+        motorControllerFaults.updateRectangleColor(RA8875_BLACK);
+    }
     motorControllerFaults.updateText(faultsString);
     //}
     previoustMCFaultString = faultsString;
@@ -139,7 +168,7 @@ void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
     {
         //motorSpeedRect.updateColor(RA8875_RED);
     }
-    sprintf(motorSpeedNum, "Motor Speed: %d", number);
+    sprintf(motorSpeedNum, "%d", number);
     Serial.println(motorSpeedNum);
     motorSpeed.updateText(motorSpeedNum);
     uint16_t barWidth = (uint16_t)((number / 4000.0) * 470.0);
@@ -315,73 +344,39 @@ void TFT_PROCESSOR::bmsFaults(etl::array<uint8_t, 8> const &data)
 
         if(CHECK_BIT(data[0], 0)){
             Serial.print("Here");
-            strncat(BMSFaultsString, "slave comm cells, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "slave comm cells | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 1)){
-            strncat(BMSFaultsString, "slave comm temps, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "slave comm temps | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 2)){
-            strncat(BMSFaultsString, "slave comm drain request, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "slave comm drain request | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 3)){
-            strncat(BMSFaultsString, "current sensor comm, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "current sensor comm | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 4)){
-            strncat(BMSFaultsString, "current, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "current | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 5)){
-            strncat(BMSFaultsString, "cell voltage irrational, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "cell voltage irrational | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 6)){
-            strncat(BMSFaultsString, "cell voltage diff, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "cell voltage diff | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 7)){
-            strncat(BMSFaultsString, "out of juice, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "out of juice | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[1], 0)){
-            strncat(BMSFaultsString, "temperature irrational, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "temperature irrational | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[1], 1)){
-            strncat(BMSFaultsString, "over temperature, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "over temperature | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[1], 2)){
-            strncat(BMSFaultsString, "drain failure, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
+            strncat(BMSFaultsString, "drain failure | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
 
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_slave_comm_cells_is_in_range(canBus.bms_fault_vector.bms_fault_vector_slave_comm_cells)){
-        //     Serial.print("Here");
-        //     strncat(BMSFaultsString, "slave comm cells not in range, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_slave_comm_temps_is_in_range(canBus.bms_fault_vector.bms_fault_vector_slave_comm_temps)){
-        //     strncat(BMSFaultsString, "slave comm cells not in range, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_slave_comm_drain_request_is_in_range(canBus.bms_fault_vector.bms_fault_vector_slave_comm_drain_request)){
-        //     strncat(BMSFaultsString, "slave comm drain request not in range, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_current_sensor_comm_is_in_range(canBus.bms_fault_vector.bms_fault_vector_current_sensor_comm)){
-        //     strncat(BMSFaultsString, "current sensor comm not in range, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_over_current_is_in_range(canBus.bms_fault_vector.bms_fault_vector_over_current)){
-        //     strncat(BMSFaultsString, "current not in range, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_cell_voltage_irrational_is_in_range(canBus.bms_fault_vector.bms_fault_vector_cell_voltage_irrational)){
-        //     strncat(BMSFaultsString, "cell voltage irrational, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_cell_voltage_diff_is_in_range(canBus.bms_fault_vector.bms_fault_vector_cell_voltage_diff)){
-        //     strncat(BMSFaultsString, "cell voltage diff not in range, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_out_of_juice_is_in_range(canBus.bms_fault_vector.bms_fault_vector_out_of_juice)){
-        //     strncat(BMSFaultsString, "out of juice, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_temperature_irrational_is_in_range(canBus.bms_fault_vector.bms_fault_vector_temperature_irrational)){
-        //     strncat(BMSFaultsString, "temperature irrational, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_over_temperature_is_in_range(canBus.bms_fault_vector.bms_fault_vector_over_temperature)){
-        //     strncat(BMSFaultsString, "over temperature, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
-        // if(!f29bms_dbc_bms_fault_vector_bms_fault_vector_drain_failure_is_in_range(canBus.bms_fault_vector.bms_fault_vector_drain_failure)){
-        //     strncat(BMSFaultsString, "drain failure, ", MAX_STRING_SIZE - strlen(BMSFaultsString));
-        // }
         
         this->prevFaultVector = incomingFaults;
         BMSFaults.updateText(BMSFaultsString);
@@ -390,51 +385,78 @@ void TFT_PROCESSOR::bmsFaults(etl::array<uint8_t, 8> const &data)
 
 void TFT_PROCESSOR::bmsCurrent(etl::array<uint8_t, 8> const &data)
 {
-    f29bms_dbc_bms_current_unpack(&canBus.bms_current, (uint8_t*) data[0], 8);
-    double curCurrent = f29bms_dbc_bms_current_bms_inst_current_filt_decode(canBus.bms_current.bms_inst_current_filt);
+    // f29bms_dbc_bms_current_unpack(&canBus.bms_current, (uint8_t*) data[0], 8);
+    uint32_t rawCurrent = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | (data[0]);
+    double curCurrent = f29bms_dbc_bms_current_bms_inst_current_filt_decode(rawCurrent);
+   //double curCurrent = rawCurrent * 0.001;
+    Serial.printf("current = %f\n", curCurrent);
     if(curCurrent > this->maxCurrent){
         this->maxCurrent = curCurrent;
         char maxCurrentString[MAX_STRING_SIZE];
-        sprintf(maxCurrentString, "Max Current: %f", this->maxCurrent);
+        sprintf(maxCurrentString, "%.3f A", this->maxCurrent);
         BMSMaxCurrent.updateText(maxCurrentString);
     }
     char currentString[MAX_STRING_SIZE];
-    sprintf(currentString, "Current: %f", curCurrent);
+    sprintf(currentString, "%.3f A", curCurrent);
     BMSCurrentCurrent.updateText(currentString);
 }
 
 void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
 {
-    f29bms_dbc_bms_voltages_unpack(&canBus.bms_voltages, (uint8_t*) data[0], 8);
+    //f29bms_dbc_bms_voltages_unpack(&canBus.bms_voltages, (uint8_t*) data[0], 8);
     //check if any just got are lower, if so, update
-    uint64_t rawData;
+    uint64_t rawData = 0;
+    uint64_t mask1 = 0xff;
+    // Serial.printf("this [0] = %u\n", data[0]);
     for(int i = 0; i < 8; i++){
-        rawData |= (data.at(i) << (i*8));
+        uint64_t thisByte = data[i] & 0xff;
+        rawData |= ((thisByte << (i*8)) & mask1);
+        mask1 = mask1 << 8;
     }
 
+    // Serial.printf("rawData[0] = %u\n", rawData & 0xff);
+    // Serial.printf("dddd[1] = %u\n", (rawData >> 8) & 0xff);
+    // Serial.printf("dddd[2] = %u\n", (rawData >> 16) & 0xff);
+    // Serial.printf("dddd[3] = %u\n", (rawData >> 24) & 0xff);
+    // Serial.printf("dddd[4] = %u\n", (rawData >> 32) & 0xff);
+    // Serial.printf("dddd[5] = %u\n", (rawData >> 40) & 0xff);
+    // Serial.printf("dddd[2] = %u\n", (rawData >> 48) & 0xff);
+
+
     uint16_t mask = 0x1FF;
+    uint8_t thisMuxValue = data[0];
     for(int i = 0; i < 6; i ++){
-        uint16_t thisRawVoltage = (rawData >> (8 + (9*i))) && mask;
-        double thisVoltage = f29bms_dbc_bms_voltages_bms_voltages_cell0_decode(thisRawVoltage);
+        uint16_t thisRawVoltage = (rawData >> (8 + (9*i))) & mask;
+        // Serial.printf("this iteration = %d this voltage = %f\n", i, f29bms_dbc_bms_voltages_bms_voltages_cell2_decode(thisRawVoltage));
+        double thisVoltage = 0.01 * thisRawVoltage;
         if(thisVoltage < this->minVoltage){
             this->minVoltage = thisVoltage;
             char minVoltageString[MAX_STRING_SIZE];
-            sprintf(minVoltageString, "Min Voltage: %f", this->minVoltage);
+            sprintf(minVoltageString, "Min Voltage: %.2f", this->minVoltage);
             BMSMinVoltage.updateText(minVoltageString);
         }
-        //Do we want to change this to be max voltage of cells right now, instead of just the max voltage seen all time?
+        //Do we want to change this to be max voltage of cells right now, instead of just the max voltage seen all time answer: right now
+        //maxVoltageCell keeps track of which cell is the max, and decreases the max value to its value, if that cells voltage is recieved
+        //again, so that the maxvoltage that is displayed is the max voltage of the cells right now, not just the max voltage seen all time
+        if(((6*thisMuxValue)+i) == this->maxVoltageCell){
+            this->maxVoltage = thisVoltage;
+            char maxVoltageString[MAX_STRING_SIZE];
+            sprintf(maxVoltageString, "Max Voltage: %.2f", this->maxVoltage);
+            BMSMaxVoltage.updateText(maxVoltageString);
+        }
         if(thisVoltage > this->maxVoltage){
             this->maxVoltage = thisVoltage;
             char maxVoltageString[MAX_STRING_SIZE];
-            sprintf(maxVoltageString, "Max Voltage: %f", this->maxVoltage);
+            sprintf(maxVoltageString, "Max Voltage: %.2f", this->maxVoltage);
             BMSMaxVoltage.updateText(maxVoltageString);
+            this->maxVoltageCell = (6*thisMuxValue) + i;
         }
     }
 }
 
 void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
 {
-    f29bms_dbc_bms_status_unpack(&canBus.bms_status, (uint8_t*) data[0], 8);
+    f29bms_dbc_bms_status_unpack(&canBus.bms_status, &data[0], 8);
     int thisSOC = data[0];
     if(thisSOC != SOC){
         this->SOC = thisSOC;
@@ -449,15 +471,21 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
         sprintf(SOCstring, "SOC(raw): %d", this->SOCRaw);
         BMSSOCRaw.updateText(SOCstring);
     }
-
-    uint16_t rawpackvoltage = (data[2] << 8) | data[3];
+    uint16_t rawpackvoltage = 0;
+    rawpackvoltage = rawpackvoltage | ((data[3]) << 8);
+    Serial.printf("1 = %u\n", rawpackvoltage);
+    rawpackvoltage = rawpackvoltage | data[2];
+    Serial.printf("2 = %u\n", rawpackvoltage);
+    rawpackvoltage = rawpackvoltage >> 5;
+    Serial.printf("3 = %u\n", rawpackvoltage);
+    //rawpackvoltage = ((data[3] << 8) | data[0]) >> 1;
     Serial.printf("Recieved = %u\n", rawpackvoltage);
     double thisPackVoltage = f29bms_dbc_bms_status_bms_status_pack_voltage_decode(rawpackvoltage);//(((data[2] & 0x07) << 7) | ((data[3] & 0xF7) >> 1));
     thisPackVoltage += 0.1;
     if(thisPackVoltage != packVoltage){
         this->packVoltage = thisPackVoltage;
         char voltstring[MAX_STRING_SIZE];
-        sprintf(voltstring, "Pack Voltage: %.3f", packVoltage);
+        sprintf(voltstring, "Pack Voltage: %.1f", packVoltage);
         BMSPackVoltage.updateText(voltstring);
     }
 }
@@ -468,6 +496,10 @@ void TFT_PROCESSOR::clearScreen()
 }
 
 void TFT_PROCESSOR::test(){
+    Serial.printf("Testttt\n");
+    this->myDashController->updateModel();
+    this->myDashController->updateView();
+    // Serial.printf("Testttt\n");
     etl::array<uint8_t, 8> data;
     data[0] = 69;
     data[1] = 12;
@@ -479,21 +511,81 @@ void TFT_PROCESSOR::test(){
     data[7] = 0;
     uint16_t pack = f29bms_dbc_bms_status_bms_status_pack_voltage_encode(78.5);
     Serial.printf("pack = %u\n", pack);
-    data[2] = (uint8_t) ((pack >> 8) & 0x7);
+    data[2] = 0xE0;
     Serial.printf("data[2] = %u\n", data[2]);
-    data[3] = (uint8_t) (pack & 0xFF);
+    data[3] = 0x7F;
     Serial.printf("data[3] = %u\n", data[3]);
     bmsStatus(data);
+    Serial.printf("helllo\n");
     for(int i  = 0; i < 8; i++){
         data[i] = 0x00;
     }
-    data[1] = 0x01;
     
-    //data[1] = 1;
+    data[1] = 1;
     bmsFaults(data);
-    // delay(10000);
-    // data[1] = 0;
-    // bmsFaults(data);
+    data[1] = 0;
     this->myDashController->updateModel();
     this->myDashController->updateView();
+    Serial.printf("helllo\n");
+    delay(1000);
+    bmsFaults(data);
+
+    data[0] = 5;
+    uint16_t cell0 = f29bms_dbc_bms_voltages_bms_voltages_cell0_encode(4.2);
+    cell0 += 1;
+    data[1] = cell0 & 0xff;
+    data[2] = (cell0 >> 8) & 0xff;
+    //bmsVoltages(data);
+    
+    this->myDashController->updateModel();
+    this->myDashController->updateView();
+    delay(1000);
+    cell0 = f29bms_dbc_bms_voltages_bms_voltages_cell0_encode(4.0);
+    cell0 += 1;
+    data[1] = cell0 & 0xff;
+    data[2] = (cell0 >> 8) & 0xff;
+    //bmsVoltages(data);
+    this->myDashController->updateModel();
+    this->myDashController->updateView();
+    delay(1000);
+    cell0 = f29bms_dbc_bms_voltages_bms_voltages_cell2_encode(3.5);
+    Serial.printf("htishti = %u\n ", cell0);
+    cell0 += 1;
+    data[4] = (cell0 & 0x1f) << 3;
+    data[5] = (((cell0 >> 8) & 0xf) << 4);
+    Serial.printf("htishti = %u\n ", data[5]);
+    bmsVoltages(data);
+    //NEED TO CHECK ENDIANESS OF BYTES, GET CORRECT CELL VOLTAGES FOR CELLS OTHER THAN 0
+
+    Serial.printf("here\n");
+    for(int i  = 0; i < 8; i++){
+        data[i] = 0x00;
+    }
+    uint32_t current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(35.008);
+    data[0] = (current >> 24) & 0xff;
+    data[1] = (current >> 16) & 0xff;
+    data[2] = (current >> 8) & 0xff;
+    data[3] = current & 0xff;
+    bmsCurrent(data);
+    this->myDashController->updateModel();
+    this->myDashController->updateView();
+    delay(1000);
+    current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(15.008);
+    data[0] = (current >> 24) & 0xff;
+    data[1] = (current >> 16) & 0xff;
+    data[2] = (current >> 8) & 0xff;
+    data[3] = current & 0xff;
+    bmsCurrent(data);
+    current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(69.420);
+    data[0] = (current >> 24) & 0xff;
+    data[1] = (current >> 16) & 0xff;
+    data[2] = (current >> 8) & 0xff;
+    data[3] = current & 0xff;
+    bmsCurrent(data);
+    data[0] = 0xD4;
+    data[1] = 0x30;
+    data[2] = 0;
+    data[3] = 0;
+    bmsCurrent(data);
+
 }

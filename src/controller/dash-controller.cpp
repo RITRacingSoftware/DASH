@@ -18,7 +18,7 @@ void DASH_CONTROLLER::initialize()
 {
   this->my_tft_processor.initializeCallbacks();
   this->my_tft_processor.clearScreen();
-  this->my_tft_processor.test();
+  //this->my_tft_processor.test();
 }
 
 void DASH_CONTROLLER::updateView()

@@ -18,7 +18,8 @@ void setup()
   //pinMode(16, OUTPUT); //for testing
   // put your setup code here, to run once:
   Serial.begin(9600);
-  delay(10000);
+  //delay(7000);
+  //Serial.printf("startting\n");
   controller.initialize();
   //digitalWrite(19, HIGH);
   //digitalWrite(16, HIGH); //for testing RTDS
@@ -38,7 +39,6 @@ void loop()
   //digitalWrite(19, HIGH);
   controller.updateModel();
   delay(DELAY);
-  //Serial.println("loop");
   //digitalWrite(19, LOW);
   controller.updateView();
   // Serial.println("6");

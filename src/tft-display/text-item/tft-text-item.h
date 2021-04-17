@@ -5,7 +5,7 @@
 #include <cstdint>
 #include "etl/cstring.h"
 
-#define MAX_STRING_SIZE 100
+#define MAX_STRING_SIZE 60
 
 class TFT_TEXT_ITEM : public DISPLAY_ITEM_INTF
 {
