@@ -83,25 +83,31 @@ private:
 
     TFT_RECTANGLE_ITEM MotorSpeedBar;
 
+    //Maximum current seen so far
     TFT_DISPLAY_ITEM BMSMaxCurrent;
     TFT_DISPLAY_ITEM BMSMaxCurrentLabel;
 
+    //Minimum cell voltage seen so far
     TFT_DISPLAY_ITEM BMSMinVoltage;
     TFT_DISPLAY_ITEM BMSMinVoltageLabel;
     
-
+    //Maximum cell voltage right now (not max seen all time)
     TFT_DISPLAY_ITEM BMSMaxVoltage;
     TFT_DISPLAY_ITEM BMSMaxVoltageLabel;
 
+    //The insantaneous current (right now)
     TFT_DISPLAY_ITEM BMSCurrentCurrent;
     TFT_DISPLAY_ITEM BMSCurrentCurrentLabel;
 
+    //State of Charge, limited
     TFT_DISPLAY_ITEM BMSSOC;
     TFT_DISPLAY_ITEM BMSSOCLabel;
     
+    //State of Charge raw value 
     TFT_DISPLAY_ITEM BMSSOCRaw;
     TFT_DISPLAY_ITEM BMSSOCRawLabel;
 
+    //Overall pack voltage (right now)
     TFT_DISPLAY_ITEM BMSPackVoltage;
     TFT_DISPLAY_ITEM BMSPackVoltageLabel;
      

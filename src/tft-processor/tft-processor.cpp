@@ -23,6 +23,8 @@
 
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
+#define MINIMUM_CELL_VOLTAGE 3.1
+#define MAXIMUM_CURRENT 230
 
 #define CURRRENT_CURRENT_X 0
 #define CURRRENT_CURRENT_Y 110
@@ -54,7 +56,7 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      //Element(TFT_TEXT_ITEM(font_size, xCoordinate, yCoordinate, foreColor, BackgroundColor, text), TFT_RECTANGLE_ITEM(xCoordinate, yCoordinate, width, height, color))
                                                                      motorControllerFaults(TFT_TEXT_ITEM(0, 0, 205, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 205, 600, 25, RA8875_BLACK)),
                                                                      motorSpeed(TFT_TEXT_ITEM(1, MOTOR_SPEED_X+90, MOTOR_SPEED_Y, RA8875_WHITE, RA8875_RED, "0000"), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X+90, MOTOR_SPEED_Y, 75, 35, RA8875_BLACK)),
-                                                                     motorSpeedLabel(TFT_TEXT_ITEM(0, MOTOR_SPEED_X, MOTOR_SPEED_Y+10, RA8875_WHITE, RA8875_RED, "Mtr. Speed: "), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X, MOTOR_SPEED_Y, 150, 35, RA8875_BLACK)),
+                                                                     motorSpeedLabel(TFT_TEXT_ITEM(0, MOTOR_SPEED_X, MOTOR_SPEED_Y+10, RA8875_WHITE, RA8875_RED, "Motor Spd.: "), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X, MOTOR_SPEED_Y, 150, 35, RA8875_BLACK)),
                                                                      //busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(300, 0, 250, 20, RA8875_BLACK)),
                                                                      //outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 30, 140, 20, RA8875_BLACK)),
                                                                      //maxTemp(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(250, 60, 150, 40, RA8875_BLACK)),
@@ -77,7 +79,7 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      BMSCurrentCurrentLabel(TFT_TEXT_ITEM(0, CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Cur: "), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+5, 38, 30, RA8875_BLACK)),
                                                                      BMSSOC(TFT_TEXT_ITEM(1, SOC_X+38, SOC_Y, RA8875_WHITE, RA8875_RED, "00%"), TFT_RECTANGLE_ITEM(SOC_X+38, SOC_Y, 50, 35, RA8875_BLACK)),
                                                                      BMSSOCLabel(TFT_TEXT_ITEM(0, SOC_X, SOC_Y+10, RA8875_WHITE, RA8875_RED, "SOC: "), TFT_RECTANGLE_ITEM(SOC_X, SOC_Y+10, 36, 20, RA8875_BLACK)),
-                                                                     BMSSOCRaw(TFT_TEXT_ITEM(1, SOC_RAW_X+60, SOC_RAW_Y, RA8875_WHITE, RA8875_RED, "00%"), TFT_RECTANGLE_ITEM(SOC_RAW_X+60, SOC_RAW_Y, 50, 35, RA8875_BLACK)),
+                                                                     BMSSOCRaw(TFT_TEXT_ITEM(1, SOC_RAW_X+60, SOC_RAW_Y, RA8875_WHITE, RA8875_RED, ""), TFT_RECTANGLE_ITEM(SOC_RAW_X+60, SOC_RAW_Y, 50, 35, RA8875_BLACK)),
                                                                      BMSSOCRawLabel(TFT_TEXT_ITEM(0, SOC_RAW_X, SOC_RAW_Y+10, RA8875_WHITE, RA8875_RED, "SOC(r): "), TFT_RECTANGLE_ITEM(SOC_RAW_X, SOC_RAW_Y+10, 58, 25, RA8875_BLACK)),
                                                                      BMSPackVoltage(TFT_TEXT_ITEM(1, PACK_VOLTAGE_X+50, PACK_VOLTAGE_Y, RA8875_WHITE, RA8875_RED, "000.0V"), TFT_RECTANGLE_ITEM(PACK_VOLTAGE_X+50, PACK_VOLTAGE_Y, 160, 30, RA8875_BLACK)),
                                                                      BMSPackVoltageLabel(TFT_TEXT_ITEM(0, PACK_VOLTAGE_X, PACK_VOLTAGE_Y+10, RA8875_WHITE, RA8875_RED, "Pack: "), TFT_RECTANGLE_ITEM(PACK_VOLTAGE_X, PACK_VOLTAGE_Y+10, 45, 25, RA8875_BLACK))
@@ -94,17 +96,11 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
     this->SOC = 0;
     this->SOCRaw = 0;
     this->packVoltage = 0;
-    // char testString[MAX_STRING_SIZE];
-    // sprintf(testString, "Max Current: %f", 5.5);
-    // this->SOCRaw = 69;
-    // char SOCstring[MAX_STRING_SIZE];
-    // BMSMaxCurrent.updateText(testString);
-    // sprintf(SOCstring, "SOC(raw): %.1f", SOCRaw);
-    // BMSSOCRaw.updateText(SOCstring);
     this->maxVoltageCell = 100;
 
 }
 
+//Controls which tft elements are displayed on the screen. Only elements added to myDisplay are displayed
 void TFT_PROCESSOR::initializeCallbacks()
 {
     //create callbacks and then register them
@@ -137,8 +133,8 @@ void TFT_PROCESSOR::initializeCallbacks()
     this->myDisplay.addElement(&BMSCurrentCurrentLabel);
     this->myDisplay.addElement(&BMSSOC);
     this->myDisplay.addElement(&BMSSOCLabel);
-    this->myDisplay.addElement(&BMSSOCRaw);
-    this->myDisplay.addElement(&BMSSOCRawLabel);
+    // this->myDisplay.addElement(&BMSSOCRaw);
+    // this->myDisplay.addElement(&BMSSOCRawLabel);
     this->myDisplay.addElement(&BMSPackVoltage);
     this->myDisplay.addElement(&BMSPackVoltageLabel);
 
@@ -197,57 +193,7 @@ void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
     //MotorSpeedBar.updateTextLocation(barWidth, 5);
 }
 
-// void TFT_PROCESSOR::VoltageInfo(etl::array<uint8_t, 8> const &data)
-// {
-//     char outputVoltageNum[MAX_STRING_SIZE];
-//     uint16_t number = data[2] | (data[3] << 8);
-//     sprintf(outputVoltageNum, "Output Voltage = %d", number);
-//     outputVoltage.updateText(outputVoltageNum);
 
-//     char busVoltageNum[MAX_STRING_SIZE];
-//     number = data[0] | (data[1] << 8);
-//     sprintf(busVoltageNum, "Bus Voltage = %d", number);
-//     busVoltage.updateText(busVoltageNum);
-// }
-
-// void TFT_PROCESSOR::AccumTemp(etl::array<uint8_t, 8> const &data)
-// {
-//     char maxTempNum[MAX_STRING_SIZE];
-//     uint16_t number = data[4];
-//     sprintf(maxTempNum, "Tmax: %d", number);
-//     if (number > 50)
-//     {
-//         maxTemp.updateTextColor(RA8875_RED);
-//     }
-//     else if (number > 40)
-//     {
-//         maxTemp.updateTextColor(RA8875_YELLOW);
-//     }
-//     else
-//     {
-//         maxTemp.updateTextColor(RA8875_WHITE);
-//     }
-    
-//     maxTemp.updateText(maxTempNum);
-// }
-
-// void TFT_PROCESSOR::AccumVoltage(etl::array<uint8_t, 8> const &data)
-// {
-//     char packVoltageNum[MAX_STRING_SIZE];
-//     uint16_t number = data[0] | (data[1] << 8);
-//     sprintf(packVoltageNum, "Vtotal: %d", number);
-//     //packVoltage.updateText(packVoltageNum);
-// }
-
-// void TFT_PROCESSOR::AccumCharge(etl::array<uint8_t, 8> const &data)
-// {
-//     char batteryPercentNum[MAX_STRING_SIZE];
-//     uint16_t number = data[0];
-//     batteryPercent = number; //Update current battery percentage for battery/lap
-//     sprintf(batteryPercentNum, "Battery  = %d", number);
-//     Serial.println(batteryPercentNum);
-//     batteryPercentage.updateText(batteryPercentNum);
-// }
 
 void TFT_PROCESSOR::IncrementLap(etl::array<uint8_t, 8> const &data)
 {
@@ -300,22 +246,12 @@ void TFT_PROCESSOR::readyToDriveMessage(etl::array<uint8_t, 8> const &data)
     }
 }
 
+
 boolean isFault(uint8_t status, uint8_t mask)
 {
     return (status && mask) != 0;
 }
 
-// void TFT_PROCESSOR::updateBMSFaults(etl::array<uint8_t, 8> const &data)
-// {
-//     char BMSFaultsString[MAX_STRING_SIZE] = "BMS Faults: ";
-
-//     checkFaults(data[0], stateOfSystem, BMSFaultsString);
-//     //Don't know how to decode Fault Codes byte
-//     checkFaults(data[5], faultFlags, BMSFaultsString);
-//     Serial.println(BMSFaultsString);
-//     BMSFaults.updateText(BMSFaultsString);
-//     //Didn't add warnings
-// }
 
 //Takes a byte of data and a list of 8 messages, and if a bit is set adds the corresponding message to the fault list
 void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 8> messages, char faultOutString[MAX_STRING_SIZE])
@@ -327,8 +263,6 @@ void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 
         {
             if ((data & (0x1 << i)) > 0)
             {
-                //char msg[MAX_STRING_SIZE];
-                //snprintf(msg, MAX_STRING_SIZE, "Fault for index %d of msg %d\n\r", i, data);
                 strncat(faultOutString, messages[i], MAX_STRING_SIZE - strlen(faultOutString));
                 strncat(faultOutString, ", ", MAX_STRING_SIZE - strlen(faultOutString));
                 //Serial.println(faults);
@@ -337,32 +271,42 @@ void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 
     }
 }
 
+//Called when bms fault vector CAN message recieved
+//Updates bms fault vector dispayed, and fault messages
 void TFT_PROCESSOR::bmsFaults(etl::array<uint8_t, 8> const &data)
 {
+    //Unpack message
     f29bms_dbc_bms_fault_vector_unpack(&canBus.bms_fault_vector, (uint8_t*) data[0], 8);
+    //Create uint64_t from data array
     uint64_t incomingFaults = 0;
     for(int i = 0; i < 8; i++){
         incomingFaults |= (data[i] << (i*8));
     }
+
+    //Turn background red if there are any faults set
     if(incomingFaults != 0){
         BMSFaults.updateRectangleColor(RA8875_RED);
     }
+    //Turn the background black if a fault is reset
     else if(incomingFaults != this->prevFaultVector){
         BMSFaults.updateRectangleColor(RA8875_BLACK);
     }
+
+    //Only update faults if a new fault is set/reset
     if(incomingFaults != this->prevFaultVector){
         char BMSFaultVectorString[MAX_STRING_SIZE];
+
+        //Print out the fault vector in binary
         sprintf(BMSFaultVectorString, "BMS Fault Vector: "BYTE_TO_BINARY_PATTERN" "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(data[1]), BYTE_TO_BINARY(data[0]));
         BMSFaultVector.updateText(BMSFaultVectorString);
         
 
         char BMSFaultsString[MAX_STRING_SIZE] = "BMS Faults: ";
 
-        Serial.println("123");
         Serial.printf("data 0 = %d", data[0]);
 
+        //Check if each bit is set and concatenate fault string
         if(CHECK_BIT(data[0], 0)){
-            Serial.print("Here");
             strncat(BMSFaultsString, "slave comm cells | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
         if(CHECK_BIT(data[0], 1)){
@@ -396,73 +340,93 @@ void TFT_PROCESSOR::bmsFaults(etl::array<uint8_t, 8> const &data)
             strncat(BMSFaultsString, "drain failure | ", MAX_STRING_SIZE - strlen(BMSFaultsString));
         }
 
-        
+        //Update stored fault vector, then update tft element
         this->prevFaultVector = incomingFaults;
         BMSFaults.updateText(BMSFaultsString);
     }
 }
 
+//Called when bms Current message recieved
+//Updates current current, and max current
 void TFT_PROCESSOR::bmsCurrent(etl::array<uint8_t, 8> const &data)
 {
-    // f29bms_dbc_bms_current_unpack(&canBus.bms_current, (uint8_t*) data[0], 8);
+    //Turn bytes 0-3 (ones with current reading) into a uiint32
     uint32_t rawCurrent = (data[3] << 24) | (data[2] << 16) | (data[1] << 8) | (data[0]);
+    //Decode uint32 value into a double current value
     double curCurrent = f29bms_dbc_bms_current_bms_inst_current_filt_decode(rawCurrent);
    //double curCurrent = rawCurrent * 0.001;
     Serial.printf("current = %f\n", curCurrent);
+
+    //If the current reasing is larger than the max stored current, update the max current
     if(curCurrent > this->maxCurrent){
         this->maxCurrent = curCurrent;
         char maxCurrentString[MAX_STRING_SIZE];
         sprintf(maxCurrentString, "%.3f A", this->maxCurrent);
         BMSMaxCurrent.updateText(maxCurrentString);
     }
+
+    //Print the current recieved (as current current)
     char currentString[MAX_STRING_SIZE];
     sprintf(currentString, "%.3f A", curCurrent);
     BMSCurrentCurrent.updateText(currentString);
+
+    //If current gets above threshold/expected maximum value, turn the background for the current red
+    if(this->maxCurrent >= MAXIMUM_CURRENT){
+        BMSCurrentCurrent.updateRectangleColor(RA8875_RED);
+    }
 }
 
+//Called when bms voltage message is recieved
+//Updates min and max cell voltages
 void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
 {
-    //f29bms_dbc_bms_voltages_unpack(&canBus.bms_voltages, (uint8_t*) data[0], 8);
-    //check if any just got are lower, if so, update
+    //Turn the data array into a uint64_t
     uint64_t rawData = 0;
     uint64_t mask1 = 0xff;
-    // Serial.printf("this [0] = %u\n", data[0]);
     for(int i = 0; i < 8; i++){
         uint64_t thisByte = data[i] & 0xff;
         rawData |= ((thisByte << (i*8)) & mask1);
         mask1 = mask1 << 8;
     }
 
-    // Serial.printf("rawData[0] = %u\n", rawData & 0xff);
-    // Serial.printf("dddd[1] = %u\n", (rawData >> 8) & 0xff);
-    // Serial.printf("dddd[2] = %u\n", (rawData >> 16) & 0xff);
-    // Serial.printf("dddd[3] = %u\n", (rawData >> 24) & 0xff);
-    // Serial.printf("dddd[4] = %u\n", (rawData >> 32) & 0xff);
-    // Serial.printf("dddd[5] = %u\n", (rawData >> 40) & 0xff);
-    // Serial.printf("dddd[2] = %u\n", (rawData >> 48) & 0xff);
-
-
+    //Each cell reading is 9 bits, mask to mask off each indivual reading
     uint16_t mask = 0x1FF;
+
+    //Get the mux value
     uint8_t thisMuxValue = data[0];
+
+    //Loop through and get each of the 6 individual cell readings
     for(int i = 0; i < 6; i ++){
+        //Mask off individual cell reading
         uint16_t thisRawVoltage = (rawData >> (8 + (9*i))) & mask;
-        // Serial.printf("this iteration = %d this voltage = %f\n", i, f29bms_dbc_bms_voltages_bms_voltages_cell2_decode(thisRawVoltage));
+        //Decode/scale value to get double reading
         double thisVoltage = 0.01 * thisRawVoltage;
+
+        //If the voltage read is less than the stored minimum voltage, update minimum
         if(thisVoltage < this->minVoltage){
             this->minVoltage = thisVoltage;
             char minVoltageString[MAX_STRING_SIZE];
             sprintf(minVoltageString, "%.2fV", this->minVoltage);
             BMSMinVoltage.updateText(minVoltageString);
+            //If the voltage value is below the threshold/expected minimum voltage, set the background red
+            if(this->minVoltage <= MINIMUM_CELL_VOLTAGE){
+                BMSMinVoltage.updateRectangleColor(RA8875_RED);
+            }
         }
         //Do we want to change this to be max voltage of cells right now, instead of just the max voltage seen all time answer: right now
         //maxVoltageCell keeps track of which cell is the max, and decreases the max value to its value, if that cells voltage is recieved
         //again, so that the maxvoltage that is displayed is the max voltage of the cells right now, not just the max voltage seen all time
+
+        //If the cell being read is the cell that had the previous max voltage, update the max voltage value
+        //so that the max voltage displayed is the current maximum cell voltage, not the highest cell voltage seen all time
         if(((6*thisMuxValue)+i) == this->maxVoltageCell){
             this->maxVoltage = thisVoltage;
             char maxVoltageString[MAX_STRING_SIZE];
             sprintf(maxVoltageString, "%.2fV", this->maxVoltage);
             BMSMaxVoltage.updateText(maxVoltageString);
         }
+
+        //If the voltage read is higher than the stored max voltage, update the stored max voltage, and store which cell the value is from
         if(thisVoltage > this->maxVoltage){
             this->maxVoltage = thisVoltage;
             char maxVoltageString[MAX_STRING_SIZE];
@@ -473,9 +437,14 @@ void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
     }
 }
 
+//Called every time a bms status message is recieved
+//Updates SOC, SOC raw, and pack voltage
 void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
 {
+    //Unpack recieved message
     f29bms_dbc_bms_status_unpack(&canBus.bms_status, &data[0], 8);
+
+    //Get SOC, if it has changed, update the tft element
     int thisSOC = data[0];
     if(thisSOC != SOC){
         this->SOC = thisSOC;
@@ -483,6 +452,8 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
         sprintf(SOCstring, "%d%%", this->SOC);
         BMSSOC.updateText(SOCstring);
     }
+
+    //Get SOC raw, if it has changed, update the tft element
     int thisSOCRaw = data[1];
     if(thisSOCRaw != SOCRaw){
         this->SOCRaw = thisSOCRaw;
@@ -490,17 +461,18 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
         sprintf(SOCstring, "%d%%", this->SOCRaw);
         BMSSOCRaw.updateText(SOCstring);
     }
+
+    //Decode the raw uint16_t pack voltage
     uint16_t rawpackvoltage = 0;
     rawpackvoltage = rawpackvoltage | ((data[3]) << 8);
-    Serial.printf("1 = %u\n", rawpackvoltage);
     rawpackvoltage = rawpackvoltage | data[2];
-    Serial.printf("2 = %u\n", rawpackvoltage);
     rawpackvoltage = rawpackvoltage >> 5;
-    Serial.printf("3 = %u\n", rawpackvoltage);
-    //rawpackvoltage = ((data[3] << 8) | data[0]) >> 1;
-    Serial.printf("Recieved = %u\n", rawpackvoltage);
+
+    //Decode the pack voltage into a double
     double thisPackVoltage = f29bms_dbc_bms_status_bms_status_pack_voltage_decode(rawpackvoltage);//(((data[2] & 0x07) << 7) | ((data[3] & 0xF7) >> 1));
     thisPackVoltage += 0.1;
+
+    //If the pack voltage has changed, update the tft element
     if(thisPackVoltage != packVoltage){
         this->packVoltage = thisPackVoltage;
         char voltstring[MAX_STRING_SIZE];
@@ -514,6 +486,7 @@ void TFT_PROCESSOR::clearScreen()
     this->myDisplay.clearScreen();
 }
 
+//Just a some stuff I wrote to test the new bms stuff
 void TFT_PROCESSOR::test(){
     Serial.printf("Testttt\n");
     this->myDashController->updateModel();

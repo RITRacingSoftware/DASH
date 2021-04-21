@@ -1,4 +1,5 @@
 #include "tft-display-item.h"
+#include "Arduino.h"
 
 TFT_DISPLAY_ITEM::TFT_DISPLAY_ITEM(TFT_TEXT_ITEM text, TFT_RECTANGLE_ITEM rectangle)
     : myText{text}, myRectangle{rectangle} { this->changed = true; }
@@ -13,6 +14,7 @@ void TFT_DISPLAY_ITEM::updateElement(Adafruit_RA8875 *const driver)
     myRectangle.updateElement(driver);
     myText.updateElement(driver);
     this->changed = false;
+    
 }
 
 void TFT_DISPLAY_ITEM::updateText(char my_text[MAX_STRING_SIZE])
