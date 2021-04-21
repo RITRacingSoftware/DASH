@@ -286,12 +286,12 @@ void TFT_PROCESSOR::readyToDriveMessage(etl::array<uint8_t, 8> const &data)
     if (vehicleState == 4)
     {
         this->myDashController->readyToDrive();
-        ReadyToDriveStatus.updateText("READY TO DRIVE");
+        ReadyToDriveStatus.updateText("PRESS START TO DRIVE");
         ReadyToDriveStatus.updateTextColor(RA8875_GREEN);
     }
     else if (vehicleState == 5 || vehicleState == 6)
     {
-        ReadyToDriveStatus.updateText("MOTOR POWERED");
+        ReadyToDriveStatus.updateText("READY TO DRIVE");
     }
     else
     {
