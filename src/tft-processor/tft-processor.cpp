@@ -23,13 +23,14 @@
 
 #define CHECK_BIT(var,pos) ((var) & (1<<(pos)))
 
-#define MINIMUM_CELL_VOLTAGE 3.1
-#define MAXIMUM_CURRENT 230
+#define MINIMUM_ALLOWED_CELL_VOLTAGE 3.1
+#define MAXIMUM_ALLOWED_CURRENT 230
+#define MINIMUM_ALLOWED_SOC 20
 
 #define CURRRENT_CURRENT_X 0
 #define CURRRENT_CURRENT_Y 110
 #define MAX_CURRENT_X 0
-#define MAX_CURRENT_Y 80
+#define MAX_CURRENT_Y 75
 #define MOTOR_SPEED_X 0
 #define MOTOR_SPEED_Y 40
 #define PACK_VOLTAGE_X 320
@@ -38,8 +39,8 @@
 #define MIN_VOLTAGE_Y 40
 #define MAX_VOLTAGE_X 330
 #define MAX_VOLTAGE_Y 110
-#define SOC_X 210
-#define SOC_Y 80
+#define SOC_X 195
+#define SOC_Y 75
 #define SOC_RAW_X 185
 #define SOC_RAW_Y 50
 
@@ -55,8 +56,8 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      myDisplay(10, 9),
                                                                      //Element(TFT_TEXT_ITEM(font_size, xCoordinate, yCoordinate, foreColor, BackgroundColor, text), TFT_RECTANGLE_ITEM(xCoordinate, yCoordinate, width, height, color))
                                                                      motorControllerFaults(TFT_TEXT_ITEM(0, 0, 205, RA8875_WHITE, RA8875_RED, "Motor Controller Faults: "), TFT_RECTANGLE_ITEM(0, 205, 600, 25, RA8875_BLACK)),
-                                                                     motorSpeed(TFT_TEXT_ITEM(1, MOTOR_SPEED_X+90, MOTOR_SPEED_Y, RA8875_WHITE, RA8875_RED, "0000"), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X+90, MOTOR_SPEED_Y, 75, 35, RA8875_BLACK)),
-                                                                     motorSpeedLabel(TFT_TEXT_ITEM(0, MOTOR_SPEED_X, MOTOR_SPEED_Y+10, RA8875_WHITE, RA8875_RED, "Motor Spd.: "), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X, MOTOR_SPEED_Y, 150, 35, RA8875_BLACK)),
+                                                                     motorSpeed(TFT_TEXT_ITEM(1, MOTOR_SPEED_X+100, MOTOR_SPEED_Y, RA8875_WHITE, RA8875_RED, "00000"), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X+100, MOTOR_SPEED_Y, 85, 35, RA8875_BLACK)),
+                                                                     motorSpeedLabel(TFT_TEXT_ITEM(0, MOTOR_SPEED_X, MOTOR_SPEED_Y+10, RA8875_WHITE, RA8875_RED, "Motor Speed: "), TFT_RECTANGLE_ITEM(MOTOR_SPEED_X, MOTOR_SPEED_Y, 95, 35, RA8875_BLACK)),
                                                                      //busVoltage(TFT_TEXT_ITEM(0, 300, 0, RA8875_WHITE, RA8875_RED, "Bus Voltage = 000"), TFT_RECTANGLE_ITEM(300, 0, 250, 20, RA8875_BLACK)),
                                                                      //outputVoltage(TFT_TEXT_ITEM(0, 0, 30, RA8875_WHITE, RA8875_RED, "Output Voltage = 000"), TFT_RECTANGLE_ITEM(0, 30, 140, 20, RA8875_BLACK)),
                                                                      //maxTemp(TFT_TEXT_ITEM(1, 250, 60, RA8875_WHITE, RA8875_RED, "Tmax: 000"), TFT_RECTANGLE_ITEM(250, 60, 150, 40, RA8875_BLACK)),
@@ -77,7 +78,7 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      BMSMaxVoltageLabel(TFT_TEXT_ITEM(0, MAX_VOLTAGE_X, MAX_VOLTAGE_Y+10, RA8875_WHITE, RA8875_RED, "Max: "), TFT_RECTANGLE_ITEM(MAX_VOLTAGE_X, MAX_VOLTAGE_Y, 40, 25, RA8875_BLACK)),
                                                                      BMSCurrentCurrent(TFT_TEXT_ITEM(1, CURRRENT_CURRENT_X+40, CURRRENT_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X+40, CURRRENT_CURRENT_Y+5, 135, 30, RA8875_BLACK)),
                                                                      BMSCurrentCurrentLabel(TFT_TEXT_ITEM(0, CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Cur: "), TFT_RECTANGLE_ITEM(CURRRENT_CURRENT_X, CURRRENT_CURRENT_Y+5, 38, 30, RA8875_BLACK)),
-                                                                     BMSSOC(TFT_TEXT_ITEM(1, SOC_X+38, SOC_Y, RA8875_WHITE, RA8875_RED, "00%"), TFT_RECTANGLE_ITEM(SOC_X+38, SOC_Y, 50, 35, RA8875_BLACK)),
+                                                                     BMSSOC(TFT_TEXT_ITEM(1, SOC_X+38, SOC_Y, RA8875_WHITE, RA8875_RED, "100%"), TFT_RECTANGLE_ITEM(SOC_X+38, SOC_Y, 65, 35, RA8875_BLACK)),
                                                                      BMSSOCLabel(TFT_TEXT_ITEM(0, SOC_X, SOC_Y+10, RA8875_WHITE, RA8875_RED, "SOC: "), TFT_RECTANGLE_ITEM(SOC_X, SOC_Y+10, 36, 20, RA8875_BLACK)),
                                                                      BMSSOCRaw(TFT_TEXT_ITEM(1, SOC_RAW_X+60, SOC_RAW_Y, RA8875_WHITE, RA8875_RED, ""), TFT_RECTANGLE_ITEM(SOC_RAW_X+60, SOC_RAW_Y, 50, 35, RA8875_BLACK)),
                                                                      BMSSOCRawLabel(TFT_TEXT_ITEM(0, SOC_RAW_X, SOC_RAW_Y+10, RA8875_WHITE, RA8875_RED, "SOC(r): "), TFT_RECTANGLE_ITEM(SOC_RAW_X, SOC_RAW_Y+10, 58, 25, RA8875_BLACK)),
@@ -371,8 +372,8 @@ void TFT_PROCESSOR::bmsCurrent(etl::array<uint8_t, 8> const &data)
     BMSCurrentCurrent.updateText(currentString);
 
     //If current gets above threshold/expected maximum value, turn the background for the current red
-    if(this->maxCurrent >= MAXIMUM_CURRENT){
-        BMSCurrentCurrent.updateRectangleColor(RA8875_RED);
+    if(this->maxCurrent >= MAXIMUM_ALLOWED_CURRENT){
+        BMSMaxCurrent.updateRectangleColor(RA8875_RED);
     }
 }
 
@@ -409,7 +410,7 @@ void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
             sprintf(minVoltageString, "%.2fV", this->minVoltage);
             BMSMinVoltage.updateText(minVoltageString);
             //If the voltage value is below the threshold/expected minimum voltage, set the background red
-            if(this->minVoltage <= MINIMUM_CELL_VOLTAGE){
+            if(this->minVoltage <= MINIMUM_ALLOWED_CELL_VOLTAGE){
                 BMSMinVoltage.updateRectangleColor(RA8875_RED);
             }
         }
@@ -451,6 +452,9 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
         char SOCstring[MAX_STRING_SIZE];
         sprintf(SOCstring, "%d%%", this->SOC);
         BMSSOC.updateText(SOCstring);
+        if(this->SOC <= MINIMUM_ALLOWED_SOC){
+            BMSSOC.updateRectangleColor(RA8875_RED);
+        }
     }
 
     //Get SOC raw, if it has changed, update the tft element
@@ -464,9 +468,9 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
 
     //Decode the raw uint16_t pack voltage
     uint16_t rawpackvoltage = 0;
-    rawpackvoltage = rawpackvoltage | ((data[3]) << 8);
-    rawpackvoltage = rawpackvoltage | data[2];
-    rawpackvoltage = rawpackvoltage >> 5;
+    rawpackvoltage = rawpackvoltage | ((data[3]) << 3);
+    rawpackvoltage = rawpackvoltage | ((data[2] & 0xE0) >> 5);
+    rawpackvoltage = rawpackvoltage | ((data[4] & 0x0F) << 11);
 
     //Decode the pack voltage into a double
     double thisPackVoltage = f29bms_dbc_bms_status_bms_status_pack_voltage_decode(rawpackvoltage);//(((data[2] & 0x07) << 7) | ((data[3] & 0xF7) >> 1));
@@ -512,6 +516,16 @@ void TFT_PROCESSOR::test(){
     for(int i  = 0; i < 8; i++){
         data[i] = 0x00;
     }
+    data[0] = 0x32;
+    data[2] = 0xC0;
+    data[3] = 0x7C;
+    data[4] = 0x01;
+    bmsStatus(data);
+
+
+    for(int i  = 0; i < 8; i++){
+        data[i] = 0x00;
+    }
     
     data[1] = 1;
     bmsFaults(data);
@@ -553,27 +567,27 @@ void TFT_PROCESSOR::test(){
     for(int i  = 0; i < 8; i++){
         data[i] = 0x00;
     }
-    uint32_t current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(35.008);
-    data[0] = (current >> 24) & 0xff;
-    data[1] = (current >> 16) & 0xff;
-    data[2] = (current >> 8) & 0xff;
-    data[3] = current & 0xff;
-    bmsCurrent(data);
+    // uint32_t current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(35.008);
+    // data[0] = (current >> 24) & 0xff;
+    // data[1] = (current >> 16) & 0xff;
+    // data[2] = (current >> 8) & 0xff;
+    // data[3] = current & 0xff;
+    // bmsCurrent(data);
     this->myDashController->updateModel();
     this->myDashController->updateView();
     delay(1000);
-    current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(15.008);
-    data[0] = (current >> 24) & 0xff;
-    data[1] = (current >> 16) & 0xff;
-    data[2] = (current >> 8) & 0xff;
-    data[3] = current & 0xff;
-    bmsCurrent(data);
-    current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(69.420);
-    data[0] = (current >> 24) & 0xff;
-    data[1] = (current >> 16) & 0xff;
-    data[2] = (current >> 8) & 0xff;
-    data[3] = current & 0xff;
-    bmsCurrent(data);
+    // current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(15.008);
+    // data[0] = (current >> 24) & 0xff;
+    // data[1] = (current >> 16) & 0xff;
+    // data[2] = (current >> 8) & 0xff;
+    // data[3] = current & 0xff;
+    // bmsCurrent(data);
+    // current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(69.420);
+    // data[0] = (current >> 24) & 0xff;
+    // data[1] = (current >> 16) & 0xff;
+    // data[2] = (current >> 8) & 0xff;
+    // data[3] = current & 0xff;
+    // bmsCurrent(data);
     data[0] = 0xD4;
     data[1] = 0x30;
     data[2] = 0;
