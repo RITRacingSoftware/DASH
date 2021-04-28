@@ -38,9 +38,9 @@ void loop()
   }
   //digitalWrite(19, HIGH);
   controller.updateModel();
-  delay(DELAY);
+  //delay(DELAY);
   //digitalWrite(19, LOW);
   controller.updateView();
   // Serial.println("6");
-  delay(DELAY);
+  //delay(DELAY);
 }

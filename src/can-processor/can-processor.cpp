@@ -18,11 +18,11 @@ bool CAN_PROCESSOR::readCAN(CAN_MESSAGE &msg)
   if (FD.read(nextMsg)) // If there is a CAN Message in the queue, set msg
                         // fields with it
   {
-    Serial.printf("Message ID = %03X\n\r", nextMsg.id);
+    //Serial.printf("Message ID = %03X\n\r", nextMsg.id);
     msg.id = nextMsg.id;         // Set the ID
     for (int i = 0; i <= 7; i++) // n to hl if need to change endianness
     {
-      Serial.printf("Byte %d = %02X\n\r", i, nextMsg.buf[i]);
+      //Serial.printf("Byte %d = %02X\n\r", i, nextMsg.buf[i]);
       msg.data[i] = nextMsg.buf[i]; // Set the data
     }
     messageRead = true;

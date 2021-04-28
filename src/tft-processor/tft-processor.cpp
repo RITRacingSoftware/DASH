@@ -68,7 +68,7 @@ TFT_PROCESSOR::TFT_PROCESSOR(DASH_CONTROLLER_INTF *dashController) : myDashContr
                                                                      waterTemp(TFT_TEXT_ITEM(0, 150, 200, RA8875_WHITE, RA8875_RED, "Twater: 0"), TFT_RECTANGLE_ITEM(150, 200, 175, 20, RA8875_BLACK)),
                                                                      BMSFaults(TFT_TEXT_ITEM(0, 0, 180, RA8875_WHITE, RA8875_RED, "BMS Faults: "), TFT_RECTANGLE_ITEM(0, 180, 480, 25, RA8875_BLACK)),
                                                                      BMSFaultVector(TFT_TEXT_ITEM(0, 0, 155, RA8875_WHITE, RA8875_RED, "BMS Fault Vector: "), TFT_RECTANGLE_ITEM(0, 155, 280, 25, RA8875_BLACK)),
-                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 230, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 230, 300, 36, RA8875_BLACK)),
+                                                                     ReadyToDriveStatus(TFT_TEXT_ITEM(1, 0, 230, RA8875_RED, RA8875_RED, "NOT READY TO DRIVE"), TFT_RECTANGLE_ITEM(0, 230, 350, 36, RA8875_BLACK)),
                                                                      MotorSpeedBar(5, 5, 0, 30, RA8875_GREEN),
                                                                      BMSMaxCurrent(TFT_TEXT_ITEM(1, MAX_CURRENT_X+40, MAX_CURRENT_Y, RA8875_WHITE, RA8875_RED, "000.000A"), TFT_RECTANGLE_ITEM(MAX_CURRENT_X+40, MAX_CURRENT_Y, 135, 30, RA8875_BLACK)),
                                                                      BMSMaxCurrentLabel(TFT_TEXT_ITEM(0, MAX_CURRENT_X, MAX_CURRENT_Y+10, RA8875_WHITE, RA8875_RED, "Max: "), TFT_RECTANGLE_ITEM(MAX_CURRENT_X, MAX_CURRENT_Y+10, 38, 30, RA8875_BLACK)),
@@ -185,11 +185,11 @@ void TFT_PROCESSOR::MotorPositionInformation(etl::array<uint8_t, 8> const &data)
         //motorSpeedRect.updateColor(RA8875_RED);
     }
     sprintf(motorSpeedNum, "%d", number);
-    Serial.println(motorSpeedNum);
+    //Serial.println(motorSpeedNum);
     motorSpeed.updateText(motorSpeedNum);
     uint16_t barWidth = (uint16_t)((number / 4000.0) * 470.0);
     //MotorSpeedBar.updateRectangleSize(barWidth, 30);
-    Serial.printf("Motor speed bar width: %d\n\r", barWidth);
+    //Serial.printf("Motor speed bar width: %d\n\r", barWidth);
     MotorSpeedBar.updateSize(barWidth, 30);
     //MotorSpeedBar.updateTextLocation(barWidth, 5);
 }
@@ -207,12 +207,12 @@ void TFT_PROCESSOR::IncrementLap(etl::array<uint8_t, 8> const &data)
     //Determine battery used last lap
     char batPerLapNum[MAX_STRING_SIZE];
     int difference = packVoltage - batteryBeforeLap; //Calulate battery used
-    Serial.print("Differnce");
-    Serial.println(number);
-    Serial.print("Percent");
+    // Serial.print("Differnce");
+    // Serial.println(number);
+    // Serial.print("Percent");
     //Serial.println(batteryPercent);
-    Serial.print("old");
-    Serial.println(batteryBeforeLap);
+    // Serial.print("old");
+    // Serial.println(batteryBeforeLap);
     sprintf(batPerLapNum, "Bat/Lap: %d", difference);
     batteryPerLap.updateText(batPerLapNum);
     //batteryBeforeLap = batteryPercent; //Set new starting percentage
@@ -229,7 +229,7 @@ void TFT_PROCESSOR::waterTempInfo(etl::array<uint8_t, 8> const &data)
 void TFT_PROCESSOR::readyToDriveMessage(etl::array<uint8_t, 8> const &data)
 {
     uint16_t vehicleState = ((data[1] << 8) | data[0]);
-    Serial.printf("Received State message, state is %d\n\r", vehicleState);
+    //Serial.printf("Received State message, state is %d\n\r", vehicleState);
     if (vehicleState == 4)
     {
         this->myDashController->readyToDrive();
@@ -304,7 +304,7 @@ void TFT_PROCESSOR::bmsFaults(etl::array<uint8_t, 8> const &data)
 
         char BMSFaultsString[MAX_STRING_SIZE] = "BMS Faults: ";
 
-        Serial.printf("data 0 = %d", data[0]);
+        //Serial.printf("data 0 = %d", data[0]);
 
         //Check if each bit is set and concatenate fault string
         if(CHECK_BIT(data[0], 0)){
@@ -356,7 +356,7 @@ void TFT_PROCESSOR::bmsCurrent(etl::array<uint8_t, 8> const &data)
     //Decode uint32 value into a double current value
     double curCurrent = f29bms_dbc_bms_current_bms_inst_current_filt_decode(rawCurrent);
    //double curCurrent = rawCurrent * 0.001;
-    Serial.printf("current = %f\n", curCurrent);
+    //Serial.printf("current = %f\n", curCurrent);
 
     //If the current reasing is larger than the max stored current, update the max current
     if(curCurrent > this->maxCurrent){
