@@ -2,17 +2,26 @@
 #include "controller/dash-controller.h"
 #include "data-processor/data-processor.h"
 
-#define START_BUTTON_PIN 4
-#define START_SOUND_SIGNAL 18
+#define START_BUTTON_PIN 21
+#define START_SOUND_SIGNAL 20
 #define DELAY 100
 
 DASH_CONTROLLER controller;
+volatile bool startButtonPressed; //Set by ISR
+bool safeButtonPressed; //version of button pressed that won't be changed by ISR
+
+//ISR for when start button is pressed
+void startButtonISR(){
+  startButtonPressed = true;
+}
 
 void setup()
 {
-
+  startButtonPressed = false;
+  safeButtonPressed = false;
   //Serial.print("startingg");
-  pinMode(START_BUTTON_PIN, INPUT);
+  //pinMode(START_BUTTON_PIN, INPUT);
+  attachInterrupt(digitalPinToInterrupt(START_BUTTON_PIN), startButtonISR, CHANGE);
   pinMode(START_SOUND_SIGNAL, OUTPUT);
   //inMode(19, OUTPUT);
   //pinMode(16, OUTPUT); //for testing
@@ -23,7 +32,8 @@ void setup()
   controller.initialize();
   //digitalWrite(19, HIGH);
   //digitalWrite(16, HIGH); //for testing RTDS
-  digitalWrite(START_SOUND_SIGNAL, HIGH);
+  //To make sound, make teensy pin high
+  digitalWrite(START_SOUND_SIGNAL, LOW);
 }
 
 void loop()
@@ -32,9 +42,13 @@ void loop()
   //Serial.println(controller.driveReady);
   //Serial.print("Button = ");
   //Serial.println(digitalRead(START_BUTTON_PIN));
-  if (controller.driveReady && (digitalRead(START_BUTTON_PIN) == HIGH))
+  cli();
+  safeButtonPressed = startButtonPressed;
+  sei();
+  //if (controller.driveReady && safeButtonPressed)
+  if(safeButtonPressed)
   {
-    digitalWrite(START_SOUND_SIGNAL, LOW);
+    digitalWrite(START_SOUND_SIGNAL, HIGH);
   }
   //digitalWrite(19, HIGH);
   controller.updateModel();
@@ -44,3 +58,4 @@ void loop()
   // Serial.println("6");
   //delay(DELAY);
 }
+
