@@ -2,11 +2,12 @@
 #include "controller/dash-controller.h"
 #include "data-processor/data-processor.h"
 
-#define START_BUTTON_PIN 4
-#define START_SOUND_SIGNAL 18
+#define START_BUTTON_PIN 21
+#define START_SOUND_SIGNAL 20
 #define DELAY 100
 
 DASH_CONTROLLER controller;
+int lastStartButtonState;
 
 void setup()
 {
@@ -23,7 +24,9 @@ void setup()
   controller.initialize();
   //digitalWrite(19, HIGH);
   //digitalWrite(16, HIGH); //for testing RTDS
-  digitalWrite(START_SOUND_SIGNAL, HIGH);
+
+  //When this is low, pin 4 on connector is 5V, when the harness schematic has RTD trigger as pin 3
+  digitalWrite(START_SOUND_SIGNAL, LOW);
 }
 
 void loop()
@@ -32,9 +35,23 @@ void loop()
   //Serial.println(controller.driveReady);
   //Serial.print("Button = ");
   //Serial.println(digitalRead(START_BUTTON_PIN));
-  if (controller.driveReady && (digitalRead(START_BUTTON_PIN) == HIGH))
+
+  //if (controller.driveReady && (digitalRead(START_BUTTON_PIN) == HIGH))
+
+  //CHANGE BACK
+  if (digitalRead(START_BUTTON_PIN) == HIGH)
   {
-    digitalWrite(START_SOUND_SIGNAL, LOW);
+    if(lastStartButtonState == HIGH){
+      digitalWrite(START_SOUND_SIGNAL, HIGH);
+      delay(100);
+      digitalWrite(START_SOUND_SIGNAL, LOW);
+    }
+    else{
+      lastStartButtonState = HIGH;
+    }
+  }
+  else{
+    lastStartButtonState = LOW;
   }
   //digitalWrite(19, HIGH);
   controller.updateModel();
