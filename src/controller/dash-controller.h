@@ -27,6 +27,7 @@
 #define BMS_TEMPERATURES_ID 0x2c0
 #define BMS_DRAIN_STATUS_A_ID 0x320
 #define BMS_DRAIN_STATUS_B_ID 0x321
+//IMPORTANT: IDs must be added to filters in order to be read
 
 class DASH_CONTROLLER : public DASH_CONTROLLER_INTF
 {
