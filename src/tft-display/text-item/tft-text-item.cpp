@@ -20,7 +20,7 @@ void TFT_TEXT_ITEM::updateElement(Adafruit_RA8875 *const displayDriver)
   displayDriver->textEnlarge(this->my_font_size);
   displayDriver->textTransparent(this->my_fore_color);
 
-  // Note: .c_str() gets a pointer to the begining of the string, adn .size()
+  // Note: .c_str() gets a pointer to the begining of the string, and .size()
   // gets the size of the actual string, not just the size of the container
   //Serial.printf("Updating text %s, address=%p, address of me=%p\n", this->my_text, this->my_text, this);
   displayDriver->textWrite(this->my_text, MAX_STRING_SIZE);
