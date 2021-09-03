@@ -15,23 +15,25 @@ void setup()
   //Serial.print("startingg");
   pinMode(START_BUTTON_PIN, INPUT);
   pinMode(START_SOUND_SIGNAL, OUTPUT);
-  //inMode(19, OUTPUT);
+  //pinMode(13, OUTPUT);
+  //digitalWrite(13, HIGH);
+  //delay(7000);
   //pinMode(16, OUTPUT); //for testing
   // put your setup code here, to run once:
   Serial.begin(9600);
-  //delay(7000);
+  
   //Serial.printf("startting\n");
   controller.initialize();
-  //digitalWrite(19, HIGH);
+  
   //digitalWrite(16, HIGH); //for testing RTDS
-
+  
   //When this is low, pin 4 on connector is 5V, when the harness schematic has RTD trigger as pin 3
   digitalWrite(START_SOUND_SIGNAL, LOW);
 }
 
 void loop()
 {
-  //Serial.print("message recieved = ");
+  Serial.print("message recieved = B\n");
   //Serial.println(controller.driveReady);
   //Serial.print("Button = ");
   //Serial.println(digitalRead(START_BUTTON_PIN));
@@ -53,11 +55,11 @@ void loop()
   else{
     lastStartButtonState = LOW;
   }
-  //digitalWrite(19, HIGH);
+  //digitalWrite(13, HIGH);
   controller.updateModel();
   //delay(DELAY);
-  //digitalWrite(19, LOW);
+  //digitalWrite(13, LOW);
   controller.updateView();
-  // Serial.println("6");
+   //Serial.println("6");
   //delay(DELAY);
 }

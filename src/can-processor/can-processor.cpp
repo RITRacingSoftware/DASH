@@ -7,6 +7,10 @@ static FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> myCan;
 
 CAN_PROCESSOR::CAN_PROCESSOR()
 {
+  // temp.insert({0x696,0});
+  // for(uint16_t i = 0xA0;i<=0xAE; i++){
+  //   temp.insert({i,0});
+  // }
   myCan.begin();
   myCan.setBaudRate(CAN_BAUD_RATE);
   myCan.enableFIFO();
@@ -26,6 +30,17 @@ bool CAN_PROCESSOR::readCAN(CAN_MESSAGE &msg)
   if (myCan.read(nextMsg)) // If there is a CAN Message in the queue, set msg
                         // fields with it
   {
+    // Serial.print("1");
+    // uint32_t numOccurances = temp.at(nextMsg.id);
+    // Serial.print("2");
+    // numOccurances++;
+    // Serial.print("3");
+    // Serial.printf("ID: %d   Ocurrances: %d \n", 0x696, temp.at(0x696));
+    // Serial.print("4");
+    // for(uint16_t i = 0xA0;i<=0xAE; i++){
+    //   Serial.printf("ID: %d   Ocurrances: %d \n", i, temp.at(i));
+    //   //Serial.printf("%d");
+    // }
     //Serial.printf("Message ID = %03X\n\r", nextMsg.id);
     msg.id = nextMsg.id;         // Set the ID
     for (int i = 0; i <= 7; i++) // n to hl if need to change endianness
