@@ -1,16 +1,16 @@
 #ifndef TFT_PROCESSOR_H_
 #define TFT_PROCESSOR_H_
 
-#include "../../include/tft-processor-intf.h"
-#include "../tft-display/tft-display.h"
-#include "../../include/dash-controller-intf.h"
-//#include "../../include/display-interfaces/display-item-intf.h"
-#include "../tft-display/text-item/tft-text-item.h"
-#include "../tft-display/rectangle-item/tft-rectangle-item.h"
-#include "../tft-display/tft-display-item.h"
+#include "../include/tft-processor-intf.h"
+#include "tft-display.h"
+#include "../include/dash-controller-intf.h"
+//#include "../include/display-interfaces/display-item-intf.h"
+#include "ui-elements/tft-text-item.h"
+#include "ui-elements/tft-rectangle-item.h"
+#include "ui-elements/tft-display-item.h"
 #include "etl/list.h"
 #include <string.h>
-#include "../f29bms_dbc.h"
+#include "f29bms_dbc.h"
 
 // struct displayItem{
 //     TFT_TEXT_ITEM text;

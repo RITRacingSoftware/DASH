@@ -1,7 +1,7 @@
 #ifndef TFT_DISPLAY_H_
 #define TFT_DISPLAY_H_
 
-#include "../../include/display-interfaces/display-intf.h"
+#include "../include/display-interfaces/display-intf.h"
 #include "Adafruit_RA8875.h"
 
 class TFT_DISPLAY : public DISPLAY_INTF

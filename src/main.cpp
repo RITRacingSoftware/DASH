@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include "controller/dash-controller.h"
-#include "data-processor/data-processor.h"
+#include "dash-controller.h"
+#include "data-processor.h"
 
 #define START_BUTTON_PIN 21
 #define START_SOUND_SIGNAL 20

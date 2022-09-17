@@ -1,8 +1,8 @@
 #ifndef TFT_DISPLAY_ITEM_H_
 #define TFT_DISPLAY_ITEM_H_
 
-#include "text-item/tft-text-item.h"
-#include "rectangle-item/tft-rectangle-item.h"
+#include "tft-text-item.h"
+#include "tft-rectangle-item.h"
 
 class TFT_DISPLAY_ITEM : public DISPLAY_ITEM_INTF
 {

@@ -1,7 +1,7 @@
 #ifndef TFT_RECTANGLE_ITEM_H_
 #define TFT_RECTANGLE_ITEM_H_
 
-#include "../../../include/display-interfaces/display-item-intf.h"
+#include "../include/display-interfaces/display-item-intf.h"
 #include <cstdint>
 
 

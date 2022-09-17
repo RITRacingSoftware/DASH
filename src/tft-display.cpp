@@ -2,8 +2,8 @@
 #include "tft-display.h"
 #include "Arduino.h"     //Temporary
 #include "etl/cstring.h" //Temporary
-#include "text-item/tft-text-item.h"
-#include "tft-display-item.h"
+#include "ui-elements/tft-text-item.h"
+#include "ui-elements/tft-display-item.h"
 //#include "tft-display-driver.h"
 
 TFT_DISPLAY::TFT_DISPLAY(uint8_t CSPin, uint8_t resetPin)

@@ -1,12 +1,12 @@
 #ifndef DATA_PROCESSOR_H_
 #define DATA_PROCESSOR_H_
 
-#include "../../include/data-processor-intf.h"
+#include "../include/data-processor-intf.h"
 #include "etl/map.h"
 #include "etl/delegate.h"
-#include "can-processor/can-processor.h"
-#include "gpio-processor/gpio-processor.h"
-#include "../../include/dash-controller-intf.h"
+#include "can-processor.h"
+#include "gpio-processor.h"
+#include "../include/dash-controller-intf.h"
 #include "etl/array.h"
 
 #define MAX_MAP_SIZE 25

@@ -1,6 +1,6 @@
 #include "can-processor.h"
 #include "../lib/FlexCAN_T4/FlexCAN_T4.h"
-#include "../controller/dash-controller.h"
+#include "dash-controller.h"
 
 #define CAN_BAUD_RATE 1000000
 static FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> myCan;

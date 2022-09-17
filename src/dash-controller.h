@@ -2,10 +2,10 @@
 #define DASH_CONTROLLER_H_
 
 #include "../include/controller-intf.h"
-#include "../../include/dash-controller-intf.h"
-#include "../tft-processor/tft-processor.h"
-#include "../data-processor/data-processor.h"
-#include "../tft-display/tft-display.h"
+#include "../include/dash-controller-intf.h"
+#include "tft-processor.h"
+#include "data-processor.h"
+#include "tft-display.h"
 
 //Define CAN message IDs
 #define MC_FAULT_CODES_ID 0x0AB

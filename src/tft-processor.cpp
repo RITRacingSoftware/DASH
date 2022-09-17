@@ -1,13 +1,13 @@
 #include <float.h>
 #include "tft-processor.h"
-#include "../../include/display-interfaces/display-item-intf.h"
-#include "../tft-display/rectangle-item/tft-rectangle-item.h"
-#include "../tft-display/text-item/tft-text-item.h"
-#include "../tft-display/tft-display.h"
+#include "../include/display-interfaces/display-item-intf.h"
+#include "ui-elements/tft-rectangle-item.h"
+#include "ui-elements/tft-text-item.h"
+#include "tft-display.h"
 #include "etl/cstring.h"
 #include "Arduino.h"
-#include "../controller/dash-controller.h"
-#include "../f29bms_dbc.h"
+#include "dash-controller.h"
+#include "f29bms_dbc.h"
 
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"

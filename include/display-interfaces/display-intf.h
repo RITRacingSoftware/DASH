@@ -4,7 +4,7 @@
 #include "etl/vector.h"
 #include <Arduino.h>
 #include "display-item-intf.h"
-#include "tft-display/tft-display-item.h"
+#include "ui-elements/tft-display-item.h"
 
 #define MAX_ELEMENTS 50
 
