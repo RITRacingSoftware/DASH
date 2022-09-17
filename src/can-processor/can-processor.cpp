@@ -1,5 +1,5 @@
 #include "can-processor.h"
-#include "../lib/FlexCAN_T4-master/FlexCAN_T4.h"
+#include "../lib/FlexCAN_T4/FlexCAN_T4.h"
 #include "../controller/dash-controller.h"
 
 #define CAN_BAUD_RATE 1000000
