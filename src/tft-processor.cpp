@@ -7,7 +7,7 @@
 #include "etl/cstring.h"
 #include "Arduino.h"
 #include "dash-controller.h"
-#include "f29bms_dbc.h"
+#include "../lib/Formula-DBC/formula_dbc.h"
 
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
@@ -284,7 +284,7 @@ void TFT_PROCESSOR::checkFaults(uint8_t data, etl::array<char[MAX_STRING_SIZE], 
 void TFT_PROCESSOR::bmsFaults(etl::array<uint8_t, 8> const &data)
 {
     //Unpack message
-    f29bms_dbc_bms_fault_vector_unpack(&canBus.bms_fault_vector, (uint8_t*) data[0], 8);
+    formula_dbc_bms_fault_vector_unpack(&canBus.bms_fault_vector, (uint8_t*) data[0], 8);
     //Create uint64_t from data array
     uint64_t incomingFaults = 0;
     for(int i = 0; i < 8; i++){
@@ -363,7 +363,7 @@ void TFT_PROCESSOR::bmsCurrent(etl::array<uint8_t, 8> const &data)
     //Current can be negative, needs to be converted to signed
     int32_t signedRawCurrent = (int32_t) rawCurrent;
     //Decode uint32 value into a double current value   
-    //double curCurrent = f29bms_dbc_bms_current_bms_inst_current_filt_decode(rawCurrent);
+    //double curCurrent = formula_dbc_bms_current_bms_inst_current_filt_decode(rawCurrent);
     double curCurrent = signedRawCurrent * 0.001;
     //Serial.printf("current = %f\n", curCurrent);
 
@@ -452,7 +452,7 @@ void TFT_PROCESSOR::bmsVoltages(etl::array<uint8_t, 8> const &data)
 void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
 {
     //Unpack recieved message
-    f29bms_dbc_bms_status_unpack(&canBus.bms_status, &data[0], 8);
+    formula_dbc_bms_status_unpack(&canBus.bms_status, &data[0], 8);
 
     //Get SOC, if it has changed, update the tft element
     int thisSOC = data[0];
@@ -482,7 +482,7 @@ void TFT_PROCESSOR::bmsStatus(etl::array<uint8_t, 8> const &data)
     rawpackvoltage = rawpackvoltage | ((data[4] & 0x0F) << 11);
 
     //Decode the pack voltage into a double
-    double thisPackVoltage = f29bms_dbc_bms_status_bms_status_pack_voltage_decode(rawpackvoltage);//(((data[2] & 0x07) << 7) | ((data[3] & 0xF7) >> 1));
+    double thisPackVoltage = formula_dbc_bms_status_bms_status_pack_voltage_decode(rawpackvoltage);//(((data[2] & 0x07) << 7) | ((data[3] & 0xF7) >> 1));
     thisPackVoltage += 0.1;
 
     //If the pack voltage has changed, update the tft element
@@ -514,7 +514,7 @@ void TFT_PROCESSOR::test(){
     data[5] = 0;
     data[6] = 0;
     data[7] = 0;
-    uint16_t pack = f29bms_dbc_bms_status_bms_status_pack_voltage_encode(78.5);
+    uint16_t pack = formula_dbc_bms_status_bms_status_pack_voltage_encode(78.5);
     Serial.printf("pack = %u\n", pack);
     data[2] = 0xE0;
     Serial.printf("data[2] = %u\n", data[2]);
@@ -546,7 +546,7 @@ void TFT_PROCESSOR::test(){
     bmsFaults(data);
 
     data[0] = 5;
-    uint16_t cell0 = f29bms_dbc_bms_voltages_bms_voltages_cell0_encode(4.2);
+    uint16_t cell0 = formula_dbc_bms_voltages_bms_voltages_cell0_encode(4.2);
     cell0 += 1;
     data[1] = cell0 & 0xff;
     data[2] = (cell0 >> 8) & 0xff;
@@ -555,7 +555,7 @@ void TFT_PROCESSOR::test(){
     this->myDashController->updateModel();
     this->myDashController->updateView();
     delay(1000);
-    cell0 = f29bms_dbc_bms_voltages_bms_voltages_cell0_encode(4.0);
+    cell0 = formula_dbc_bms_voltages_bms_voltages_cell0_encode(4.0);
     cell0 += 1;
     data[1] = cell0 & 0xff;
     data[2] = (cell0 >> 8) & 0xff;
@@ -563,7 +563,7 @@ void TFT_PROCESSOR::test(){
     this->myDashController->updateModel();
     this->myDashController->updateView();
     delay(1000);
-    cell0 = f29bms_dbc_bms_voltages_bms_voltages_cell2_encode(3.5);
+    cell0 = formula_dbc_bms_voltages_bms_voltages_cell2_encode(3.5);
     Serial.printf("htishti = %u\n ", cell0);
     cell0 += 1;
     data[4] = (cell0 & 0x1f) << 3;
@@ -576,7 +576,7 @@ void TFT_PROCESSOR::test(){
     for(int i  = 0; i < 8; i++){
         data[i] = 0x00;
     }
-    //int32_t current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(35.008);
+    //int32_t current = formula_dbc_bms_current_bms_inst_current_filt_encode(35.008);
     //Set current to 135.8
     data[0] = 0x78;
     data[1] = 0x12;
@@ -586,7 +586,7 @@ void TFT_PROCESSOR::test(){
     this->myDashController->updateModel();
     this->myDashController->updateView();
     delay(1000);
-    //int32_t current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(35.008);
+    //int32_t current = formula_dbc_bms_current_bms_inst_current_filt_encode(35.008);
     //Set current to -20.5
     data[0] = 0xEC;
     data[1] = 0xAF;
@@ -596,13 +596,13 @@ void TFT_PROCESSOR::test(){
     this->myDashController->updateModel();
     this->myDashController->updateView();
     delay(1000);
-    // current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(15.008);
+    // current = formula_dbc_bms_current_bms_inst_current_filt_encode(15.008);
     // data[0] = (current >> 24) & 0xff;
     // data[1] = (current >> 16) & 0xff;
     // data[2] = (current >> 8) & 0xff;
     // data[3] = current & 0xff;
     // bmsCurrent(data);
-    // current = f29bms_dbc_bms_current_bms_inst_current_filt_encode(69.420);
+    // current = formula_dbc_bms_current_bms_inst_current_filt_encode(69.420);
     // data[0] = (current >> 24) & 0xff;
     // data[1] = (current >> 16) & 0xff;
     // data[2] = (current >> 8) & 0xff;

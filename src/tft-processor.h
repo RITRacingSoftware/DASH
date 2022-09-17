@@ -10,7 +10,7 @@
 #include "ui-elements/tft-display-item.h"
 #include "etl/list.h"
 #include <string.h>
-#include "f29bms_dbc.h"
+#include "../lib/Formula-DBC/formula_dbc.h"
 
 // struct displayItem{
 //     TFT_TEXT_ITEM text;
@@ -19,16 +19,16 @@
 
 typedef struct
 {
-    struct f29bms_dbc_bms_status_t bms_status;
-    struct f29bms_dbc_bms_fault_vector_t bms_fault_vector;
-    struct f29bms_dbc_bms_fault_alert_t bms_fault_alert;
-    struct f29bms_dbc_bms_voltages_t bms_voltages;
-    struct f29bms_dbc_bms_thermistor_voltages_t bms_thermistor_voltages;
-    struct f29bms_dbc_bms_temperatures_t bms_temperatures;
-    struct f29bms_dbc_bms_drain_status_a_t bms_drain_status_a;
-    struct f29bms_dbc_bms_drain_status_b_t bms_drain_status_b;
-    struct f29bms_dbc_bms_current_t bms_current;
-    struct f29bms_dbc_bms_charge_request_t bms_charge_request;
+    struct formula_dbc_bms_status_t bms_status;
+    struct formula_dbc_bms_fault_vector_t bms_fault_vector;
+    struct formula_dbc_bms_fault_alert_t bms_fault_alert;
+    struct formula_dbc_bms_voltages_t bms_voltages;
+    struct formula_dbc_bms_thermistor_voltages_t bms_thermistor_voltages;
+    struct formula_dbc_bms_temperatures_t bms_temperatures;
+    struct formula_dbc_bms_drain_status_a_t bms_drain_status_a;
+    struct formula_dbc_bms_drain_status_b_t bms_drain_status_b;
+    struct formula_dbc_bms_current_t bms_current;
+    struct formula_dbc_bms_charge_request_t bms_charge_request;
 } CAN_BUS;
 
 class TFT_PROCESSOR : public TFT_PROCESSOR_INTF
