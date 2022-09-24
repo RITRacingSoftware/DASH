@@ -15,7 +15,6 @@ void TFTManager::initScreen() {
 	driver.PWM1out(255);
 
 	driver.graphicsMode();
-	driver.fillScreen(RA8875_BLACK);
 }
 
 TFTManager::TFTManager() : driver(Adafruit_RA8875(PIN_RA8875_CS, PIN_RA8875_RESET)){
@@ -25,29 +24,21 @@ TFTManager::TFTManager() : driver(Adafruit_RA8875(PIN_RA8875_CS, PIN_RA8875_RESE
 	Serial.printf("Initializing Display\n");
 	initScreen();
 
-	// Initialize Frame Buffer
-	framebuf = (uint16_t*) malloc(TFT_SCREEN_PIXELS * sizeof(uint16_t));
-	fillBuffer(RA8875_BLACK);
-	Serial.printf("Initialized Framebuffer\n");
-
+	fillScreen(RA8875_BLACK);
 }
 
 TFTManager::~TFTManager() {
 
 }
 
-uint16_t* TFTManager::getDrawBuffer() {
-	//return buf_rear;
-	return NULL;
+void TFTManager::fillScreen(uint16_t color) {
+	driver.fillScreen(color);
 }
 
-void TFTManager::fillBuffer(uint16_t color) {
-	for(int i = 0; i < TFT_SCREEN_PIXELS; i++) {
-		framebuf[i] = color;
+void TFTManager::drawTexturedRect(int x1, int x2, int y1, int y2, uint16_t* pixels) {
+	for(int y = y1; y <= y2; y++) {
+		int width = x2-x1+1;
+		driver.drawPixels(pixels, width, x1, y);
+		pixels += width;
 	}
-}
-
-void TFTManager::drawBuffer() {
-	driver.graphicsMode();
-	driver.drawPixels(framebuf, TFT_SCREEN_PIXELS, 0, 0);
 }
