@@ -15,8 +15,7 @@ void TFTManager::initScreen() {
 	driver.PWM1out(255);
 
 	driver.graphicsMode();
-	driver.fillScreen(RA8875_RED);
-	driver.textMode(); // Temporary
+	driver.fillScreen(RA8875_BLACK);
 }
 
 TFTManager::TFTManager() : driver(Adafruit_RA8875(PIN_RA8875_CS, PIN_RA8875_RESET)){
@@ -24,40 +23,17 @@ TFTManager::TFTManager() : driver(Adafruit_RA8875(PIN_RA8875_CS, PIN_RA8875_RESE
 	Serial.printf("Initializing TFT Manager\n");
 
 	Serial.printf("Initializing Display\n");
-
 	initScreen();
 
-	buf_front = (uint16_t*) malloc(TFT_SCREEN_PIXELS * sizeof(uint16_t));
-	buf_rear = (uint16_t*) malloc(TFT_SCREEN_PIXELS * sizeof(uint16_t));
+	// Initialize Frame Buffer
+	framebuf = (uint16_t*) malloc(TFT_SCREEN_PIXELS * sizeof(uint16_t));
+	fillBuffer(RA8875_BLACK);
+	Serial.printf("Initialized Framebuffer\n");
 
-	for(int i = 0; i < TFT_SCREEN_PIXELS; i++) {
-		buf_front[i] = 0xffff;
-		//buf_rear[i] = 0x7777;
-	}
-
-	Serial.printf("Initialized Framebuffers\n");
-
-	uint16_t color = 0;
-
-	while(true) {
-		for(int i = 0; i < TFT_SCREEN_PIXELS; i++) {
-			buf_front[i] = color;
-			//buf_rear[i] = 0x7777;
-		}
-		color += 0x1111;
-
-		Serial.printf("White\n");
-		driver.graphicsMode();
-		driver.drawPixels(buf_front, TFT_SCREEN_PIXELS, 0, 0);
-		//Serial.printf("Grey\n");
-		//driver.drawPixels(buf_rear, TFT_SCREEN_PIXELS, 0, 0);
-	}
-
-	//bufferToTFT();
 }
 
 TFTManager::~TFTManager() {
-	//delete driver;
+
 }
 
 uint16_t* TFTManager::getDrawBuffer() {
@@ -65,24 +41,13 @@ uint16_t* TFTManager::getDrawBuffer() {
 	return NULL;
 }
 
-void TFTManager::clearDrawBuffer(uint16_t color) {
+void TFTManager::fillBuffer(uint16_t color) {
 	for(int i = 0; i < TFT_SCREEN_PIXELS; i++) {
-	//	buf_rear[i] = color;
+		framebuf[i] = color;
 	}
 }
 
-void TFTManager::swapBuffers() {
-	/*uint16_t* temp = buf_front;
-	buf_front = buf_rear;
-	buf_rear = temp;*/
-}
-
-void TFTManager::bufferToTFT() {
-	//driver.graphicsMode();
-	//driver.drawPixels(buf_front, TFT_SCREEN_PIXELS, 0, 0);
-}
-
-void TFTManager::swapDisplay() {
-	swapBuffers();
-	bufferToTFT();
+void TFTManager::drawBuffer() {
+	driver.graphicsMode();
+	driver.drawPixels(framebuf, TFT_SCREEN_PIXELS, 0, 0);
 }

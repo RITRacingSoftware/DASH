@@ -10,17 +10,14 @@
 class TFTManager {
 private:
 	Adafruit_RA8875 driver;
-	uint16_t* buf_front;
-	uint16_t* buf_rear;
+	uint16_t* framebuf;
 
 	void initScreen();
-	void swapBuffers();
-	void bufferToTFT();
 
 public:
 	TFTManager();
 	~TFTManager();
 	uint16_t* getDrawBuffer();
-	void clearDrawBuffer(uint16_t color);
-	void swapDisplay();
+	void fillBuffer(uint16_t color);
+	void drawBuffer();
 };

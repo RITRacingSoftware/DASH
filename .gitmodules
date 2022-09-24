@@ -4,3 +4,6 @@
 [submodule "lib/Formula-DBC"]
 	path = lib/Formula-DBC
 	url = https://github.com/RITRacingSoftware/Formula-DBC
+[submodule "lib/lvgl"]
+	path = lib/lvgl
+	url = https://github.com/lvgl/lvgl
