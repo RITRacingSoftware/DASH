@@ -53,7 +53,7 @@ void setup()
 	lv_obj_align(label1, LV_ALIGN_CENTER, 0, 0);
 	lv_obj_add_style(label1, &style, LV_PART_MAIN);
 
-	lv_timer_create(label_updater, 100, NULL);
+	lv_timer_create(label_updater, 50, NULL);
 
 	starttime = millis();
 }
