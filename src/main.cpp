@@ -12,10 +12,20 @@ lv_disp_draw_buf_t drawbuf;
 lv_color_t drawbuf1[DRAW_BUFFER_SIZE];
 lv_disp_drv_t disp_drv;
 lv_style_t style;
+lv_obj_t* label1;
 uint16_t color = 0xffff;
 
 void disp_flush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p) {
 	man.drawTexturedRect(area->x1, area->x2, area->y1, area->y2, (uint16_t*) color_p);
+
+	lv_disp_flush_ready(disp);
+}
+
+uint32_t i = 0;
+uint64_t starttime;
+
+void label_updater(void* p) {
+	lv_label_set_text_fmt(label1, "i = %d", i);
 }
 
 void setup()
@@ -38,10 +48,14 @@ void setup()
 	lv_style_set_text_color(&style, lv_color_white());
 	lv_obj_add_style(lv_scr_act(), &style, LV_PART_MAIN);
 
-	lv_obj_t* label1 = lv_label_create(lv_scr_act());
+	label1 = lv_label_create(lv_scr_act());
 	lv_label_set_text(label1, "Testing");
-	//lv_obj_align(label1, LV_ALIGN_CENTER, 0, -40);
+	lv_obj_align(label1, LV_ALIGN_CENTER, 0, 0);
 	lv_obj_add_style(label1, &style, LV_PART_MAIN);
+
+	lv_timer_create(label_updater, 100, NULL);
+
+	starttime = millis();
 }
 
 void loop()
@@ -49,4 +63,7 @@ void loop()
 	Serial.print("Update\n");
 
 	lv_timer_handler();
+	delay(5);
+
+	i = (millis() - starttime) / 1000;
 }
