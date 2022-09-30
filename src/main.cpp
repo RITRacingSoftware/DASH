@@ -1,10 +1,14 @@
 #include <Arduino.h>
 
 #include "tft-manager.h"
+#include "can-message.h"
+#include "can-processor.h"
 #include "../lib/lvgl/lvgl.h"
 
 #define TARGET_LOOP_TIME_MS 10
 #define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 10)
+
+#define BMS_STATUS_ID 0x258
 
 TFTManager man;
 
@@ -14,6 +18,7 @@ lv_disp_drv_t disp_drv;
 lv_style_t style;
 lv_obj_t* label1;
 uint16_t color = 0xffff;
+CAN_PROCESSOR canProc;
 
 void disp_flush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p) {
 	man.drawTexturedRect(area->x1, area->x2, area->y1, area->y2, (uint16_t*) color_p);
@@ -65,5 +70,12 @@ void loop()
 	lv_timer_handler();
 	delay(5);
 
-	i = (millis() - starttime) / 1000;
+	//i = (millis() - starttime) / 1000;
+
+	CAN_MESSAGE message;
+	bool readed = canProc.readCAN(message);
+	if(readed && message.id == BMS_STATUS_ID) {
+		int soc = message.data[0];
+		i = soc;
+	}
 }
