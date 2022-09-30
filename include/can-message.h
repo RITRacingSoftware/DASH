@@ -1,15 +1,10 @@
-#ifndef CAN_MESSAGE_H_
-#define CAN_MESSAGE_H_
-
-#include "etl/queue.h"
+#pragma once
 
 // Structure for Can messages
 class CAN_MESSAGE {
 public:
   uint16_t id;
-  uint8_t data[];
+  uint8_t data[8];
 
   CAN_MESSAGE() = default;
 };
-
-#endif /* CAN_MESSAGE_H_ */

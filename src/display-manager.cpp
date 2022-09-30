@@ -39,6 +39,10 @@ namespace DisplayManager {
 		initLVGL();
 	}
 
+	void update() {
+		lv_timer_handler();
+	}
+
 	void destroy() {
 		TFTManager::destroy();
 	}

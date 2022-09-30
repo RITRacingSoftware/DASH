@@ -5,6 +5,7 @@
 
 namespace DisplayManager {
 	void init();
+	void update();
 	void destroy();
 	lv_style_t* getStyle();
 }
