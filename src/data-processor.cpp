@@ -7,7 +7,7 @@
 #include "data-processor.h"
 
 // static bool isBMSmessage(uint16_t id){
-//   return ((id = BMS_FAULTS_ID) || (id = BMS_CHARGE_REQUEST_ID) || (id = BMS_CURRENT_ID) || (id = BMS_STATUS_ID) || (id = BMS_FAULT_ALERT_ID) || 
+//   return ((id = BMS_FAULTS_ID) || (id = BMS_CHARGE_REQUEST_ID) || (id = BMS_CURRENT_ID) || (id = BMS_STATUS_ID) || (id = BMS_FAULT_ALERT_ID) ||
 //       (id = BMS_VOLTAGES_ID) || (id = BMS_THERMISTOR_VOLTAGES_ID ) || (id = BMS_TEMPERATURES_ID) || (id = BMS_DRAIN_STATUS_A_ID) || (id = BMS_DRAIN_STATUS_B_ID));
 // }
 
@@ -53,7 +53,7 @@ void DATA_PROCESSOR::processData()
         if (func.is_valid())
         {
           //Serial.printf("Running callback for id %02X\n\r", message.id);
-          func(message.data);
+          //func(message.data);
         } // Call the function with the data from the can
       }
     } // Get the function associated with the id}
