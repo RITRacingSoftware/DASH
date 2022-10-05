@@ -6,6 +6,7 @@
 #include "../lib/lvgl/lvgl.h"
 
 #define BMS_STATUS_ID 0x258
+#define MOTOR_POSITION_ID 0x0A5
 
 lv_obj_t* label1;
 lv_obj_t* bar1;
@@ -16,7 +17,7 @@ int i = 0;
 uint64_t starttime;
 
 void label_updater(void* p) {
-	lv_label_set_text_fmt(label1, "i = %d", i);
+	lv_label_set_text_fmt(label1, "Motor speed = %d rpm", i);
 	lv_bar_set_value(bar1, i%11, LV_ANIM_OFF);
 }
 
@@ -40,7 +41,7 @@ void setup()
 
 
 	bar1 = lv_bar_create(lv_scr_act());
-	lv_bar_set_range(bar1, 0, 10);
+	lv_bar_set_range(bar1, 0, 100);
 	lv_obj_set_width(bar1, 16);
 	lv_obj_set_height(bar1, 100);
 	lv_obj_align(bar1, LV_ALIGN_CENTER, -100, 0);
@@ -62,8 +63,15 @@ void loop()
 
 	CAN_MESSAGE message;
 	bool readed = canProc.readCAN(message);
-	if(readed && message.id == BMS_STATUS_ID) {
+	/*if(readed && message.id == BMS_STATUS_ID) {
 		int soc = message.data[0];
 		i = soc;
+	}*/
+
+	if(readed && message.id == MOTOR_POSITION_ID) {
+		int16_t motorrpm = message.data[2] | (message.data[3] << 8);
+		i = motorrpm;
 	}
+
+
 }
