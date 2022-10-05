@@ -1,11 +1,9 @@
 #pragma once
 
 #include "../lib/lvgl/lvgl.h"
-#include "tft-manager.h"
+#include "data-manager.h"
 
 namespace DisplayManager {
 	void init();
-	void update();
-	void destroy();
-	lv_style_t* getStyle();
+	void update(DataManager::car_data_t data);
 }

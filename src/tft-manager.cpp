@@ -29,11 +29,7 @@ namespace TFTManager {
 		Serial.printf("Initializing Display\n");
 		initScreen();
 
-		fillScreen(RA8875_BLACK);
-	}
-
-	void destroy() {
-		delete driver;
+		fillScreen(RA8875_WHITE);
 	}
 
 	void fillScreen(uint16_t color) {

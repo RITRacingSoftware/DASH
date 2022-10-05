@@ -9,7 +9,6 @@
 
 namespace TFTManager {
 	void init();
-	void destroy();
 	void fillScreen(uint16_t color);
 	void drawTexturedRect(int x1, int x2, int y1, int y2, uint16_t* pixels);
 }
