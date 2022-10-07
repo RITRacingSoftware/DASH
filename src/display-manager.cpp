@@ -66,7 +66,7 @@ namespace DisplayManager {
 		if(curdata.motorrpm != lastdata.motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.motorrpm, LV_ANIM_OFF);
 		}
-		lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
+		//lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
 
 		lastdata = curdata;
 	}
