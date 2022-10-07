@@ -1,6 +1,7 @@
 #include "can-manager.h"
 
 #include <cstdint>
+#include <Arduino.h>
 
 #include "../lib/FlexCAN_T4/FlexCAN_T4.h"
 
@@ -41,6 +42,7 @@ namespace CANManager {
 		if (can.read(message))
 		{
 			out->id = message.id;
+			out->len = message.len;
 			for (int i = 0; i <= 7; i++) // n to hl if need to change endianness
 			{
 					out->data[i] = message.buf[i]; // Set the data
@@ -51,10 +53,8 @@ namespace CANManager {
 	}
 
 	void init() {
+		Serial.printf("Initializing CANManager\n");
 		initCAN();
-	}
-
-	void update() {
-
+		Serial.printf("Initialized CANManager\n");
 	}
 }

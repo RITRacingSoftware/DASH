@@ -22,14 +22,13 @@ namespace TFTManager {
 
 	void init(){
 
-		Serial.printf("Initializing TFT Manager\n");
+		Serial.printf("Initializing TFTManager\n");
 
 		driver = new Adafruit_RA8875(PIN_RA8875_CS, PIN_RA8875_RESET);
-
-		Serial.printf("Initializing Display\n");
 		initScreen();
 
-		fillScreen(RA8875_WHITE);
+		fillScreen(RA8875_BLACK);
+		Serial.printf("Initialized TFTManager\n");
 	}
 
 	void fillScreen(uint16_t color) {

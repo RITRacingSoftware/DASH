@@ -54,37 +54,39 @@ namespace DisplayManager {
 		lv_style_set_pad_all(&barstyle, 4);
 
 		display_elements.rpmbar = lv_bar_create(lv_scr_act());
-		lv_bar_set_range(display_elements.rpmbar, 0, 100);
+		lv_bar_set_range(display_elements.rpmbar, 0, 5000);
 		lv_obj_set_width(display_elements.rpmbar, 16);
 		lv_obj_set_height(display_elements.rpmbar, 100);
 		lv_obj_align(display_elements.rpmbar, LV_ALIGN_CENTER, -100, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, LV_PART_INDICATOR);
-
-		TFTManager::fillScreen(0);
 	}
 
-	void updaterTask(void* p) {
+	void updateDisplayElements() {
 		if(curdata.motorrpm != lastdata.motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.motorrpm, LV_ANIM_OFF);
 		}
-
-		lv_bar_set_value(display_elements.rpmbar, millis() % 100, LV_ANIM_OFF);
+		lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
 
 		lastdata = curdata;
 	}
 
 	void init() {
+		Serial.printf("Initializing DisplayManager\n");
 		TFTManager::init();
+		Serial.printf("Initializing LVGL\n");
 		initLVGL();
+		Serial.printf("Initializing Display Elements\n");
 		initDisplayElements();
-		lv_timer_create(updaterTask, 50, NULL);
-		lv_timer_handler();
+		Serial.printf("Initialized DisplayManager\n");
 	}
 
 	void update(DataManager::car_data_t data) {
 		curdata = data;
 
-		lv_timer_handler();
+		updateDisplayElements();
+
+		// Force display refresh with new data
+		lv_refr_now(NULL);
 	}
 }

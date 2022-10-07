@@ -12,8 +12,8 @@ void setup()
 
 void loop()
 {
-	Serial.print("Update\n");
+	//Serial.printf("Update\n");
 
 	DataManager::update();
-	delay(5);
+	delay(100);
 }
