@@ -10,6 +10,7 @@
 namespace DisplayManager {
 	struct display_elements_s {
 		lv_obj_t* rpmbar;
+		lv_obj_t* chargebar;
 	} display_elements;
 
 	lv_disp_draw_buf_t drawbuf;
@@ -53,6 +54,7 @@ namespace DisplayManager {
 		lv_style_set_radius(&barstyle, 1);
 		lv_style_set_pad_all(&barstyle, 4);
 
+		// RPM Bar
 		display_elements.rpmbar = lv_bar_create(lv_scr_act());
 		lv_bar_set_range(display_elements.rpmbar, 0, 5000);
 		lv_obj_set_width(display_elements.rpmbar, 16);
@@ -60,13 +62,30 @@ namespace DisplayManager {
 		lv_obj_align(display_elements.rpmbar, LV_ALIGN_CENTER, -100, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, LV_PART_INDICATOR);
+		// RPM Bar Label
+		lv_obj_t* rpmbarlabel = lv_label_create(lv_scr_act());
+		lv_label_set_text(rpmbarlabel, "Motor RPM");
+		lv_obj_align_to(rpmbarlabel, display_elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+
+		// SOC Bar
+		display_elements.chargebar = lv_bar_create(lv_scr_act());
+		lv_bar_set_range(display_elements.chargebar, 0, 4000);
+		lv_obj_set_width(display_elements.chargebar, 16);
+		lv_obj_set_height(display_elements.chargebar, 100);
+		lv_obj_align(display_elements.chargebar, LV_ALIGN_CENTER, +100, 0);
+		lv_obj_add_style(display_elements.chargebar, &barstyle, 0);
+		lv_obj_add_style(display_elements.chargebar, &barstyle, LV_PART_INDICATOR);
 	}
 
 	void updateDisplayElements() {
 		if(curdata.motorrpm != lastdata.motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.motorrpm, LV_ANIM_OFF);
 		}
-		//lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
+		if(curdata.chargepercent != lastdata.chargepercent) {
+			lv_bar_set_value(display_elements.chargebar, curdata.chargepercent, LV_ANIM_OFF);
+		}
+		lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
+		lv_bar_set_value(display_elements.chargebar, millis() % 4000, LV_ANIM_OFF);
 
 		lastdata = curdata;
 	}

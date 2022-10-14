@@ -7,9 +7,6 @@
 #include "display-manager.h"
 #include "../lib/Formula-DBC/formula_dbc.h"
 
-// TODO: Migrate to DBC
-#define CAN_ID_MOTOR_POSITION 0x0A5
-
 namespace DataManager {
 	car_data_t data;
 
@@ -28,13 +25,14 @@ namespace DataManager {
 			if(message.id == FORMULA_DBC_BMS_STATUS_FRAME_ID) {
 				formula_dbc_bms_status_t bms_status;
 				formula_dbc_bms_status_unpack(&bms_status, message.data, message.len);
-				uint8_t soc = bms_status.bms_status_soc;
+				data.chargepercent = bms_status.bms_status_soc;
+				Serial.printf("New battery SOC = %d%%\n", data.chargepercent);
 			}
 
-			if(message.id == CAN_ID_MOTOR_POSITION) {
-
-
-				data.motorrpm = message.data[2] | (message.data[3] << 8);
+			if(message.id == FORMULA_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID) {
+				formula_dbc_mcu_motor_position_info_t motor_position;
+				formula_dbc_mcu_motor_position_info_unpack(&motor_position, message.data, message.len);
+				data.motorrpm = motor_position.d2_motor_speed;
 				Serial.printf("New motor speed = %d RPM\n", data.motorrpm);
 			}
 		}
