@@ -38,16 +38,17 @@ namespace DisplayManager {
 		lv_disp_drv_register(&disp_drv);
 	}
 
+	lv_style_t style;
+	lv_style_t barstyle;
+
 	void initDisplayElements() {
 		// Global style, can be overridden
-		lv_style_t style;
 		lv_style_init(&style);
 		lv_style_set_bg_color(&style, lv_color_black());
 		lv_style_set_text_color(&style, lv_color_white());
 		lv_obj_add_style(lv_scr_act(), &style, LV_PART_MAIN);
 
 		// Progress bar style
-		lv_style_t barstyle;
 		lv_style_init(&barstyle);
 		lv_style_set_border_color(&barstyle, lv_palette_main(LV_PALETTE_BLUE));
 		lv_style_set_border_width(&barstyle, 2);
@@ -57,7 +58,7 @@ namespace DisplayManager {
 		// RPM Bar
 		display_elements.rpmbar = lv_bar_create(lv_scr_act());
 		lv_bar_set_range(display_elements.rpmbar, 0, 5000);
-		lv_obj_set_width(display_elements.rpmbar, 16);
+		lv_obj_set_width(display_elements.rpmbar, 32);
 		lv_obj_set_height(display_elements.rpmbar, 100);
 		lv_obj_align(display_elements.rpmbar, LV_ALIGN_CENTER, -100, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
