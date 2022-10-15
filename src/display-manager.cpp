@@ -10,7 +10,10 @@
 namespace DisplayManager {
 	struct display_elements_s {
 		lv_obj_t* rpmbar;
+		lv_obj_t* rpmlabel;
 		lv_obj_t* chargebar;
+		lv_obj_t* chargelabel;
+		lv_obj_t* currentlabel;
 	} display_elements;
 
 	lv_disp_draw_buf_t drawbuf;
@@ -64,29 +67,37 @@ namespace DisplayManager {
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, LV_PART_INDICATOR);
 		// RPM Bar Label
-		lv_obj_t* rpmbarlabel = lv_label_create(lv_scr_act());
-		lv_label_set_text(rpmbarlabel, "Motor RPM");
-		lv_obj_align_to(rpmbarlabel, display_elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+		display_elements.rpmlabel = lv_label_create(lv_scr_act());
+		lv_label_set_text(display_elements.rpmlabel, "Motor RPM = ??? RPM");
+		lv_obj_align_to(display_elements.rpmlabel, display_elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
 		// SOC Bar
 		display_elements.chargebar = lv_bar_create(lv_scr_act());
-		lv_bar_set_range(display_elements.chargebar, 0, 4000);
+		lv_bar_set_range(display_elements.chargebar, 0, 100);
 		lv_obj_set_width(display_elements.chargebar, 16);
 		lv_obj_set_height(display_elements.chargebar, 100);
 		lv_obj_align(display_elements.chargebar, LV_ALIGN_CENTER, +100, 0);
 		lv_obj_add_style(display_elements.chargebar, &barstyle, 0);
 		lv_obj_add_style(display_elements.chargebar, &barstyle, LV_PART_INDICATOR);
+
+		display_elements.currentlabel = lv_label_create(lv_scr_act());
+		lv_obj_align(display_elements.currentlabel, LV_ALIGN_CENTER, 0, 0);
+		lv_label_set_text(display_elements.currentlabel, "Current = ??? A");
 	}
 
 	void updateDisplayElements() {
 		if(curdata.motorrpm != lastdata.motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.motorrpm, LV_ANIM_OFF);
+			lv_label_set_text_fmt(display_elements.rpmlabel, "Motor RPM = %d RPM", curdata.motorrpm);
 		}
 		if(curdata.chargepercent != lastdata.chargepercent) {
 			lv_bar_set_value(display_elements.chargebar, curdata.chargepercent, LV_ANIM_OFF);
 		}
-		lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
-		lv_bar_set_value(display_elements.chargebar, millis() % 4000, LV_ANIM_OFF);
+		if(curdata.buscurrent != lastdata.buscurrent) {
+			lv_label_set_text_fmt(display_elements.currentlabel, "Current = %3.3f A", curdata.buscurrent * 0.001);
+		}
+		//lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
+		//lv_bar_set_value(display_elements.chargebar, millis() % 4000, LV_ANIM_OFF);
 
 		lastdata = curdata;
 	}

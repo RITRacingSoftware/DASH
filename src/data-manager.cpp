@@ -20,13 +20,13 @@ namespace DataManager {
 	void update() {
 		CANManager::can_message_t message;
 		while(CANManager::readMessage(&message)) {
-			Serial.printf("Got CAN message, ID=%04x\n", message.id);
+			Serial.printf("Got CAN message, ID=0x%04x\n", message.id);
 
 			if(message.id == FORMULA_DBC_BMS_STATUS_FRAME_ID) {
 				formula_dbc_bms_status_t bms_status;
 				formula_dbc_bms_status_unpack(&bms_status, message.data, message.len);
 				data.chargepercent = bms_status.bms_status_soc;
-				Serial.printf("New battery SOC = %d%%\n", data.chargepercent);
+				Serial.printf("New battery SOC = %d %%\n", data.chargepercent);
 			}
 
 			if(message.id == FORMULA_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID) {
@@ -34,6 +34,13 @@ namespace DataManager {
 				formula_dbc_mcu_motor_position_info_unpack(&motor_position, message.data, message.len);
 				data.motorrpm = motor_position.d2_motor_speed;
 				Serial.printf("New motor speed = %d RPM\n", data.motorrpm);
+			}
+
+			if(message.id == FORMULA_DBC_BMS_CURRENT_FRAME_ID) {
+				formula_dbc_bms_current_t current;
+				formula_dbc_bms_current_unpack(&current, message.data, message.len);
+				data.buscurrent = current.bms_inst_current_filt;
+				Serial.printf("New bus current = %3.3f A\n", data.buscurrent * 0.001);
 			}
 		}
 

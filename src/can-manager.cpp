@@ -14,14 +14,14 @@ namespace CANManager {
 
 	void initCAN() {
 		can.begin();
-	    can.setBaudRate(CAN_BAUD_RATE);
-	    can.enableFIFO();
-	    can.enableMBInterrupt(FIFO);
-	    can.setFIFOFilter(REJECT_ALL);
-	    can.setFIFOFilter(0, FORMULA_DBC_MCU_FAULT_CODES_FRAME_ID, FORMULA_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID, STD);
-	    can.setFIFOFilter(1, READY_TO_DRIVE_ID, FORMULA_DBC_BMS_FAULT_VECTOR_FRAME_ID, STD);
-	    can.setFIFOFilter(2, FORMULA_DBC_BMS_CURRENT_FRAME_ID, FORMULA_DBC_BMS_STATUS_FRAME_ID, STD);
-	    can.setFIFOFilter(3, FORMULA_DBC_BMS_VOLTAGES_FRAME_ID, STD);
+		can.setBaudRate(CAN_BAUD_RATE);
+		can.enableFIFO();
+		can.enableMBInterrupt(FIFO);
+		can.setFIFOFilter(REJECT_ALL);
+		can.setFIFOFilter(0, FORMULA_DBC_MCU_FAULT_CODES_FRAME_ID, FORMULA_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID, STD);
+		//can.setFIFOFilter(1, READY_TO_DRIVE_ID, FORMULA_DBC_BMS_FAULT_VECTOR_FRAME_ID, STD);
+		//can.setFIFOFilter(2, FORMULA_DBC_BMS_CURRENT_FRAME_ID, FORMULA_DBC_BMS_STATUS_FRAME_ID, STD);
+		//can.setFIFOFilter(3, FORMULA_DBC_BMS_VOLTAGES_FRAME_ID, STD);
 	}
 
 	bool readMessage(can_message_t* out) {

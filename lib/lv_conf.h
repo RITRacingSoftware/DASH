@@ -53,7 +53,7 @@
 /*Enable and configure the built-in (v)snprintf */
 #define LV_USE_BUILTIN_SNPRINTF 1
 #if LV_USE_BUILTIN_SNPRINTF
-    #define LV_SPRINTF_USE_FLOAT 0
+    #define LV_SPRINTF_USE_FLOAT 1
 #endif  /*LV_USE_BUILTIN_SNPRINTF*/
 
 #define LV_STDLIB_INCLUDE <stdint.h>
