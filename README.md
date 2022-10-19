@@ -5,6 +5,7 @@ Welcome! This is the home of all sources for the Dashboard, used to display usef
 * [Teensy 4.0](https://www.pjrc.com/store/teensy40.html)
 * [Adafruit RA8875 TFT Driver Board](https://www.adafruit.com/product/1590)
 * [AZ Displays ATM0430D12M TFT LCD Panel](https://www.azdisplays.com/digital-tft-panel/ATM0430D12M/)
+* [Microchip Technology MCP2561H CAN Transciever](https://www.digikey.com/en/products/detail/microchip-technology/MCP2561-H-MF/4079962)
 
 ## Installation
 After cloning, be sure to run `git submodule update --init` from the project directory to download source dependencies.
