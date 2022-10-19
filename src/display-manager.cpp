@@ -14,6 +14,7 @@ namespace DisplayManager {
 		lv_obj_t* chargebar;
 		lv_obj_t* chargelabel;
 		lv_obj_t* currentlabel;
+		lv_obj_t* cellvoltagelabel;
 	} display_elements;
 
 	lv_disp_draw_buf_t drawbuf;
@@ -74,30 +75,43 @@ namespace DisplayManager {
 		// SOC Bar
 		display_elements.chargebar = lv_bar_create(lv_scr_act());
 		lv_bar_set_range(display_elements.chargebar, 0, 100);
-		lv_obj_set_width(display_elements.chargebar, 16);
+		lv_obj_set_width(display_elements.chargebar, 32);
 		lv_obj_set_height(display_elements.chargebar, 100);
 		lv_obj_align(display_elements.chargebar, LV_ALIGN_CENTER, +100, 0);
 		lv_obj_add_style(display_elements.chargebar, &barstyle, 0);
 		lv_obj_add_style(display_elements.chargebar, &barstyle, LV_PART_INDICATOR);
+		// SOC Bar Label
+		display_elements.chargelabel = lv_label_create(lv_scr_act());
+		lv_label_set_text(display_elements.chargelabel, "Battery SOC = ??? %");
+		lv_obj_align_to(display_elements.chargelabel, display_elements.chargebar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
+		// Current Label
 		display_elements.currentlabel = lv_label_create(lv_scr_act());
 		lv_obj_align(display_elements.currentlabel, LV_ALIGN_CENTER, 0, 0);
 		lv_label_set_text(display_elements.currentlabel, "Current = ??? A");
+
+		// Cell Voltages Label
+		display_elements.cellvoltagelabel = lv_label_create(lv_scr_act());
+		lv_obj_align(display_elements.cellvoltagelabel, LV_ALIGN_CENTER, 0, -40);
+		lv_label_set_text(display_elements.cellvoltagelabel, "Voltage = ?? - ?? V");
 	}
 
 	void updateDisplayElements() {
-		if(curdata.motorrpm != lastdata.motorrpm) {
-			lv_bar_set_value(display_elements.rpmbar, curdata.motorrpm, LV_ANIM_OFF);
-			lv_label_set_text_fmt(display_elements.rpmlabel, "Motor RPM = %d RPM", curdata.motorrpm);
+		if(curdata.mcu_motorrpm != lastdata.mcu_motorrpm) {
+			lv_bar_set_value(display_elements.rpmbar, curdata.mcu_motorrpm, LV_ANIM_OFF);
+			lv_label_set_text_fmt(display_elements.rpmlabel, "Motor RPM = %d RPM", curdata.mcu_motorrpm);
 		}
-		if(curdata.chargepercent != lastdata.chargepercent) {
-			lv_bar_set_value(display_elements.chargebar, curdata.chargepercent, LV_ANIM_OFF);
+		if(curdata.bms_soc != lastdata.bms_soc) {
+			lv_bar_set_value(display_elements.chargebar, curdata.bms_soc, LV_ANIM_OFF);
 		}
-		if(curdata.buscurrent != lastdata.buscurrent) {
-			lv_label_set_text_fmt(display_elements.currentlabel, "Current = %3.3f A", curdata.buscurrent * 0.001);
+		if(curdata.bms_buscurrent != lastdata.bms_buscurrent) {
+			lv_label_set_text_fmt(display_elements.currentlabel, "Current = %3.3f A", curdata.bms_buscurrent * 0.001);
 		}
-		//lv_bar_set_value(display_elements.rpmbar, millis() % 5000, LV_ANIM_OFF);
-		//lv_bar_set_value(display_elements.chargebar, millis() % 4000, LV_ANIM_OFF);
+		if(curdata.bms_cellvoltages_min != lastdata.bms_cellvoltages_min ||
+				curdata.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
+			lv_label_set_text_fmt(display_elements.cellvoltagelabel, "Cells = %1.2f - %1.2f V",
+				curdata.bms_cellvoltages_min * 0.01, curdata.bms_cellvoltages_max * 0.01);
+		}
 
 		lastdata = curdata;
 	}
