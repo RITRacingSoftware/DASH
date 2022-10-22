@@ -45,7 +45,7 @@ namespace DataManager {
 			}
 
 			// TODO: Reimplement with respect to CAN interrupt model
-			/*if(message.id == FORMULA_DBC_BMS_VOLTAGES_FRAME_ID) {
+			if(message.id == FORMULA_DBC_BMS_VOLTAGES_FRAME_ID) {
 				formula_dbc_bms_voltages_t* voltages = (formula_dbc_bms_voltages_t*)
 					&(data.bms_cellvoltages_struct);
 				formula_dbc_bms_voltages_unpack(voltages, message.data, message.len);
@@ -65,7 +65,7 @@ namespace DataManager {
 
 				data.bms_cellvoltages_min = min;
 				data.bms_cellvoltages_max = max;
-			}*/
+			}
 		}
 
 		DisplayManager::update(data);

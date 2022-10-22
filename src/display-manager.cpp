@@ -103,6 +103,7 @@ namespace DisplayManager {
 		}
 		if(curdata.bms_soc != lastdata.bms_soc) {
 			lv_bar_set_value(display_elements.chargebar, curdata.bms_soc, LV_ANIM_OFF);
+			lv_label_set_text_fmt(display_elements.chargelabel, "Battery SOC = %d%%", curdata.bms_soc);
 		}
 		if(curdata.bms_buscurrent != lastdata.bms_buscurrent) {
 			lv_label_set_text_fmt(display_elements.currentlabel, "Current = %3.3f A", curdata.bms_buscurrent * 0.001);
