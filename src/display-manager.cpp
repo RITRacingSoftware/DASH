@@ -11,11 +11,18 @@ namespace DisplayManager {
 	struct display_elements_s {
 		lv_obj_t* rpmbar;
 		lv_obj_t* rpmlabel;
+
 		lv_obj_t* bms_soc_label;
 		lv_obj_t* bms_cellvoltage_label;
 		lv_obj_t* bms_packvoltage_label;
 		lv_obj_t* bms_current_label;
 		lv_obj_t* bms_maxcurrent_label;
+
+		lv_obj_t* status_overall;
+		lv_obj_t* status_vcstatus;
+		lv_obj_t* status_mcustatus;
+		lv_obj_t* status_bmsstatus;
+
 		lv_obj_t* faults_label;
 	} display_elements;
 
@@ -87,22 +94,25 @@ namespace DisplayManager {
 		// Disable scroll bars
 		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
 
-		lv_obj_t* status_overall = lv_label_create(status_area);
-		lv_obj_align(status_overall, LV_ALIGN_CENTER, 0, -38);
-		lv_label_set_recolor(status_overall, true);
-		lv_label_set_text(status_overall, "#00ff00 READY TO DRIVE#");
+		display_elements.status_overall = lv_label_create(status_area);
+		lv_obj_align(display_elements.status_overall, LV_ALIGN_CENTER, 0, -38);
+		lv_label_set_recolor(display_elements.status_overall, true);
+		lv_label_set_text(display_elements.status_overall, "#00ff00 READY TO DRIVE#");
 
-		lv_obj_t* status_vcstatus = lv_label_create(status_area);
-		lv_obj_align(status_vcstatus, LV_ALIGN_CENTER, 0, -13);
-		lv_label_set_text(status_vcstatus, "VC: READY");
+		display_elements.status_vcstatus = lv_label_create(status_area);
+		lv_obj_align(display_elements.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
+		lv_label_set_recolor(display_elements.status_vcstatus, true);
+		lv_label_set_text(display_elements.status_vcstatus, "VC: READY");
 
-		lv_obj_t* status_mcustatus = lv_label_create(status_area);
-		lv_obj_align(status_mcustatus, LV_ALIGN_CENTER, 0, 12);
-		lv_label_set_text(status_mcustatus, "MCU: READY");
+		display_elements.status_mcustatus = lv_label_create(status_area);
+		lv_obj_align(display_elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
+		lv_label_set_recolor(display_elements.status_mcustatus, true);
+		lv_label_set_text(display_elements.status_mcustatus, "MCU: READY");
 
-		lv_obj_t* status_bmsstatus = lv_label_create(status_area);
-		lv_obj_align(status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
-		lv_label_set_text(status_bmsstatus, "BMS: READY");
+		display_elements.status_bmsstatus = lv_label_create(status_area);
+		lv_obj_align(display_elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
+		lv_label_set_recolor(display_elements.status_bmsstatus, true);
+		lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
 
 		// BMS-related display elements
 		lv_obj_t* bms_area = lv_obj_create(lv_scr_act());
@@ -162,6 +172,19 @@ namespace DisplayManager {
 		if(curdata.mcu_motorrpm != lastdata.mcu_motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.mcu_motorrpm, LV_ANIM_OFF);
 			lv_label_set_text_fmt(display_elements.rpmlabel, "%04d\nRPM", curdata.mcu_motorrpm);
+		}
+
+		// Status Elements
+		if(curdata.bms_faultnum != lastdata.bms_faultnum) {
+			if(curdata.bms_faultnum == 0) {
+				lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
+			}
+			else {
+				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", curdata.bms_faultnum);
+				if(curdata.bms_faultvector[0]) {
+					lv_label_set_text(display_elements.faults_label, "BMS slave comm cells");
+				}
+			}
 		}
 
 		// BMS Elements
