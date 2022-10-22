@@ -9,7 +9,7 @@ namespace DataManager {
 		uint16_t mcu_motorrpm;
 		uint8_t bms_soc;
 		int32_t bms_buscurrent;
-		//uint16_t bms_voltages_cells[NUM_BMS_CELLS];
+		int32_t bms_maxcurrent;
 		struct {
 			uint8_t bms_voltages_mux;
 			uint16_t bms_voltages_cell[NUM_BMS_CELLS];

@@ -11,10 +11,12 @@ namespace DisplayManager {
 	struct display_elements_s {
 		lv_obj_t* rpmbar;
 		lv_obj_t* rpmlabel;
-		lv_obj_t* chargebar;
-		lv_obj_t* chargelabel;
-		lv_obj_t* currentlabel;
-		lv_obj_t* cellvoltagelabel;
+		lv_obj_t* bms_soc_label;
+		lv_obj_t* bms_cellvoltage_label;
+		lv_obj_t* bms_packvoltage_label;
+		lv_obj_t* bms_current_label;
+		lv_obj_t* bms_maxcurrent_label;
+		lv_obj_t* faults_label;
 	} display_elements;
 
 	lv_disp_draw_buf_t drawbuf;
@@ -62,57 +64,114 @@ namespace DisplayManager {
 		// RPM Bar
 		display_elements.rpmbar = lv_bar_create(lv_scr_act());
 		lv_bar_set_range(display_elements.rpmbar, 0, 5000);
-		lv_obj_set_width(display_elements.rpmbar, 32);
-		lv_obj_set_height(display_elements.rpmbar, 100);
-		lv_obj_align(display_elements.rpmbar, LV_ALIGN_CENTER, -100, 0);
+		lv_obj_set_size(display_elements.rpmbar, 47, 135);
+		lv_obj_align(display_elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, LV_PART_INDICATOR);
 		// RPM Bar Label
 		display_elements.rpmlabel = lv_label_create(lv_scr_act());
-		lv_label_set_text(display_elements.rpmlabel, "Motor RPM = ??? RPM");
+		lv_label_set_text(display_elements.rpmlabel, "????\nRPM");
 		lv_obj_align_to(display_elements.rpmlabel, display_elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
-		// SOC Bar
-		display_elements.chargebar = lv_bar_create(lv_scr_act());
-		lv_bar_set_range(display_elements.chargebar, 0, 100);
-		lv_obj_set_width(display_elements.chargebar, 32);
-		lv_obj_set_height(display_elements.chargebar, 100);
-		lv_obj_align(display_elements.chargebar, LV_ALIGN_CENTER, +100, 0);
-		lv_obj_add_style(display_elements.chargebar, &barstyle, 0);
-		lv_obj_add_style(display_elements.chargebar, &barstyle, LV_PART_INDICATOR);
-		// SOC Bar Label
-		display_elements.chargelabel = lv_label_create(lv_scr_act());
-		lv_label_set_text(display_elements.chargelabel, "Battery SOC = ??? %");
-		lv_obj_align_to(display_elements.chargelabel, display_elements.chargebar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+		// Status display elements
+		lv_obj_t* status_area = lv_obj_create(lv_scr_act());
+		lv_obj_set_size(status_area, 210, 180);
+		lv_obj_align(status_area, LV_ALIGN_TOP_MID, -70, 10);
+		lv_obj_add_style(status_area, &style, LV_PART_MAIN);
 
-		// Current Label
-		display_elements.currentlabel = lv_label_create(lv_scr_act());
-		lv_obj_align(display_elements.currentlabel, LV_ALIGN_CENTER, 0, 0);
-		lv_label_set_text(display_elements.currentlabel, "Current = ??? A");
+		lv_obj_t* status_overall = lv_label_create(status_area);
+		lv_obj_align(status_overall, LV_ALIGN_CENTER, 0, -38);
+		lv_label_set_recolor(status_overall, true);
+		lv_label_set_text(status_overall, "#00ff00 READY TO DRIVE#");
+
+		lv_obj_t* status_vcstatus = lv_label_create(status_area);
+		lv_obj_align(status_vcstatus, LV_ALIGN_CENTER, 0, -13);
+		lv_label_set_text(status_vcstatus, "VC: READY");
+
+		lv_obj_t* status_mcustatus = lv_label_create(status_area);
+		lv_obj_align(status_mcustatus, LV_ALIGN_CENTER, 0, 12);
+		lv_label_set_text(status_mcustatus, "MCU: READY");
+
+		lv_obj_t* status_bmsstatus = lv_label_create(status_area);
+		lv_obj_align(status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
+		lv_label_set_text(status_bmsstatus, "BMS: READY");
+
+		// BMS-related display elements
+		lv_obj_t* bms_area = lv_obj_create(lv_scr_act());
+		lv_obj_set_size(bms_area, 190, 180);
+		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
+		lv_obj_add_style(bms_area, &style, LV_PART_MAIN);
+
+		// SOC Label
+		display_elements.bms_soc_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements.bms_soc_label, LV_ALIGN_CENTER, 0, -50);
+		lv_label_set_text(display_elements.bms_soc_label, "SOC = ???%");
 
 		// Cell Voltages Label
-		display_elements.cellvoltagelabel = lv_label_create(lv_scr_act());
-		lv_obj_align(display_elements.cellvoltagelabel, LV_ALIGN_CENTER, 0, -40);
-		lv_label_set_text(display_elements.cellvoltagelabel, "Voltage = ?? - ?? V");
+		display_elements.bms_cellvoltage_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -25);
+		lv_label_set_text(display_elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
+
+		// Cell Voltages Label
+		display_elements.bms_packvoltage_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, 0);
+		lv_label_set_text(display_elements.bms_packvoltage_label, "PACK = ?.?? V");
+
+		// Current Label
+		display_elements.bms_current_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements.bms_current_label, LV_ALIGN_CENTER, 0, 25);
+		lv_label_set_text(display_elements.bms_current_label, "I = ?.?? A");
+
+		// Current Label
+		display_elements.bms_maxcurrent_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 50);
+		lv_label_set_text(display_elements.bms_maxcurrent_label, "MAX I = ?.?? A");
+
+
+
+		lv_obj_t* faults_area = lv_obj_create(lv_scr_act());
+		lv_obj_set_size(faults_area, 460, 60);
+		lv_obj_align(faults_area, LV_ALIGN_BOTTOM_MID, 0, -10);
+		lv_obj_add_style(faults_area, &style, LV_PART_MAIN);
+
+		// Fault font style
+		lv_style_t faultstyle;
+		lv_style_init(&faultstyle);
+		lv_style_set_bg_color(&style, lv_color_black());
+		lv_style_set_text_color(&faultstyle, lv_color_white());
+		lv_style_set_text_font(&faultstyle, &lv_font_montserrat_14);
+
+		// Faults
+		display_elements.faults_label = lv_label_create(faults_area);
+		lv_obj_align(display_elements.faults_label, LV_ALIGN_TOP_LEFT, 0, 0);
+		//lv_obj_align(display_elements.faults_label, LV_ALIGN_CENTER, 0, 0);
+		lv_label_set_text(display_elements.faults_label, "FAULTS: NONE");
+		//lv_obj_add_style(display_elements.faults_label, &faultstyle, LV_PART_MAIN);
+
 	}
 
 	void updateDisplayElements() {
 		if(curdata.mcu_motorrpm != lastdata.mcu_motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.mcu_motorrpm, LV_ANIM_OFF);
-			lv_label_set_text_fmt(display_elements.rpmlabel, "Motor RPM = %d RPM", curdata.mcu_motorrpm);
+			lv_label_set_text_fmt(display_elements.rpmlabel, "%04d\nRPM", curdata.mcu_motorrpm);
 		}
+
+		// BMS Elements
 		if(curdata.bms_soc != lastdata.bms_soc) {
-			lv_bar_set_value(display_elements.chargebar, curdata.bms_soc, LV_ANIM_OFF);
-			lv_label_set_text_fmt(display_elements.chargelabel, "Battery SOC = %d%%", curdata.bms_soc);
-		}
-		if(curdata.bms_buscurrent != lastdata.bms_buscurrent) {
-			lv_label_set_text_fmt(display_elements.currentlabel, "Current = %3.3f A", curdata.bms_buscurrent * 0.001);
+			lv_label_set_text_fmt(display_elements.bms_soc_label, "SOC = %d%%", curdata.bms_soc);
 		}
 		if(curdata.bms_cellvoltages_min != lastdata.bms_cellvoltages_min ||
 				curdata.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
-			lv_label_set_text_fmt(display_elements.cellvoltagelabel, "Cells = %1.2f - %1.2f V",
+			lv_label_set_text_fmt(display_elements.bms_cellvoltage_label, "V = %1.2f - %1.2f V",
 				curdata.bms_cellvoltages_min * 0.01, curdata.bms_cellvoltages_max * 0.01);
 		}
+		if(curdata.bms_buscurrent != lastdata.bms_buscurrent) {
+			lv_label_set_text_fmt(display_elements.bms_current_label, "I = %1.2f A", curdata.bms_buscurrent * 0.001);
+			if(curdata.bms_maxcurrent != lastdata.bms_maxcurrent) {
+				lv_label_set_text_fmt(display_elements.bms_maxcurrent_label, "MAX I = %1.2f A", curdata.bms_maxcurrent * 0.001);
+			}
+		}
+
 
 		lastdata = curdata;
 	}

@@ -14,6 +14,9 @@ namespace DataManager {
 		Serial.printf("Initializing DataManager\n");
 		DisplayManager::init();
 		CANManager::init();
+
+		data.bms_maxcurrent = -100000;
+
 		Serial.printf("Initialized DataManager\n");
 	}
 
@@ -42,6 +45,9 @@ namespace DataManager {
 				formula_dbc_bms_current_unpack(&current, message.data, message.len);
 				data.bms_buscurrent = current.bms_inst_current_filt;
 				Serial.printf("New bus current = %3.3f A\n", data.bms_buscurrent * 0.001);
+				if(data.bms_buscurrent > data.bms_maxcurrent) {
+					data.bms_maxcurrent = data.bms_buscurrent;
+				}
 			}
 
 			// TODO: Reimplement with respect to CAN interrupt model
