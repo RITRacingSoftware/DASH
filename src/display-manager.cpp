@@ -46,6 +46,7 @@ namespace DisplayManager {
 
 	lv_style_t style;
 	lv_style_t barstyle;
+	lv_style_t barindstyle;
 
 	void initDisplayElements() {
 		// Global style, can be overridden
@@ -56,10 +57,15 @@ namespace DisplayManager {
 
 		// Progress bar style
 		lv_style_init(&barstyle);
-		lv_style_set_border_color(&barstyle, lv_palette_main(LV_PALETTE_BLUE));
+		lv_style_set_border_color(&barstyle, lv_color_white());
 		lv_style_set_border_width(&barstyle, 2);
 		lv_style_set_radius(&barstyle, 1);
 		lv_style_set_pad_all(&barstyle, 4);
+		lv_style_init(&barindstyle);
+		//lv_style_set_border_color(&barindstyle, lv_color_white());
+		//lv_style_set_border_width(&barindstyle, 2);
+		lv_style_set_radius(&barindstyle, 1);
+		lv_style_set_pad_all(&barindstyle, 4);
 
 		// RPM Bar
 		display_elements.rpmbar = lv_bar_create(lv_scr_act());
@@ -67,7 +73,7 @@ namespace DisplayManager {
 		lv_obj_set_size(display_elements.rpmbar, 47, 135);
 		lv_obj_align(display_elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
-		lv_obj_add_style(display_elements.rpmbar, &barstyle, LV_PART_INDICATOR);
+		lv_obj_add_style(display_elements.rpmbar, &barindstyle, LV_PART_INDICATOR);
 		// RPM Bar Label
 		display_elements.rpmlabel = lv_label_create(lv_scr_act());
 		lv_label_set_text(display_elements.rpmlabel, "????\nRPM");
@@ -78,6 +84,8 @@ namespace DisplayManager {
 		lv_obj_set_size(status_area, 210, 180);
 		lv_obj_align(status_area, LV_ALIGN_TOP_MID, -70, 10);
 		lv_obj_add_style(status_area, &style, LV_PART_MAIN);
+		// Disable scroll bars
+		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
 
 		lv_obj_t* status_overall = lv_label_create(status_area);
 		lv_obj_align(status_overall, LV_ALIGN_CENTER, 0, -38);
