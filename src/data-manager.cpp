@@ -19,7 +19,8 @@ namespace DataManager {
 
 	void update() {
 		CANManager::can_message_t message;
-		while(CANManager::readMessage(&message)) {
+		while(CANManager::hasMessage()) {
+			message = CANManager::getMessage();
 			Serial.printf("Got CAN message, ID=0x%04x\n", message.id);
 
 			if(message.id == FORMULA_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID) {
@@ -43,7 +44,8 @@ namespace DataManager {
 				Serial.printf("New bus current = %3.3f A\n", data.bms_buscurrent * 0.001);
 			}
 
-			if(message.id == FORMULA_DBC_BMS_VOLTAGES_FRAME_ID) {
+			// TODO: Reimplement with respect to CAN interrupt model
+			/*if(message.id == FORMULA_DBC_BMS_VOLTAGES_FRAME_ID) {
 				formula_dbc_bms_voltages_t* voltages = (formula_dbc_bms_voltages_t*)
 					&(data.bms_cellvoltages_struct);
 				formula_dbc_bms_voltages_unpack(voltages, message.data, message.len);
@@ -60,10 +62,10 @@ namespace DataManager {
 						max = cell;
 					}
 				}
-				
+
 				data.bms_cellvoltages_min = min;
 				data.bms_cellvoltages_max = max;
-			}
+			}*/
 		}
 
 		DisplayManager::update(data);

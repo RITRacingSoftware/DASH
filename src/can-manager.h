@@ -10,5 +10,6 @@ namespace CANManager {
 	} can_message_t;
 
 	void init();
-	bool readMessage(can_message_t* out);
+	bool hasMessage();
+	can_message_t getMessage();
 }
