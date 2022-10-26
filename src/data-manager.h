@@ -9,6 +9,7 @@ namespace DataManager {
 		uint16_t mcu_motorrpm;
 
 		uint8_t vc_status;
+		uint8_t vc_faultvector;
 		uint8_t mcu_status;
 		uint16_t bms_faultvector;
 

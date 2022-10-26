@@ -40,10 +40,18 @@ namespace DisplayManager {
 		"FAULTED",
 	};
 
+	const char* VC_FAULT_MESSAGES[] = {
+		"VC brake sensor irrational",
+		"VC accelerator irrational",
+		"VC APPS sensor disagreement",
+		"VC APPS double pedal",
+		"VC hardfault",
+	};
+
 	const char* MCU_STATUS_MESSAGES[] = {
 		"DISCONN.",
 		"DISABLED",
-		"DIS. UNLOCK",
+		"UNLOCKING",
 		"ENABLED",
 		"READY",
 	};
@@ -138,7 +146,7 @@ namespace DisplayManager {
 		display_elements.status_mcustatus = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
 		lv_label_set_recolor(display_elements.status_mcustatus, true);
-		lv_label_set_text_fmt(display_elements.status_mcustatus, "MCU: %s",
+		lv_label_set_text_fmt(display_elements.status_mcustatus, "MC: %s",
 			MCU_STATUS_MESSAGES[0]);
 
 		display_elements.status_bmsstatus = lv_label_create(status_area);
@@ -210,38 +218,59 @@ namespace DisplayManager {
 
 		if(curdata.mcu_status != lastdata.mcu_status) {
 			if(curdata.mcu_status >= 1 && curdata.mcu_status <= 4) {
-				lv_label_set_text_fmt(display_elements.status_mcustatus, "MCU: %s",
+				lv_label_set_text_fmt(display_elements.status_mcustatus, "MC: %s",
 					MCU_STATUS_MESSAGES[curdata.mcu_status]);
 			}
 			else {
-				lv_label_set_text_fmt(display_elements.status_mcustatus, "MCU: %s",
+				lv_label_set_text_fmt(display_elements.status_mcustatus, "MC: %s",
 					MCU_STATUS_MESSAGES[0]);
 			}
 		}
 
-		if(curdata.bms_faultvector != lastdata.bms_faultvector) {
-			Serial.printf("BMS fault vector = 0x%04x\n", curdata.bms_faultvector);
-			if(curdata.bms_faultvector == 0) {
+		if(curdata.vc_faultvector != lastdata.vc_faultvector ||
+			curdata.bms_faultvector != lastdata.bms_faultvector) {
+			// If any fault message changes, we must update them all...
+
+			bool firstfault = true; // Used for pretty-printing
+			uint8_t vc_faultnum = 0;
+			uint8_t bms_faultnum = 0;
+
+			lv_textarea_set_text(display_elements.faults_textarea, "Faults: ");
+
+			// Loop over possible VC faults
+			for(int i = 0; i < 5; i++) {
+				bool faulted = (curdata.vc_faultvector >> i) & 1;
+				if(faulted) {
+					if(!firstfault) {
+						// Pretty printing
+						lv_textarea_add_text(display_elements.faults_textarea, ", ");
+					}
+					firstfault = false;
+					lv_textarea_add_text(display_elements.faults_textarea, VC_FAULT_MESSAGES[i]);
+					Serial.printf("VC fault #%d\n", i);
+					vc_faultnum++;
+				}
+			}
+
+			// Loop over possible BMS faults
+			for(int i = 0; i < 11; i++) {
+				bool faulted = (curdata.bms_faultvector >> i) & 1;
+				if(faulted) {
+					if(!firstfault) {
+						// Pretty printing
+						lv_textarea_add_text(display_elements.faults_textarea, ", ");
+					}
+					firstfault = false;
+					lv_textarea_add_text(display_elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
+					Serial.printf("BMS fault #%d\n", i);
+					bms_faultnum++;
+				}
+			}
+
+			if(bms_faultnum == 0) {
 				lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
-				lv_textarea_set_text(display_elements.faults_textarea, "");
 			}
 			else {
-				lv_textarea_set_text(display_elements.faults_textarea, "Faults: ");
-				bool firstfault = true;
-				uint8_t bms_faultnum = 0;
-				for(int i = 0; i < 11; i++) {
-					bool faulted = (curdata.bms_faultvector >> i) & 1;
-					if(faulted) {
-						if(!firstfault) {
-							// Pretty printing
-							lv_textarea_add_text(display_elements.faults_textarea, ", ");
-						}
-						firstfault = false;
-						lv_textarea_add_text(display_elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
-						Serial.printf("BMS fault #%d\n", i);
-						bms_faultnum++;
-					}
-				}
 				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", bms_faultnum);
 			}
 		}

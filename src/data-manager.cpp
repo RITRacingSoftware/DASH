@@ -77,6 +77,25 @@ namespace DataManager {
 				data.mcu_status = vcstatus.vc_status_mc_ready;
 			}
 
+			if(message.id == FORMULA_DBC_VC_FAULT_VECTOR_FRAME_ID) {
+				uint8_t mask = 0xf;
+				data.vc_faultvector = (data.vc_faultvector & ~mask) |
+											(message.data[0] & mask);
+				// Masked to keep other bits
+			}
+
+			if(message.id == FORMULA_DBC_VC_HARD_FAULT_INDICATOR_FRAME_ID) {
+				formula_dbc_vc_hard_fault_indicator_t fault;
+				formula_dbc_vc_hard_fault_indicator_unpack(&fault, message.data, message.len);
+				uint8_t faulted = fault.vc_hard_fault_indicator_task != 0;
+				uint8_t mask = 0x10;
+				data.vc_faultvector = (data.vc_faultvector & ~mask) |
+											((faulted << 4) & mask);
+				Serial.printf("VC hardfault = %d\n", fault.vc_hard_fault_indicator_task);
+				Serial.printf("VC fault vec = 0x%02x\n", data.vc_faultvector);
+				// Masked to keep other bits
+			}
+
 			if(message.id == FORMULA_DBC_BMS_FAULT_VECTOR_FRAME_ID) {
 				// This is not as DBC-agnostic as I would like,
 				//		but it's the best way I see to do it.
