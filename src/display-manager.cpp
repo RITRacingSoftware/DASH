@@ -188,16 +188,22 @@ namespace DisplayManager {
 			}
 			else {
 				lv_textarea_set_text(display_elements.faults_textarea, "Faults: ");
-				uint8_t faultnum = 0;
+				bool firstfault = true;
+				uint8_t bms_faultnum = 0;
 				for(int i = 0; i < 11; i++) {
 					bool faulted = (curdata.bms_faultvector >> i) & 1;
 					if(faulted) {
+						if(!firstfault) {
+							// Pretty printing
+							lv_textarea_add_text(display_elements.faults_textarea, ", ");
+						}
+						firstfault = false;
 						lv_textarea_add_text(display_elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
 						Serial.printf("BMS fault #%d\n", i);
-						faultnum++;
+						bms_faultnum++;
 					}
 				}
-				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", faultnum);
+				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", bms_faultnum);
 			}
 		}
 
