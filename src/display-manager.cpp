@@ -41,9 +41,9 @@ namespace DisplayManager {
 	};
 
 	const char* MCU_STATUS_MESSAGES[] = {
-		"DISCONNECTED",
+		"DISCONN.",
 		"DISABLED",
-		"DISABLED UNLOCKING",
+		"DIS. UNLOCK",
 		"ENABLED",
 		"READY",
 	};
@@ -165,7 +165,7 @@ namespace DisplayManager {
 		// Cell Voltages Label
 		display_elements.bms_packvoltage_label = lv_label_create(bms_area);
 		lv_obj_align(display_elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, 0);
-		lv_label_set_text(display_elements.bms_packvoltage_label, "PACK = ?.?? V");
+		lv_label_set_text(display_elements.bms_packvoltage_label, "PACK = ???.? V");
 
 		// Current Label
 		display_elements.bms_current_label = lv_label_create(bms_area);
@@ -254,6 +254,9 @@ namespace DisplayManager {
 				curdata.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
 			lv_label_set_text_fmt(display_elements.bms_cellvoltage_label, "V = %1.2f - %1.2f V",
 				curdata.bms_cellvoltages_min * 0.01, curdata.bms_cellvoltages_max * 0.01);
+		}
+		if(curdata.bms_packvoltage != lastdata.bms_packvoltage) {
+			lv_label_set_text_fmt(display_elements.bms_packvoltage_label, "PACK = %3.1f V", curdata.bms_packvoltage * 0.1);
 		}
 		if(curdata.bms_buscurrent != lastdata.bms_buscurrent) {
 			lv_label_set_text_fmt(display_elements.bms_current_label, "I = %1.2f A", curdata.bms_buscurrent * 0.001);

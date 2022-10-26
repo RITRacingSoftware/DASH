@@ -21,6 +21,7 @@ namespace DataManager {
 		} bms_cellvoltages_struct;
 		uint16_t bms_cellvoltages_min;
 		uint16_t bms_cellvoltages_max;
+		uint16_t bms_packvoltage;
 	} car_data_t;
 
 	void init();

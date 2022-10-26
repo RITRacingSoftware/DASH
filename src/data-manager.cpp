@@ -30,21 +30,19 @@ namespace DataManager {
 				formula_dbc_mcu_motor_position_info_t motor_position;
 				formula_dbc_mcu_motor_position_info_unpack(&motor_position, message.data, message.len);
 				data.mcu_motorrpm = motor_position.d2_motor_speed;
-				Serial.printf("New motor speed = %d RPM\n", data.mcu_motorrpm);
 			}
 
 			if(message.id == FORMULA_DBC_BMS_STATUS_FRAME_ID) {
 				formula_dbc_bms_status_t bms_status;
 				formula_dbc_bms_status_unpack(&bms_status, message.data, message.len);
 				data.bms_soc = bms_status.bms_status_soc;
-				Serial.printf("New battery SOC = %d %%\n", data.bms_soc);
+				data.bms_packvoltage = bms_status.bms_status_pack_voltage;
 			}
 
 			if(message.id == FORMULA_DBC_BMS_CURRENT_FRAME_ID) {
 				formula_dbc_bms_current_t current;
 				formula_dbc_bms_current_unpack(&current, message.data, message.len);
 				data.bms_buscurrent = current.bms_inst_current_filt;
-				Serial.printf("New bus current = %3.3f A\n", data.bms_buscurrent * 0.001);
 				if(data.bms_buscurrent > data.bms_maxcurrent) {
 					data.bms_maxcurrent = data.bms_buscurrent;
 				}
