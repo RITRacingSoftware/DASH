@@ -33,6 +33,20 @@ namespace DisplayManager {
 	DataManager::car_data_t curdata;
 	DataManager::car_data_t lastdata;
 
+	const char* BMS_FAULT_MESSAGES[] = {
+		"BMS slave comm cells",
+		"BMS slave comm temps",
+		"BMS slave comm drain request",
+		"BMS current sensor comm",
+		"BMS over current",
+		"BMS cell voltage irrational",
+		"BMS cell voltage diff",
+		"BMS out of juice",
+		"BMS temperature irrational",
+		"BMS over temperature",
+		"BMS drain failure",
+	};
+
 	void disp_flush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p) {
 		TFTManager::drawTexturedRect(area->x1, area->x2, area->y1, area->y2, (uint16_t*) color_p);
 		lv_disp_flush_ready(disp);
@@ -175,15 +189,22 @@ namespace DisplayManager {
 		}
 
 		// Status Elements
-		if(curdata.bms_faultnum != lastdata.bms_faultnum) {
-			if(curdata.bms_faultnum == 0) {
+		if(curdata.bms_faultvector != lastdata.bms_faultvector) {
+			Serial.printf("BMS fault vector = 0x%04x\n", curdata.bms_faultvector);
+			if(curdata.bms_faultvector == 0) {
 				lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
 			}
 			else {
-				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", curdata.bms_faultnum);
-				if(curdata.bms_faultvector[0]) {
-					lv_label_set_text(display_elements.faults_label, "BMS slave comm cells");
+				uint8_t faultnum = 0;
+				for(int i = 0; i < 11; i++) {
+					bool faulted = (curdata.bms_faultvector >> i) & 1;
+					if(faulted) {
+						lv_label_set_text(display_elements.faults_label, BMS_FAULT_MESSAGES[i]);
+						Serial.printf("BMS fault #%d\n", i);
+						faultnum++;
+					}
 				}
+				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", faultnum);
 			}
 		}
 
