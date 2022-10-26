@@ -23,7 +23,7 @@ namespace DisplayManager {
 		lv_obj_t* status_mcustatus;
 		lv_obj_t* status_bmsstatus;
 
-		lv_obj_t* faults_label;
+		lv_obj_t* faults_textarea;
 	} display_elements;
 
 	lv_disp_draw_buf_t drawbuf;
@@ -68,6 +68,7 @@ namespace DisplayManager {
 	lv_style_t style;
 	lv_style_t barstyle;
 	lv_style_t barindstyle;
+	lv_style_t faultstyle;
 
 	void initDisplayElements() {
 		// Global style, can be overridden
@@ -159,27 +160,17 @@ namespace DisplayManager {
 		lv_obj_align(display_elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 50);
 		lv_label_set_text(display_elements.bms_maxcurrent_label, "MAX I = ?.?? A");
 
-
-
-		lv_obj_t* faults_area = lv_obj_create(lv_scr_act());
-		lv_obj_set_size(faults_area, 460, 60);
-		lv_obj_align(faults_area, LV_ALIGN_BOTTOM_MID, 0, -10);
-		lv_obj_add_style(faults_area, &style, LV_PART_MAIN);
-
 		// Fault font style
-		lv_style_t faultstyle;
 		lv_style_init(&faultstyle);
-		lv_style_set_bg_color(&style, lv_color_black());
+		lv_style_set_bg_color(&faultstyle, lv_color_black());
 		lv_style_set_text_color(&faultstyle, lv_color_white());
 		lv_style_set_text_font(&faultstyle, &lv_font_montserrat_14);
 
-		// Faults
-		display_elements.faults_label = lv_label_create(faults_area);
-		lv_obj_align(display_elements.faults_label, LV_ALIGN_TOP_LEFT, 0, 0);
-		//lv_obj_align(display_elements.faults_label, LV_ALIGN_CENTER, 0, 0);
-		lv_label_set_text(display_elements.faults_label, "FAULTS: NONE");
-		//lv_obj_add_style(display_elements.faults_label, &faultstyle, LV_PART_MAIN);
-
+		// Fault text area
+		display_elements.faults_textarea = lv_textarea_create(lv_scr_act());
+		lv_obj_set_size(display_elements.faults_textarea, 460, 60);
+		lv_obj_align(display_elements.faults_textarea, LV_ALIGN_BOTTOM_MID, 0, -10);
+		lv_obj_add_style(display_elements.faults_textarea, &faultstyle, LV_PART_MAIN);
 	}
 
 	void updateDisplayElements() {
@@ -193,13 +184,15 @@ namespace DisplayManager {
 			Serial.printf("BMS fault vector = 0x%04x\n", curdata.bms_faultvector);
 			if(curdata.bms_faultvector == 0) {
 				lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
+				lv_textarea_set_text(display_elements.faults_textarea, "");
 			}
 			else {
+				lv_textarea_set_text(display_elements.faults_textarea, "Faults: ");
 				uint8_t faultnum = 0;
 				for(int i = 0; i < 11; i++) {
 					bool faulted = (curdata.bms_faultvector >> i) & 1;
 					if(faulted) {
-						lv_label_set_text(display_elements.faults_label, BMS_FAULT_MESSAGES[i]);
+						lv_textarea_add_text(display_elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
 						Serial.printf("BMS fault #%d\n", i);
 						faultnum++;
 					}
