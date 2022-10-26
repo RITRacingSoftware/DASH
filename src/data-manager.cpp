@@ -72,6 +72,13 @@ namespace DataManager {
 				data.bms_cellvoltages_max = max;
 			}
 
+			if(message.id == FORMULA_DBC_VC_STATUS_FRAME_ID) {
+				formula_dbc_vc_status_t vcstatus;
+				formula_dbc_vc_status_unpack(&vcstatus, message.data, message.len);
+				data.vc_status = vcstatus.vc_status_vehicle_state;
+				data.mcu_status = vcstatus.vc_status_mc_ready;
+			}
+
 			if(message.id == FORMULA_DBC_BMS_FAULT_VECTOR_FRAME_ID) {
 				// This is not as DBC-agnostic as I would like,
 				//		but it's the best way I see to do it.

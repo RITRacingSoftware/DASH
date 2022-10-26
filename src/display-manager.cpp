@@ -33,6 +33,21 @@ namespace DisplayManager {
 	DataManager::car_data_t curdata;
 	DataManager::car_data_t lastdata;
 
+	const char* VC_STATUS_MESSAGES[] = {
+		"NOT READY",
+		"STARTUP",
+		"READY",
+		"FAULTED",
+	};
+
+	const char* MCU_STATUS_MESSAGES[] = {
+		"DISCONNECTED",
+		"DISABLED",
+		"DISABLED UNLOCKING",
+		"ENABLED",
+		"READY",
+	};
+
 	const char* BMS_FAULT_MESSAGES[] = {
 		"BMS slave comm cells",
 		"BMS slave comm temps",
@@ -117,12 +132,14 @@ namespace DisplayManager {
 		display_elements.status_vcstatus = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
 		lv_label_set_recolor(display_elements.status_vcstatus, true);
-		lv_label_set_text(display_elements.status_vcstatus, "VC: READY");
+		lv_label_set_text_fmt(display_elements.status_vcstatus, "VC: %s",
+			VC_STATUS_MESSAGES[0]);
 
 		display_elements.status_mcustatus = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
 		lv_label_set_recolor(display_elements.status_mcustatus, true);
-		lv_label_set_text(display_elements.status_mcustatus, "MCU: READY");
+		lv_label_set_text_fmt(display_elements.status_mcustatus, "MCU: %s",
+			MCU_STATUS_MESSAGES[0]);
 
 		display_elements.status_bmsstatus = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
@@ -180,6 +197,28 @@ namespace DisplayManager {
 		}
 
 		// Status Elements
+		if(curdata.vc_status != lastdata.vc_status) {
+			if(curdata.vc_status >= 0 && curdata.vc_status <= 2) {
+				lv_label_set_text_fmt(display_elements.status_vcstatus, "VC: %s",
+					VC_STATUS_MESSAGES[curdata.vc_status]);
+			}
+			else {
+				lv_label_set_text_fmt(display_elements.status_vcstatus, "VC: %s",
+					VC_STATUS_MESSAGES[3]);
+			}
+		}
+
+		if(curdata.mcu_status != lastdata.mcu_status) {
+			if(curdata.mcu_status >= 1 && curdata.mcu_status <= 4) {
+				lv_label_set_text_fmt(display_elements.status_mcustatus, "MCU: %s",
+					MCU_STATUS_MESSAGES[curdata.mcu_status]);
+			}
+			else {
+				lv_label_set_text_fmt(display_elements.status_mcustatus, "MCU: %s",
+					MCU_STATUS_MESSAGES[0]);
+			}
+		}
+
 		if(curdata.bms_faultvector != lastdata.bms_faultvector) {
 			Serial.printf("BMS fault vector = 0x%04x\n", curdata.bms_faultvector);
 			if(curdata.bms_faultvector == 0) {

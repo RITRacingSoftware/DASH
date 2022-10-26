@@ -8,6 +8,8 @@ namespace DataManager {
 	typedef struct car_data_s {
 		uint16_t mcu_motorrpm;
 
+		uint8_t vc_status;
+		uint8_t mcu_status;
 		uint16_t bms_faultvector;
 
 		uint8_t bms_soc;
