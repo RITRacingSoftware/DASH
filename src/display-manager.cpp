@@ -135,30 +135,30 @@ namespace DisplayManager {
 		display_elements.status_overall = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_overall, LV_ALIGN_CENTER, 0, -38);
 		lv_label_set_recolor(display_elements.status_overall, true);
-		lv_label_set_text(display_elements.status_overall, "#00ff00 READY TO DRIVE#");
+		lv_label_set_text(display_elements.status_overall, "#ff0000 NOT READY#");
 
 		display_elements.status_vcstatus = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
 		lv_label_set_recolor(display_elements.status_vcstatus, true);
-		lv_label_set_text_fmt(display_elements.status_vcstatus, "VC: %s",
-			VC_STATUS_MESSAGES[0]);
+		lv_label_set_text(display_elements.status_vcstatus, "VC: ???");
 
 		display_elements.status_mcustatus = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
 		lv_label_set_recolor(display_elements.status_mcustatus, true);
-		lv_label_set_text_fmt(display_elements.status_mcustatus, "MC: %s",
-			MCU_STATUS_MESSAGES[0]);
+		lv_label_set_text(display_elements.status_mcustatus, "MC: ???");
 
 		display_elements.status_bmsstatus = lv_label_create(status_area);
 		lv_obj_align(display_elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
 		lv_label_set_recolor(display_elements.status_bmsstatus, true);
-		lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
+		lv_label_set_text(display_elements.status_bmsstatus, "BMS: ???");
 
 		// BMS-related display elements
 		lv_obj_t* bms_area = lv_obj_create(lv_scr_act());
 		lv_obj_set_size(bms_area, 190, 180);
 		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
 		lv_obj_add_style(bms_area, &style, LV_PART_MAIN);
+		// Disable scroll bars
+		lv_obj_set_scrollbar_mode(bms_area, LV_SCROLLBAR_MODE_OFF);
 
 		// SOC Label
 		display_elements.bms_soc_label = lv_label_create(bms_area);
@@ -205,6 +205,29 @@ namespace DisplayManager {
 		}
 
 		// Status Elements
+		// TODO: Re-evaluate readiness detection
+		/*if(curdata.vc_status != lastdata.vc_status ||
+			curdata.mcu_status != lastdata.mcu_status ||
+			curdata.bms_faultvector != lastdata.bms_faultvector) {
+
+			if(curdata.vc_status == 2 && curdata.mcu_status == 3 &&
+				curdata.bms_faultvector == 0) {
+				lv_label_set_text(display_elements.status_overall, "#00ff00 READY TO DRIVE#");
+			}
+			else {
+				lv_label_set_text(display_elements.status_overall, "#ff0000 NOT READY#");
+			}
+
+		}*/
+		if(curdata.vc_status != lastdata.vc_status) {
+			if(curdata.vc_status == 2) {
+				lv_label_set_text(display_elements.status_overall, "#00ff00 READY TO DRIVE#");
+			}
+			else {
+				lv_label_set_text(display_elements.status_overall, "#ff0000 NOT READY#");
+			}
+		}
+
 		if(curdata.vc_status != lastdata.vc_status) {
 			if(curdata.vc_status >= 0 && curdata.vc_status <= 2) {
 				lv_label_set_text_fmt(display_elements.status_vcstatus, "VC: %s",
@@ -267,11 +290,15 @@ namespace DisplayManager {
 				}
 			}
 
-			if(bms_faultnum == 0) {
+			if(curdata.bms_faultvector == 0) {
 				lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
 			}
 			else {
 				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", bms_faultnum);
+			}
+
+			if(vc_faultnum == 0 && bms_faultnum == 0) {
+				lv_textarea_set_text(display_elements.faults_textarea, "");
 			}
 		}
 
