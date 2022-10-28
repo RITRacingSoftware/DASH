@@ -11,6 +11,7 @@ namespace DisplayManager {
 	struct display_elements_s {
 		lv_obj_t* rpmbar;
 		lv_obj_t* rpmlabel;
+		lv_obj_t* mphlabel;
 
 		lv_obj_t* bms_soc_label;
 		lv_obj_t* bms_cellvoltage_label;
@@ -98,24 +99,25 @@ namespace DisplayManager {
 		lv_style_init(&style);
 		lv_style_set_bg_color(&style, lv_color_black());
 		lv_style_set_text_color(&style, lv_color_white());
+		lv_style_set_radius(&style, 2);
 		lv_obj_add_style(lv_scr_act(), &style, LV_PART_MAIN);
 
 		// Progress bar style
 		lv_style_init(&barstyle);
 		lv_style_set_border_color(&barstyle, lv_color_white());
 		lv_style_set_border_width(&barstyle, 2);
-		lv_style_set_radius(&barstyle, 1);
+		lv_style_set_radius(&barstyle, 2);
 		lv_style_set_pad_all(&barstyle, 4);
 		lv_style_init(&barindstyle);
 		//lv_style_set_border_color(&barindstyle, lv_color_white());
 		//lv_style_set_border_width(&barindstyle, 2);
-		lv_style_set_radius(&barindstyle, 1);
+		lv_style_set_radius(&barindstyle, 2);
 		lv_style_set_pad_all(&barindstyle, 4);
 
 		// RPM Bar
 		display_elements.rpmbar = lv_bar_create(lv_scr_act());
 		lv_bar_set_range(display_elements.rpmbar, 0, 5000);
-		lv_obj_set_size(display_elements.rpmbar, 47, 135);
+		lv_obj_set_size(display_elements.rpmbar, 47, 156);
 		lv_obj_align(display_elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
 		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
 		lv_obj_add_style(display_elements.rpmbar, &barindstyle, LV_PART_INDICATOR);
@@ -123,6 +125,10 @@ namespace DisplayManager {
 		display_elements.rpmlabel = lv_label_create(lv_scr_act());
 		lv_label_set_text(display_elements.rpmlabel, "????\nRPM");
 		lv_obj_align_to(display_elements.rpmlabel, display_elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+		// MPH Label
+		display_elements.mphlabel = lv_label_create(lv_scr_act());
+		lv_label_set_text(display_elements.mphlabel, "??.?\nMPH");
+		lv_obj_align_to(display_elements.mphlabel, display_elements.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
 		// Status display elements
 		lv_obj_t* status_area = lv_obj_create(lv_scr_act());
@@ -190,11 +196,12 @@ namespace DisplayManager {
 		lv_style_set_bg_color(&faultstyle, lv_color_black());
 		lv_style_set_text_color(&faultstyle, lv_color_white());
 		lv_style_set_text_font(&faultstyle, &lv_font_montserrat_14);
+		lv_style_set_radius(&faultstyle, 2);
 
 		// Fault text area
 		display_elements.faults_textarea = lv_textarea_create(lv_scr_act());
-		lv_obj_set_size(display_elements.faults_textarea, 460, 60);
-		lv_obj_align(display_elements.faults_textarea, LV_ALIGN_BOTTOM_MID, 0, -10);
+		lv_obj_set_size(display_elements.faults_textarea, 405, 60);
+		lv_obj_align(display_elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
 		lv_obj_add_style(display_elements.faults_textarea, &faultstyle, LV_PART_MAIN);
 	}
 
@@ -202,6 +209,7 @@ namespace DisplayManager {
 		if(curdata.mcu_motorrpm != lastdata.mcu_motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.mcu_motorrpm, LV_ANIM_OFF);
 			lv_label_set_text_fmt(display_elements.rpmlabel, "%04d\nRPM", curdata.mcu_motorrpm);
+			lv_label_set_text_fmt(display_elements.mphlabel, "%2.1f\nMPH", curdata.mcu_wheelspeed);
 		}
 
 		// Status Elements

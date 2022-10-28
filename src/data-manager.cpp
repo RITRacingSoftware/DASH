@@ -10,6 +10,10 @@
 namespace DataManager {
 	car_data_t data;
 
+	// Calculated using GNU units to prevent precision loss
+	// > units "1/minute * 11/40 * 16in * pi" "mph"
+	const double RPM_TO_MPH = .0130899;
+
 	void init() {
 		Serial.printf("Initializing DataManager\n");
 		DisplayManager::init();
@@ -32,6 +36,9 @@ namespace DataManager {
 				formula_dbc_mcu_motor_position_info_t motor_position;
 				formula_dbc_mcu_motor_position_info_unpack(&motor_position, message.data, message.len);
 				data.mcu_motorrpm = motor_position.d2_motor_speed;
+				float wheelmph = data.mcu_motorrpm * RPM_TO_MPH;
+				data.mcu_wheelspeed = wheelmph;
+				//data.mcu_wheelspeed = RPM_TO_MPH;
 			}
 
 			if(message.id == FORMULA_DBC_BMS_STATUS_FRAME_ID) {
