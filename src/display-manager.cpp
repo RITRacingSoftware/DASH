@@ -209,7 +209,7 @@ namespace DisplayManager {
 		if(curdata.mcu_motorrpm != lastdata.mcu_motorrpm) {
 			lv_bar_set_value(display_elements.rpmbar, curdata.mcu_motorrpm, LV_ANIM_OFF);
 			lv_label_set_text_fmt(display_elements.rpmlabel, "%04d\nRPM", curdata.mcu_motorrpm);
-			lv_label_set_text_fmt(display_elements.mphlabel, "%2.1f\nMPH", curdata.mcu_wheelspeed);
+			lv_label_set_text_fmt(display_elements.mphlabel, "%04.1f\nMPH", curdata.mcu_wheelspeed);
 		}
 
 		// Status Elements
