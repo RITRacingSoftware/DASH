@@ -8,7 +8,12 @@
 #define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 10)
 
 namespace DisplayManager {
-	struct display_elements_s {
+
+	bool active_screen = 0; // 0 = debug, 1 = drive
+	lv_obj_t* debug_screen;
+	lv_obj_t* drive_screen;
+
+	struct display_elements_debug_s {
 		lv_obj_t* rpmbar;
 		lv_obj_t* rpmlabel;
 		lv_obj_t* mphlabel;
@@ -25,11 +30,16 @@ namespace DisplayManager {
 		lv_obj_t* status_bmsstatus;
 
 		lv_obj_t* faults_textarea;
-	} display_elements;
+	} display_elements_drive;
 
 	lv_disp_draw_buf_t drawbuf;
 	lv_color_t drawbuf1[DRAW_BUFFER_SIZE];
 	lv_disp_drv_t disp_drv;
+
+	lv_style_t style;
+	lv_style_t barstyle;
+	lv_style_t barindstyle;
+	lv_style_t faultstyle;
 
 	DataManager::car_data_t curdata;
 	DataManager::car_data_t lastdata;
@@ -89,18 +99,12 @@ namespace DisplayManager {
 		lv_disp_drv_register(&disp_drv);
 	}
 
-	lv_style_t style;
-	lv_style_t barstyle;
-	lv_style_t barindstyle;
-	lv_style_t faultstyle;
-
-	void initDisplayElements() {
+	void initStyles() {
 		// Global style, can be overridden
 		lv_style_init(&style);
 		lv_style_set_bg_color(&style, lv_color_black());
 		lv_style_set_text_color(&style, lv_color_white());
 		lv_style_set_radius(&style, 2);
-		lv_obj_add_style(lv_scr_act(), &style, LV_PART_MAIN);
 
 		// Progress bar style
 		lv_style_init(&barstyle);
@@ -109,87 +113,8 @@ namespace DisplayManager {
 		lv_style_set_radius(&barstyle, 2);
 		lv_style_set_pad_all(&barstyle, 4);
 		lv_style_init(&barindstyle);
-		//lv_style_set_border_color(&barindstyle, lv_color_white());
-		//lv_style_set_border_width(&barindstyle, 2);
 		lv_style_set_radius(&barindstyle, 2);
 		lv_style_set_pad_all(&barindstyle, 4);
-
-		// RPM Bar
-		display_elements.rpmbar = lv_bar_create(lv_scr_act());
-		lv_bar_set_range(display_elements.rpmbar, 0, 5000);
-		lv_obj_set_size(display_elements.rpmbar, 47, 156);
-		lv_obj_align(display_elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
-		lv_obj_add_style(display_elements.rpmbar, &barstyle, 0);
-		lv_obj_add_style(display_elements.rpmbar, &barindstyle, LV_PART_INDICATOR);
-		// RPM Bar Label
-		display_elements.rpmlabel = lv_label_create(lv_scr_act());
-		lv_label_set_text(display_elements.rpmlabel, "????\nRPM");
-		lv_obj_align_to(display_elements.rpmlabel, display_elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
-		// MPH Label
-		display_elements.mphlabel = lv_label_create(lv_scr_act());
-		lv_label_set_text(display_elements.mphlabel, "??.?\nMPH");
-		lv_obj_align_to(display_elements.mphlabel, display_elements.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
-
-		// Status display elements
-		lv_obj_t* status_area = lv_obj_create(lv_scr_act());
-		lv_obj_set_size(status_area, 210, 180);
-		lv_obj_align(status_area, LV_ALIGN_TOP_MID, -70, 10);
-		lv_obj_add_style(status_area, &style, LV_PART_MAIN);
-		// Disable scroll bars
-		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
-
-		display_elements.status_overall = lv_label_create(status_area);
-		lv_obj_align(display_elements.status_overall, LV_ALIGN_CENTER, 0, -38);
-		lv_label_set_recolor(display_elements.status_overall, true);
-		lv_label_set_text(display_elements.status_overall, "#ff0000 NOT READY#");
-
-		display_elements.status_vcstatus = lv_label_create(status_area);
-		lv_obj_align(display_elements.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
-		lv_label_set_recolor(display_elements.status_vcstatus, true);
-		lv_label_set_text(display_elements.status_vcstatus, "VC: ???");
-
-		display_elements.status_mcustatus = lv_label_create(status_area);
-		lv_obj_align(display_elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
-		lv_label_set_recolor(display_elements.status_mcustatus, true);
-		lv_label_set_text(display_elements.status_mcustatus, "MC: ???");
-
-		display_elements.status_bmsstatus = lv_label_create(status_area);
-		lv_obj_align(display_elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
-		lv_label_set_recolor(display_elements.status_bmsstatus, true);
-		lv_label_set_text(display_elements.status_bmsstatus, "BMS: ???");
-
-		// BMS-related display elements
-		lv_obj_t* bms_area = lv_obj_create(lv_scr_act());
-		lv_obj_set_size(bms_area, 190, 180);
-		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
-		lv_obj_add_style(bms_area, &style, LV_PART_MAIN);
-		// Disable scroll bars
-		lv_obj_set_scrollbar_mode(bms_area, LV_SCROLLBAR_MODE_OFF);
-
-		// SOC Label
-		display_elements.bms_soc_label = lv_label_create(bms_area);
-		lv_obj_align(display_elements.bms_soc_label, LV_ALIGN_CENTER, 0, -50);
-		lv_label_set_text(display_elements.bms_soc_label, "SOC = ???%");
-
-		// Cell Voltages Label
-		display_elements.bms_cellvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(display_elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -25);
-		lv_label_set_text(display_elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
-
-		// Cell Voltages Label
-		display_elements.bms_packvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(display_elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, 0);
-		lv_label_set_text(display_elements.bms_packvoltage_label, "PACK = ???.? V");
-
-		// Current Label
-		display_elements.bms_current_label = lv_label_create(bms_area);
-		lv_obj_align(display_elements.bms_current_label, LV_ALIGN_CENTER, 0, 25);
-		lv_label_set_text(display_elements.bms_current_label, "I = ?.?? A");
-
-		// Current Label
-		display_elements.bms_maxcurrent_label = lv_label_create(bms_area);
-		lv_obj_align(display_elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 50);
-		lv_label_set_text(display_elements.bms_maxcurrent_label, "MAX I = ?.?? A");
 
 		// Fault font style
 		lv_style_init(&faultstyle);
@@ -197,19 +122,104 @@ namespace DisplayManager {
 		lv_style_set_text_color(&faultstyle, lv_color_white());
 		lv_style_set_text_font(&faultstyle, &lv_font_montserrat_14);
 		lv_style_set_radius(&faultstyle, 2);
-
-		// Fault text area
-		display_elements.faults_textarea = lv_textarea_create(lv_scr_act());
-		lv_obj_set_size(display_elements.faults_textarea, 405, 60);
-		lv_obj_align(display_elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
-		lv_obj_add_style(display_elements.faults_textarea, &faultstyle, LV_PART_MAIN);
 	}
 
-	void updateDisplayElements() {
+	void initDebugDisplayElements() {
+		lv_obj_add_style(debug_screen, &style, LV_PART_MAIN);
+
+		// RPM Bar
+		display_elements_drive.rpmbar = lv_bar_create(debug_screen);
+		lv_bar_set_range(display_elements_drive.rpmbar, 0, 5000);
+		lv_obj_set_size(display_elements_drive.rpmbar, 47, 156);
+		lv_obj_align(display_elements_drive.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_add_style(display_elements_drive.rpmbar, &barstyle, 0);
+		lv_obj_add_style(display_elements_drive.rpmbar, &barindstyle, LV_PART_INDICATOR);
+		// RPM Bar Label
+		display_elements_drive.rpmlabel = lv_label_create(debug_screen);
+		lv_label_set_text(display_elements_drive.rpmlabel, "????\nRPM");
+		lv_obj_align_to(display_elements_drive.rpmlabel, display_elements_drive.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+		// MPH Label
+		display_elements_drive.mphlabel = lv_label_create(debug_screen);
+		lv_label_set_text(display_elements_drive.mphlabel, "??.?\nMPH");
+		lv_obj_align_to(display_elements_drive.mphlabel, display_elements_drive.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+
+		// Status display elements
+		lv_obj_t* status_area = lv_obj_create(debug_screen);
+		lv_obj_set_size(status_area, 210, 180);
+		lv_obj_align(status_area, LV_ALIGN_TOP_MID, -70, 10);
+		lv_obj_add_style(status_area, &style, LV_PART_MAIN);
+		// Disable scroll bars
+		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
+
+		display_elements_drive.status_overall = lv_label_create(status_area);
+		lv_obj_align(display_elements_drive.status_overall, LV_ALIGN_CENTER, 0, -38);
+		lv_label_set_recolor(display_elements_drive.status_overall, true);
+		lv_label_set_text(display_elements_drive.status_overall, "#ff0000 NOT READY#");
+
+		display_elements_drive.status_vcstatus = lv_label_create(status_area);
+		lv_obj_align(display_elements_drive.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
+		lv_label_set_recolor(display_elements_drive.status_vcstatus, true);
+		lv_label_set_text(display_elements_drive.status_vcstatus, "VC: ???");
+
+		display_elements_drive.status_mcustatus = lv_label_create(status_area);
+		lv_obj_align(display_elements_drive.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
+		lv_label_set_recolor(display_elements_drive.status_mcustatus, true);
+		lv_label_set_text(display_elements_drive.status_mcustatus, "MC: ???");
+
+		display_elements_drive.status_bmsstatus = lv_label_create(status_area);
+		lv_obj_align(display_elements_drive.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
+		lv_label_set_recolor(display_elements_drive.status_bmsstatus, true);
+		lv_label_set_text(display_elements_drive.status_bmsstatus, "BMS: ???");
+
+		// BMS-related display elements
+		lv_obj_t* bms_area = lv_obj_create(debug_screen);
+		lv_obj_set_size(bms_area, 190, 180);
+		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
+		lv_obj_add_style(bms_area, &style, LV_PART_MAIN);
+		// Disable scroll bars
+		lv_obj_set_scrollbar_mode(bms_area, LV_SCROLLBAR_MODE_OFF);
+
+		// SOC Label
+		display_elements_drive.bms_soc_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements_drive.bms_soc_label, LV_ALIGN_CENTER, 0, -50);
+		lv_label_set_text(display_elements_drive.bms_soc_label, "SOC = ???%");
+
+		// Cell Voltages Label
+		display_elements_drive.bms_cellvoltage_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements_drive.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -25);
+		lv_label_set_text(display_elements_drive.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
+
+		// Cell Voltages Label
+		display_elements_drive.bms_packvoltage_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements_drive.bms_packvoltage_label, LV_ALIGN_CENTER, 0, 0);
+		lv_label_set_text(display_elements_drive.bms_packvoltage_label, "PACK = ???.? V");
+
+		// Current Label
+		display_elements_drive.bms_current_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements_drive.bms_current_label, LV_ALIGN_CENTER, 0, 25);
+		lv_label_set_text(display_elements_drive.bms_current_label, "I = ?.?? A");
+
+		// Current Label
+		display_elements_drive.bms_maxcurrent_label = lv_label_create(bms_area);
+		lv_obj_align(display_elements_drive.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 50);
+		lv_label_set_text(display_elements_drive.bms_maxcurrent_label, "MAX I = ?.?? A");
+
+		// Fault text area
+		display_elements_drive.faults_textarea = lv_textarea_create(debug_screen);
+		lv_obj_set_size(display_elements_drive.faults_textarea, 405, 60);
+		lv_obj_align(display_elements_drive.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
+		lv_obj_add_style(display_elements_drive.faults_textarea, &faultstyle, LV_PART_MAIN);
+	}
+
+	void initDriveDisplayElements() {
+
+	}
+
+	void updateDebugDisplayElements() {
 		if(curdata.mcu_motorrpm != lastdata.mcu_motorrpm) {
-			lv_bar_set_value(display_elements.rpmbar, curdata.mcu_motorrpm, LV_ANIM_OFF);
-			lv_label_set_text_fmt(display_elements.rpmlabel, "%04d\nRPM", curdata.mcu_motorrpm);
-			lv_label_set_text_fmt(display_elements.mphlabel, "%04.1f\nMPH", curdata.mcu_wheelspeed);
+			lv_bar_set_value(display_elements_drive.rpmbar, curdata.mcu_motorrpm, LV_ANIM_OFF);
+			lv_label_set_text_fmt(display_elements_drive.rpmlabel, "%04d\nRPM", curdata.mcu_motorrpm);
+			lv_label_set_text_fmt(display_elements_drive.mphlabel, "%04.1f\nMPH", curdata.mcu_wheelspeed);
 		}
 
 		// Status Elements
@@ -220,40 +230,40 @@ namespace DisplayManager {
 
 			if(curdata.vc_status == 2 && curdata.mcu_status == 3 &&
 				curdata.bms_faultvector == 0) {
-				lv_label_set_text(display_elements.status_overall, "#00ff00 READY TO DRIVE#");
+				lv_label_set_text(display_elements_drive.status_overall, "#00ff00 READY TO DRIVE#");
 			}
 			else {
-				lv_label_set_text(display_elements.status_overall, "#ff0000 NOT READY#");
+				lv_label_set_text(display_elements_drive.status_overall, "#ff0000 NOT READY#");
 			}
 
 		}*/
 		if(curdata.vc_status != lastdata.vc_status) {
 			if(curdata.vc_status == 2) {
-				lv_label_set_text(display_elements.status_overall, "#00ff00 READY TO DRIVE#");
+				lv_label_set_text(display_elements_drive.status_overall, "#00ff00 READY TO DRIVE#");
 			}
 			else {
-				lv_label_set_text(display_elements.status_overall, "#ff0000 NOT READY#");
+				lv_label_set_text(display_elements_drive.status_overall, "#ff0000 NOT READY#");
 			}
 		}
 
 		if(curdata.vc_status != lastdata.vc_status) {
 			if(curdata.vc_status >= 0 && curdata.vc_status <= 2) {
-				lv_label_set_text_fmt(display_elements.status_vcstatus, "VC: %s",
+				lv_label_set_text_fmt(display_elements_drive.status_vcstatus, "VC: %s",
 					VC_STATUS_MESSAGES[curdata.vc_status]);
 			}
 			else {
-				lv_label_set_text_fmt(display_elements.status_vcstatus, "VC: %s",
+				lv_label_set_text_fmt(display_elements_drive.status_vcstatus, "VC: %s",
 					VC_STATUS_MESSAGES[3]);
 			}
 		}
 
 		if(curdata.mcu_status != lastdata.mcu_status) {
 			if(curdata.mcu_status >= 1 && curdata.mcu_status <= 4) {
-				lv_label_set_text_fmt(display_elements.status_mcustatus, "MC: %s",
+				lv_label_set_text_fmt(display_elements_drive.status_mcustatus, "MC: %s",
 					MCU_STATUS_MESSAGES[curdata.mcu_status]);
 			}
 			else {
-				lv_label_set_text_fmt(display_elements.status_mcustatus, "MC: %s",
+				lv_label_set_text_fmt(display_elements_drive.status_mcustatus, "MC: %s",
 					MCU_STATUS_MESSAGES[0]);
 			}
 		}
@@ -266,7 +276,7 @@ namespace DisplayManager {
 			uint8_t vc_faultnum = 0;
 			uint8_t bms_faultnum = 0;
 
-			lv_textarea_set_text(display_elements.faults_textarea, "Faults: ");
+			lv_textarea_set_text(display_elements_drive.faults_textarea, "Faults: ");
 
 			// Loop over possible VC faults
 			for(int i = 0; i < 5; i++) {
@@ -274,10 +284,10 @@ namespace DisplayManager {
 				if(faulted) {
 					if(!firstfault) {
 						// Pretty printing
-						lv_textarea_add_text(display_elements.faults_textarea, ", ");
+						lv_textarea_add_text(display_elements_drive.faults_textarea, ", ");
 					}
 					firstfault = false;
-					lv_textarea_add_text(display_elements.faults_textarea, VC_FAULT_MESSAGES[i]);
+					lv_textarea_add_text(display_elements_drive.faults_textarea, VC_FAULT_MESSAGES[i]);
 					Serial.printf("VC fault #%d\n", i);
 					vc_faultnum++;
 				}
@@ -289,43 +299,43 @@ namespace DisplayManager {
 				if(faulted) {
 					if(!firstfault) {
 						// Pretty printing
-						lv_textarea_add_text(display_elements.faults_textarea, ", ");
+						lv_textarea_add_text(display_elements_drive.faults_textarea, ", ");
 					}
 					firstfault = false;
-					lv_textarea_add_text(display_elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
+					lv_textarea_add_text(display_elements_drive.faults_textarea, BMS_FAULT_MESSAGES[i]);
 					Serial.printf("BMS fault #%d\n", i);
 					bms_faultnum++;
 				}
 			}
 
 			if(curdata.bms_faultvector == 0) {
-				lv_label_set_text(display_elements.status_bmsstatus, "BMS: READY");
+				lv_label_set_text(display_elements_drive.status_bmsstatus, "BMS: READY");
 			}
 			else {
-				lv_label_set_text_fmt(display_elements.status_bmsstatus, "BMS: %d FAULTS", bms_faultnum);
+				lv_label_set_text_fmt(display_elements_drive.status_bmsstatus, "BMS: %d FAULTS", bms_faultnum);
 			}
 
 			if(vc_faultnum == 0 && bms_faultnum == 0) {
-				lv_textarea_set_text(display_elements.faults_textarea, "");
+				lv_textarea_set_text(display_elements_drive.faults_textarea, "");
 			}
 		}
 
 		// BMS Elements
 		if(curdata.bms_soc != lastdata.bms_soc) {
-			lv_label_set_text_fmt(display_elements.bms_soc_label, "SOC = %d%%", curdata.bms_soc);
+			lv_label_set_text_fmt(display_elements_drive.bms_soc_label, "SOC = %d%%", curdata.bms_soc);
 		}
 		if(curdata.bms_cellvoltages_min != lastdata.bms_cellvoltages_min ||
 				curdata.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
-			lv_label_set_text_fmt(display_elements.bms_cellvoltage_label, "V = %1.2f - %1.2f V",
+			lv_label_set_text_fmt(display_elements_drive.bms_cellvoltage_label, "V = %1.2f - %1.2f V",
 				curdata.bms_cellvoltages_min * 0.01, curdata.bms_cellvoltages_max * 0.01);
 		}
 		if(curdata.bms_packvoltage != lastdata.bms_packvoltage) {
-			lv_label_set_text_fmt(display_elements.bms_packvoltage_label, "PACK = %3.1f V", curdata.bms_packvoltage * 0.1);
+			lv_label_set_text_fmt(display_elements_drive.bms_packvoltage_label, "PACK = %3.1f V", curdata.bms_packvoltage * 0.1);
 		}
 		if(curdata.bms_buscurrent != lastdata.bms_buscurrent) {
-			lv_label_set_text_fmt(display_elements.bms_current_label, "I = %1.2f A", curdata.bms_buscurrent * 0.001);
+			lv_label_set_text_fmt(display_elements_drive.bms_current_label, "I = %1.2f A", curdata.bms_buscurrent * 0.001);
 			if(curdata.bms_maxcurrent != lastdata.bms_maxcurrent) {
-				lv_label_set_text_fmt(display_elements.bms_maxcurrent_label, "MAX I = %1.2f A", curdata.bms_maxcurrent * 0.001);
+				lv_label_set_text_fmt(display_elements_drive.bms_maxcurrent_label, "MAX I = %1.2f A", curdata.bms_maxcurrent * 0.001);
 			}
 		}
 
@@ -333,20 +343,38 @@ namespace DisplayManager {
 		lastdata = curdata;
 	}
 
+	void updateDriveDisplayElements() {
+
+	}
+
+	void initScreens() {
+		debug_screen = lv_obj_create(NULL);
+		drive_screen = lv_obj_create(NULL);
+		initStyles();
+		initDebugDisplayElements();
+		initDriveDisplayElements();
+		lv_scr_load(debug_screen);
+	}
+
 	void init() {
 		Serial.printf("Initializing DisplayManager\n");
 		TFTManager::init();
 		Serial.printf("Initializing LVGL\n");
 		initLVGL();
-		Serial.printf("Initializing Display Elements\n");
-		initDisplayElements();
-		Serial.printf("Initialized DisplayManager\n");
+		Serial.printf("Initializing Screens\n");
+		initScreens();
+		Serial.printf("Initialized Screens\n");
 	}
 
 	void update(DataManager::car_data_t data) {
 		curdata = data;
 
-		updateDisplayElements();
+		if(active_screen == 0) {
+			updateDebugDisplayElements();
+		}
+		else if(active_screen == 1) {
+			updateDriveDisplayElements();
+		}
 
 		// Force display refresh with new data
 		lv_refr_now(NULL);
