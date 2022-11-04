@@ -7,7 +7,7 @@
 namespace DataManager {
 	typedef struct car_data_s {
 		uint16_t mcu_motorrpm;
-		double mcu_wheelspeed;
+		float mcu_wheelspeed;
 
 		uint8_t vc_status;
 		uint8_t vc_faultvector;
@@ -15,15 +15,15 @@ namespace DataManager {
 		uint16_t bms_faultvector;
 
 		uint8_t bms_soc;
-		int32_t bms_buscurrent;
-		int32_t bms_maxcurrent;
+		float bms_buscurrent;
+		float bms_maxcurrent;
 		struct {
 			uint8_t bms_voltages_mux;
 			uint16_t bms_voltages_cell[NUM_BMS_CELLS];
 		} bms_cellvoltages_struct;
-		uint16_t bms_cellvoltages_min;
-		uint16_t bms_cellvoltages_max;
-		uint16_t bms_packvoltage;
+		float bms_cellvoltages_min;
+		float bms_cellvoltages_max;
+		float bms_packvoltage;
 	} car_data_t;
 
 	void init();

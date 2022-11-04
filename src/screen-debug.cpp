@@ -266,15 +266,15 @@ namespace ScreenDebug {
 		if(data.bms_cellvoltages_min != lastdata.bms_cellvoltages_min ||
 				data.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
 			lv_label_set_text_fmt(elements.bms_cellvoltage_label, "V = %1.2f - %1.2f V",
-				data.bms_cellvoltages_min * 0.01, data.bms_cellvoltages_max * 0.01);
+				data.bms_cellvoltages_min, data.bms_cellvoltages_max);
 		}
 		if(data.bms_packvoltage != lastdata.bms_packvoltage) {
-			lv_label_set_text_fmt(elements.bms_packvoltage_label, "PACK = %3.1f V", data.bms_packvoltage * 0.1);
+			lv_label_set_text_fmt(elements.bms_packvoltage_label, "PACK = %3.1f V", data.bms_packvoltage);
 		}
 		if(data.bms_buscurrent != lastdata.bms_buscurrent) {
-			lv_label_set_text_fmt(elements.bms_current_label, "I = %1.2f A", data.bms_buscurrent * 0.001);
+			lv_label_set_text_fmt(elements.bms_current_label, "I = %1.2f A", data.bms_buscurrent);
 			if(data.bms_maxcurrent != lastdata.bms_maxcurrent) {
-				lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent * 0.001);
+				lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent);
 			}
 		}
 
