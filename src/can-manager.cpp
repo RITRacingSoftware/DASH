@@ -42,7 +42,7 @@ namespace CANManager {
 		can.onReceive(CAN_ISR);
 
 		// Filtering
-		// TODO: Untested while using FIFO interrupt
+		// TODO: Determine if this is at all still useful
 		/*can.setFIFOFilter(REJECT_ALL);
 		can.setFIFOFilter(0, FORMULA_DBC_MCU_FAULT_CODES_FRAME_ID, FORMULA_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID, STD);
 		can.setFIFOFilter(1, READY_TO_DRIVE_ID, FORMULA_DBC_BMS_FAULT_VECTOR_FRAME_ID, STD);
