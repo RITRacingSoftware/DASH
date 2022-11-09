@@ -9,10 +9,11 @@ void setup()
 	Serial.printf("Starting!\n");
 
 	DataManager::init();
+	DisplayManager::switchScreens(1);
 }
 
 unsigned long lastswitchtime = 0;
-bool lastscreen = 0;
+bool lastscreen = 1;
 
 void loop()
 {
