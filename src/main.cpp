@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include "data-manager.h"
+#include "display-manager.h"
 
 void setup()
 {
@@ -10,10 +11,19 @@ void setup()
 	DataManager::init();
 }
 
+unsigned long lastswitchtime = 0;
+bool lastscreen = 0;
+
 void loop()
 {
-	//Serial.printf("Update\n");
-
 	DataManager::update();
+
+	unsigned long time = millis();
+	if(time - lastswitchtime > 5000) {
+		lastswitchtime = time;
+		lastscreen = !lastscreen;
+		DisplayManager::switchScreens(lastscreen);
+	}
+
 	delay(100);
 }

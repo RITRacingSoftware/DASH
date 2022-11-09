@@ -4,7 +4,7 @@
 #include "display-manager.h"
 #include "lvgl.h"
 
-namespace ScreenDebug {
+namespace ScreenDrive {
 	lv_obj_t* init(DisplayManager::styles_t* styles);
 	void update(DataManager::car_data_t data);
 }

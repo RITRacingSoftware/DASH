@@ -1,8 +1,11 @@
 #include "screen-debug.h"
 
+#include <Arduino.h>
+
 #include "data-manager.h"
 #include "display-manager.h"
-#include "../lib/lvgl/lvgl.h"
+
+#include "lvgl.h"
 
 namespace ScreenDebug {
 	lv_obj_t* screen;
@@ -65,18 +68,19 @@ namespace ScreenDebug {
 		"BMS drain failure",
 	};
 
-	lv_obj_t* init(DisplayManager::styles_t styles) {
-		screen = lv_obj_create(NULL);
+	lv_obj_t* init(DisplayManager::styles_t* styles) {
+		Serial.printf("Initializing Debug Screen\n");
 
-		lv_obj_add_style(screen, &styles.style, LV_PART_MAIN);
+		screen = lv_obj_create(NULL);
+		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 
 		// RPM Bar
 		elements.rpmbar = lv_bar_create(screen);
 		lv_bar_set_range(elements.rpmbar, 0, 5000);
 		lv_obj_set_size(elements.rpmbar, 47, 156);
 		lv_obj_align(elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
-		lv_obj_add_style(elements.rpmbar, &styles.barstyle, 0);
-		lv_obj_add_style(elements.rpmbar, &styles.barindstyle, LV_PART_INDICATOR);
+		lv_obj_add_style(elements.rpmbar, &styles->barstyle, 0);
+		lv_obj_add_style(elements.rpmbar, &styles->barindstyle, LV_PART_INDICATOR);
 		// RPM Bar Label
 		elements.rpmlabel = lv_label_create(screen);
 		lv_label_set_text(elements.rpmlabel, "????\nRPM");
@@ -90,7 +94,7 @@ namespace ScreenDebug {
 		lv_obj_t* status_area = lv_obj_create(screen);
 		lv_obj_set_size(status_area, 210, 180);
 		lv_obj_align(status_area, LV_ALIGN_TOP_MID, -70, 10);
-		lv_obj_add_style(status_area, &styles.style, LV_PART_MAIN);
+		lv_obj_add_style(status_area, &styles->style, LV_PART_MAIN);
 		// Disable scroll bars
 		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
 
@@ -118,7 +122,7 @@ namespace ScreenDebug {
 		lv_obj_t* bms_area = lv_obj_create(screen);
 		lv_obj_set_size(bms_area, 190, 180);
 		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
-		lv_obj_add_style(bms_area, &styles.style, LV_PART_MAIN);
+		lv_obj_add_style(bms_area, &styles->style, LV_PART_MAIN);
 		// Disable scroll bars
 		lv_obj_set_scrollbar_mode(bms_area, LV_SCROLLBAR_MODE_OFF);
 
@@ -151,7 +155,9 @@ namespace ScreenDebug {
 		elements.faults_textarea = lv_textarea_create(screen);
 		lv_obj_set_size(elements.faults_textarea, 405, 60);
 		lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
-		lv_obj_add_style(elements.faults_textarea, &styles.faultstyle, LV_PART_MAIN);
+		lv_obj_add_style(elements.faults_textarea, &styles->faultstyle, LV_PART_MAIN);
+
+		Serial.printf("Initialized Debug Screen\n");
 
 		return screen;
 	}

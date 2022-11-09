@@ -4,8 +4,8 @@
 #include <queue>
 #include <Arduino.h>
 
-#include "../lib/FlexCAN_T4/FlexCAN_T4.h"
-#include "../lib/Formula-DBC/formula_dbc.h"
+#include "FlexCAN_T4.h"
+#include "formula_dbc.h"
 
 #define CAN_BAUD_RATE 1000000
 #define READY_TO_DRIVE_ID 0x0AA

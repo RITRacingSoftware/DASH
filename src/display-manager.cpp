@@ -5,7 +5,8 @@
 
 #include "tft-manager.h"
 #include "screen-debug.h"
-//#include "screen-drive.h"
+#include "screen-drive.h"
+
 #include "lvgl.h"
 
 #define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 10)
@@ -72,10 +73,11 @@ namespace DisplayManager {
 		initLVGL();
 		Serial.printf("Initializing Screens\n");
 		initStyles();
-		screen_debug = ScreenDebug::init(styles);
-		//screen_drive = ScreenDrive::init(styles);
+		screen_debug = ScreenDebug::init(&styles);
+		screen_drive = ScreenDrive::init(&styles);
 		lv_scr_load(screen_debug);
 		Serial.printf("Initialized Screens\n");
+		Serial.printf("Initialized DisplayManager\n");
 	}
 
 	void update(DataManager::car_data_t data) {

@@ -5,7 +5,7 @@
 
 #include "can-manager.h"
 #include "display-manager.h"
-#include "../lib/Formula-DBC/formula_dbc.h"
+#include "formula_dbc.h"
 
 namespace DataManager {
 	car_data_t data;
