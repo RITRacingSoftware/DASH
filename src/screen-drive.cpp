@@ -60,12 +60,12 @@ namespace ScreenDrive {
 		lv_style_init(&mph_style);
 		lv_style_set_bg_color(&mph_style, lv_color_black());
 		lv_style_set_text_color(&mph_style, lv_color_white());
-		//lv_style_set_text_font(&mph_style, &lv_font_montserrat_26);
+		lv_style_set_text_font(&mph_style, &lv_font_montserrat_28_compressed);
 
-		/*elements.mph_label = lv_label_create(screen);
+		elements.mph_label = lv_label_create(screen);
 		lv_label_set_text(elements.mph_label, "??.? MPH");
 		lv_obj_align(elements.mph_label, LV_ALIGN_TOP_MID, 0, 10);
-		lv_obj_add_style(elements.mph_label, &mph_style, LV_PART_MAIN);*/
+		//lv_obj_add_style(elements.mph_label, &mph_style, LV_PART_MAIN);
 
 		Serial.printf("Initialized Drive Screen\n");
 
