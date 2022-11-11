@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../lib/lvgl/lvgl.h"
+#include "lvgl.h"
 #include "data-manager.h"
 
 namespace DisplayManager {

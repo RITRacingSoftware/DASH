@@ -2,7 +2,7 @@
 
 #include <Arduino.h>
 
-#include "../lib/lvgl/lvgl.h"
+#include "lvgl.h"
 #include "tft-manager.h"
 
 #define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 10)
