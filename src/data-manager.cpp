@@ -40,11 +40,10 @@ namespace DataManager {
 					data.mcu_wheelspeed = wheelmph;
 					break; }
 				case FORMULA_DBC_BMS_STATUS_FRAME_ID: {
-					formula_dbc_mcu_motor_position_info_t motor_position;
-					formula_dbc_mcu_motor_position_info_unpack(&motor_position, message.data, message.len);
-					data.mcu_motorrpm = motor_position.d2_motor_speed;
-					float wheelmph = data.mcu_motorrpm * RPM_TO_MPH;
-					data.mcu_wheelspeed = wheelmph;
+					formula_dbc_bms_status_t bms_status;
+					formula_dbc_bms_status_unpack(&bms_status, message.data, message.len);
+					data.bms_soc = bms_status.bms_status_soc;
+					data.bms_packvoltage = bms_status.bms_status_pack_voltage * 0.1;
 					break; }
 				case FORMULA_DBC_BMS_CURRENT_FRAME_ID: {
 					formula_dbc_bms_current_t current;
