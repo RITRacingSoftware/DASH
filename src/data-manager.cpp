@@ -35,7 +35,8 @@ namespace DataManager {
 				case FORMULA_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID: {
 					formula_dbc_mcu_motor_position_info_t motor_position;
 					formula_dbc_mcu_motor_position_info_unpack(&motor_position, message.data, message.len);
-					data.mcu_motorrpm = motor_position.d2_motor_speed;
+					// TODO?: Motor is backwards, need to invert values
+					data.mcu_motorrpm = -motor_position.d2_motor_speed;
 					float wheelmph = data.mcu_motorrpm * RPM_TO_MPH;
 					data.mcu_wheelspeed = wheelmph;
 					break; }
@@ -48,7 +49,8 @@ namespace DataManager {
 				case FORMULA_DBC_BMS_CURRENT_FRAME_ID: {
 					formula_dbc_bms_current_t current;
 					formula_dbc_bms_current_unpack(&current, message.data, message.len);
-					data.bms_buscurrent = current.bms_inst_current_filt * 0.001;
+					// TODO: Bus current is off by -8A, need to calibrate sensor or something
+					data.bms_buscurrent = current.bms_inst_current_filt * 0.001 + 8;
 					if(data.bms_buscurrent > data.bms_maxcurrent) {
 						data.bms_maxcurrent = data.bms_buscurrent;
 					}
