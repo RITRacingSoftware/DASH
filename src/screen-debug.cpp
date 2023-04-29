@@ -29,6 +29,8 @@ namespace ScreenDebug {
 		lv_obj_t* status_bmsstatus;
 
 		lv_obj_t* faults_textarea;
+
+		lv_style_t limp_style;
 	} elements;
 
 	const char* VC_STATUS_MESSAGES[] = {
@@ -68,11 +70,22 @@ namespace ScreenDebug {
 		"BMS drain failure",
 	};
 
+	const lv_color_t LIMP_COLORS[] = {
+		lv_palette_main(LV_PALETTE_BLUE),
+		lv_palette_main(LV_PALETTE_GREEN),
+		lv_palette_main(LV_PALETTE_YELLOW),
+		lv_palette_main(LV_PALETTE_RED),
+	};
+
 	lv_obj_t* init(DisplayManager::styles_t* styles) {
 		Serial.printf("Initializing Debug Screen\n");
 
 		screen = lv_obj_create(NULL);
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
+
+		// Custom styles
+		lv_style_init(&elements.limp_style);
+		lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[0]);
 
 		// RPM Bar
 		elements.rpmbar = lv_bar_create(screen);
@@ -163,7 +176,9 @@ namespace ScreenDebug {
 	}
 
 	void update(DataManager::car_data_t data) {
-		if(data.mcu_motorrpm != lastdata.mcu_motorrpm) {
+		if(data.mcu_motorrpm != lastdata.mcu_motorrpm
+			|| data.bms_limplevel != lastdata.bms_limplevel) {
+			lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[data.bms_limplevel]);
 			lv_bar_set_value(elements.rpmbar, data.mcu_motorrpm, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.rpmlabel, "%04d\nRPM", data.mcu_motorrpm);
 			lv_label_set_text_fmt(elements.mphlabel, "%04.1f\nMPH", data.mcu_wheelspeed);

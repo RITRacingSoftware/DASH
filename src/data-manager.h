@@ -18,6 +18,8 @@ namespace DataManager {
 		float bms_buscurrent;
 		float bms_maxcurrent;
 
+		uint8_t bms_limplevel;
+
 		// This mirrors the formula_dbc_bms_voltages_t struct
 		// in the auto-generated DBC header file.
 		// Cells are randomly ordered, but the values are good.

@@ -54,6 +54,7 @@ namespace DisplayManager {
 		lv_style_set_border_width(&styles.barstyle, 2);
 		lv_style_set_radius(&styles.barstyle, 2);
 		lv_style_set_pad_all(&styles.barstyle, 4);
+
 		lv_style_init(&styles.barindstyle);
 		lv_style_set_radius(&styles.barindstyle, 2);
 		lv_style_set_pad_all(&styles.barindstyle, 4);
@@ -85,7 +86,7 @@ namespace DisplayManager {
 			ScreenDebug::update(data);
 		}
 		else if(active_screen == 1) {
-			//ScreenDrive::update(data);
+			ScreenDrive::update(data);
 		}
 
 		// Force display refresh with new data

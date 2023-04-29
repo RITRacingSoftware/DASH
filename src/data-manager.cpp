@@ -104,6 +104,20 @@ namespace DataManager {
 					//		but it's the best way I see to do it.
 					data.bms_faultvector = message.data[0] + (message.data[1] << 8);
 					break; }
+				case FORMULA_MAIN_DBC_BMS_LIMP_MODE_FRAME_ID: {
+					formula_main_dbc_bms_limp_mode_t limpmode;
+					formula_main_dbc_bms_limp_mode_unpack(&limpmode, message.data, message.len);
+					uint8_t volt_limp = limpmode.bms_limp_mode_voltage_limp_level;
+					uint8_t temp_limp = limpmode.bms_limp_mode_temp_limp_level;
+					uint8_t overall_limp;
+
+					if(volt_limp > temp_limp) {
+						data.bms_limplevel = volt_limp;
+					}
+					else {
+						data.bms_limplevel = temp_limp;
+					}
+				}
 			}
 		}
 
