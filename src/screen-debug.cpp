@@ -71,9 +71,9 @@ namespace ScreenDebug {
 	};
 
 	const lv_color_t LIMP_COLORS[] = {
-		lv_palette_main(LV_PALETTE_BLUE),
 		lv_palette_main(LV_PALETTE_GREEN),
 		lv_palette_main(LV_PALETTE_YELLOW),
+		lv_palette_main(LV_PALETTE_ORANGE),
 		lv_palette_main(LV_PALETTE_RED),
 	};
 
