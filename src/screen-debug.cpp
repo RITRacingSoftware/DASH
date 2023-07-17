@@ -40,12 +40,22 @@ namespace ScreenDebug {
 		"FAULTED",
 	};
 
+	// const char* VC_FAULT_MESSAGES[] = {
+	// 	"VC brake sensor irrational",
+	// 	"VC accelerator irrational",
+	// 	"VC APPS sensor disagreement",
+	// 	"VC APPS double pedal",
+	// 	"VC hardfault",
+	// };
+
+	// The dbc seems to be outdated/not match what the VC is sending, I know this
+	// isn't the correct way to fix it but I'm doing it for now to make it match the VC
 	const char* VC_FAULT_MESSAGES[] = {
 		"VC brake sensor irrational",
-		"VC accelerator irrational",
+		// "VC accelerator irrational",
 		"VC APPS sensor disagreement",
 		"VC APPS double pedal",
-		"VC hardfault",
+		// "VC hardfault",
 	};
 
 	const char* MCU_STATUS_MESSAGES[] = {
@@ -71,7 +81,9 @@ namespace ScreenDebug {
 	};
 
 	const lv_color_t LIMP_COLORS[] = {
+		lv_palette_main(LV_PALETTE_NONE),
 		lv_palette_main(LV_PALETTE_GREEN),
+		lv_palette_main(LV_PALETTE_LIGHT_BLUE),
 		lv_palette_main(LV_PALETTE_YELLOW),
 		lv_palette_main(LV_PALETTE_ORANGE),
 		lv_palette_main(LV_PALETTE_RED),
@@ -81,11 +93,13 @@ namespace ScreenDebug {
 		Serial.printf("Initializing Debug Screen\n");
 
 		screen = lv_obj_create(NULL);
-		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
+		// lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 
 		// Custom styles
 		lv_style_init(&elements.limp_style);
 		lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[0]);
+		lv_style_set_text_color(&elements.limp_style, lv_color_white());
+		lv_obj_add_style(screen, &elements.limp_style, LV_PART_MAIN);
 
 		// RPM Bar
 		elements.rpmbar = lv_bar_create(screen);

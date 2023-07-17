@@ -49,8 +49,7 @@ namespace DataManager {
 				case FORMULA_MAIN_DBC_BMS_CURRENT_FRAME_ID: {
 					formula_main_dbc_bms_current_t current;
 					formula_main_dbc_bms_current_unpack(&current, message.data, message.len);
-					// TODO: Bus current is off by -8A, need to calibrate sensor or something
-					data.bms_buscurrent = current.bms_inst_current_filt * 0.001 + 8;
+					data.bms_buscurrent = current.bms_inst_current_filt * 0.001;
 					if(data.bms_buscurrent > data.bms_maxcurrent) {
 						data.bms_maxcurrent = data.bms_buscurrent;
 					}
