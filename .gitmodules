@@ -7,4 +7,4 @@
 	branch = release/v8.3
 [submodule "lib/Formula-Main-DBC"]
 	path = lib/Formula-Main-DBC
-	url = https://github.com/RITRacingSoftware/Formula-Main-DBC.git
+	url = https://github.com/mnn1262/Formula-Main-DBC.git

@@ -28,6 +28,11 @@ namespace ScreenDebug {
 		lv_obj_t* status_mcustatus;
 		lv_obj_t* status_bmsstatus;
 
+		lv_obj_t* regen_conf_label;
+		lv_obj_t* vc_req_torque_label;
+		lv_obj_t* mcu_req_torque_label;
+		lv_obj_t* mcu_feedback_torque_label;
+
 		lv_obj_t* faults_textarea;
 
 		lv_style_t limp_style;
@@ -126,24 +131,39 @@ namespace ScreenDebug {
 		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
 
 		elements.status_overall = lv_label_create(status_area);
-		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -38);
+		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -75);
 		lv_label_set_recolor(elements.status_overall, true);
 		lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
 
 		elements.status_vcstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
+		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -50);
 		lv_label_set_recolor(elements.status_vcstatus, true);
 		lv_label_set_text(elements.status_vcstatus, "VC: ???");
 
 		elements.status_mcustatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
+		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, -25);
 		lv_label_set_recolor(elements.status_mcustatus, true);
 		lv_label_set_text(elements.status_mcustatus, "MC: ???");
 
 		elements.status_bmsstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
+		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 0);
 		lv_label_set_recolor(elements.status_bmsstatus, true);
 		lv_label_set_text(elements.status_bmsstatus, "BMS: ???");
+
+		elements.vc_req_torque_label = lv_label_create(status_area);
+		lv_obj_align(elements.vc_req_torque_label, LV_ALIGN_CENTER, 0, 25);
+		lv_label_set_recolor(elements.vc_req_torque_label, true);
+		lv_label_set_text(elements.vc_req_torque_label, "VC TRQ: ??.? Nm");
+
+		elements.mcu_req_torque_label = lv_label_create(status_area);
+		lv_obj_align(elements.mcu_req_torque_label, LV_ALIGN_CENTER, 0, 50);
+		lv_label_set_recolor(elements.mcu_req_torque_label, true);
+		lv_label_set_text(elements.mcu_req_torque_label, "MCU TRQ: ??.? Nm");
+
+		elements.mcu_feedback_torque_label = lv_label_create(status_area);
+		lv_obj_align(elements.mcu_feedback_torque_label, LV_ALIGN_CENTER, 0, 75);
+		lv_label_set_recolor(elements.mcu_feedback_torque_label, true);
+		lv_label_set_text(elements.mcu_feedback_torque_label, "FB TRQ: ??.? Nm");
 
 		// BMS-related display elements
 		lv_obj_t* bms_area = lv_obj_create(screen);
@@ -155,28 +175,33 @@ namespace ScreenDebug {
 
 		// SOC Label
 		elements.bms_soc_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -50);
+		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -63);
 		lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
 
 		// Cell Voltages Label
 		elements.bms_cellvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -25);
+		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -38);
 		lv_label_set_text(elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
 
 		// Cell Voltages Label
 		elements.bms_packvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, 0);
+		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, -13);
 		lv_label_set_text(elements.bms_packvoltage_label, "PACK = ???.? V");
 
 		// Current Label
 		elements.bms_current_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 25);
+		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 12);
 		lv_label_set_text(elements.bms_current_label, "I = ?.?? A");
 
 		// Current Label
 		elements.bms_maxcurrent_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 50);
+		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 37);
 		lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
+
+		// Regen label
+		elements.regen_conf_label = lv_label_create(bms_area);
+		lv_obj_align(elements.regen_conf_label, LV_ALIGN_CENTER, 0, 62);
+		lv_label_set_text(elements.regen_conf_label, "CONF = 10.0 Nm");
 
 		// Fault text area
 		elements.faults_textarea = lv_textarea_create(screen);
@@ -311,6 +336,20 @@ namespace ScreenDebug {
 			if(data.bms_maxcurrent != lastdata.bms_maxcurrent) {
 				lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent);
 			}
+		}
+
+		// Regen data
+		if(data.regen_config_torque != lastdata.regen_config_torque) {
+			lv_label_set_text_fmt(elements.regen_conf_label, "CONF = %2.1f Nm", data.regen_config_torque);
+		}
+		if(data.vc_req_torque != lastdata.vc_req_torque) {
+			lv_label_set_text_fmt(elements.vc_req_torque_label, "VC TRQ = %2.1f Nm", data.vc_req_torque);
+		}
+		if(data.mcu_req_torque != lastdata.mcu_req_torque) {
+			lv_label_set_text_fmt(elements.mcu_req_torque_label, "MCU TRQ = %2.1f Nm", data.mcu_req_torque);
+		}
+		if(data.mcu_feedback_torque != lastdata.mcu_feedback_torque) {
+			lv_label_set_text_fmt(elements.mcu_feedback_torque_label, "FB TRQ = %2.1f Nm", data.mcu_feedback_torque);
 		}
 
 		lastdata = data;

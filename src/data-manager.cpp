@@ -23,6 +23,8 @@ namespace DataManager {
 		//Assume we have a fault until we certianly don't
 		data.bms_faultvector = 0x8000;
 
+		data.regen_config_torque = 10.0;
+
 		Serial.printf("Initialized DataManager\n");
 	}
 
@@ -116,7 +118,23 @@ namespace DataManager {
 					else {
 						data.bms_limplevel = temp_limp;
 					}
-				}
+					break; }
+				case FORMULA_MAIN_DBC_REGEN_CONFIG_COMMAND_FRAME_ID: {
+					formula_main_dbc_regen_config_command_t command;
+					formula_main_dbc_regen_config_command_unpack(&command, message.data, message.len);
+					data.regen_config_torque = command.regen_torque * 0.1;
+					break; }
+				case FORMULA_MAIN_DBC_MCU_COMMAND_MESSAGE_FRAME_ID: {
+					formula_main_dbc_mcu_command_message_t command;
+					formula_main_dbc_mcu_command_message_unpack(&command, message.data, message.len);
+					data.vc_req_torque = command.torque_command * 0.1;
+					break; }
+				case FORMULA_MAIN_DBC_MCU_TORQUE_AND_TIMER_INFO_FRAME_ID: {
+					formula_main_dbc_mcu_torque_and_timer_info_t info;
+					formula_main_dbc_mcu_torque_and_timer_info_unpack(&info, message.data, message.len);
+					data.mcu_req_torque = info.d1_commanded_torque * 0.1;
+					data.mcu_feedback_torque = info.d2_torque_feedback * 0.1;
+					break; }
 			}
 		}
 

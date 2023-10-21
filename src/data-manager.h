@@ -30,6 +30,12 @@ namespace DataManager {
 		float bms_cellvoltages_min;
 		float bms_cellvoltages_max;
 		float bms_packvoltage;
+
+		// Regen numbers
+		float regen_config_torque;
+		float vc_req_torque;
+		float mcu_req_torque;
+		float mcu_feedback_torque;
 	} car_data_t;
 
 	void init();
