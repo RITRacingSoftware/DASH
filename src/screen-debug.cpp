@@ -29,6 +29,8 @@ namespace ScreenDebug {
 		lv_obj_t* status_bmsstatus;
 
 		lv_obj_t* regen_conf_label;
+		lv_obj_t* vsm_state_label;
+
 		lv_obj_t* vc_req_torque_label;
 		lv_obj_t* mcu_req_torque_label;
 		lv_obj_t* mcu_feedback_torque_label;
@@ -175,33 +177,38 @@ namespace ScreenDebug {
 
 		// SOC Label
 		elements.bms_soc_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -63);
+		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -75);
 		lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
 
 		// Cell Voltages Label
 		elements.bms_cellvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -38);
+		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -50);
 		lv_label_set_text(elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
 
 		// Cell Voltages Label
 		elements.bms_packvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, -13);
+		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, -25);
 		lv_label_set_text(elements.bms_packvoltage_label, "PACK = ???.? V");
 
 		// Current Label
 		elements.bms_current_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 12);
+		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 0);
 		lv_label_set_text(elements.bms_current_label, "I = ?.?? A");
 
 		// Current Label
 		elements.bms_maxcurrent_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 37);
+		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 25);
 		lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
 
-		// Regen label
+		// Regen config label
 		elements.regen_conf_label = lv_label_create(bms_area);
-		lv_obj_align(elements.regen_conf_label, LV_ALIGN_CENTER, 0, 62);
+		lv_obj_align(elements.regen_conf_label, LV_ALIGN_CENTER, 0, 50);
 		lv_label_set_text(elements.regen_conf_label, "CONF = 10.0 Nm");
+
+		// VSM state label
+		elements.vsm_state_label = lv_label_create(bms_area);
+		lv_obj_align(elements.vsm_state_label, LV_ALIGN_CENTER, 0, 75);
+		lv_label_set_text(elements.vsm_state_label, "VSM = ?");
 
 		// Fault text area
 		elements.faults_textarea = lv_textarea_create(screen);
@@ -342,6 +349,10 @@ namespace ScreenDebug {
 		if(data.regen_config_torque != lastdata.regen_config_torque) {
 			lv_label_set_text_fmt(elements.regen_conf_label, "CONF = %2.1f Nm", data.regen_config_torque);
 		}
+		if(data.vsm_state != lastdata.vsm_state) {
+			lv_label_set_text_fmt(elements.vsm_state_label, "VSM = %d", data.vsm_state);
+		}
+
 		if(data.vc_req_torque != lastdata.vc_req_torque) {
 			lv_label_set_text_fmt(elements.vc_req_torque_label, "VC TRQ = %2.1f Nm", data.vc_req_torque);
 		}

@@ -33,6 +33,7 @@ namespace DataManager {
 
 		// Regen numbers
 		float regen_config_torque;
+		uint8_t vsm_state;
 		float vc_req_torque;
 		float mcu_req_torque;
 		float mcu_feedback_torque;

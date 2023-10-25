@@ -135,6 +135,11 @@ namespace DataManager {
 					data.mcu_req_torque = info.d1_commanded_torque * 0.1;
 					data.mcu_feedback_torque = info.d2_torque_feedback * 0.1;
 					break; }
+				case FORMULA_MAIN_DBC_MCU_INTERNAL_STATES_FRAME_ID: {
+					formula_main_dbc_mcu_internal_states_t states;
+					formula_main_dbc_mcu_internal_states_unpack(&states, message.data, message.len);
+					data.vsm_state = states.d1_vsm_state;
+					break; }
 			}
 		}
 
