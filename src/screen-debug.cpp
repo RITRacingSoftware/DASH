@@ -1,3 +1,4 @@
+#include "tft-manager.h"
 #include "screen-debug.h"
 
 #include <Arduino.h>
@@ -100,90 +101,90 @@ namespace ScreenDebug {
 		lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[0]);
 		lv_style_set_text_color(&elements.limp_style, lv_color_white());
 		lv_obj_add_style(screen, &elements.limp_style, LV_PART_MAIN);
-
+		
 		// RPM Bar
 		elements.rpmbar = lv_bar_create(screen);
-		lv_bar_set_range(elements.rpmbar, 0, 5000);
-		lv_obj_set_size(elements.rpmbar, 47, 156);
-		lv_obj_align(elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_bar_set_range(elements.rpmbar,  0, 5000);
+		lv_obj_set_size(elements.rpmbar, rpm_bar_sizeX, rpm_bar_sizeY);
+		lv_obj_align(elements.rpmbar, LV_ALIGN_TOP_LEFT, rpm_bar_align_offsetX, rpm_bar_align_offsetY);
 		lv_obj_add_style(elements.rpmbar, &styles->barstyle, 0);
 		lv_obj_add_style(elements.rpmbar, &styles->barindstyle, LV_PART_INDICATOR);
 		// RPM Bar Label
 		elements.rpmlabel = lv_label_create(screen);
 		lv_label_set_text(elements.rpmlabel, "????\nRPM");
-		lv_obj_align_to(elements.rpmlabel, elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+		lv_obj_align_to(elements.rpmlabel, elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, rpmlabel_align_offsetX, rpmlabel_align_offsetY);
 		// MPH Label
 		elements.mphlabel = lv_label_create(screen);
 		lv_label_set_text(elements.mphlabel, "??.?\nMPH");
-		lv_obj_align_to(elements.mphlabel, elements.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
-
+		lv_obj_align_to(elements.mphlabel, elements.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, mphlabel_align_offsetX, mphlabel_align_offsetY);
+		/*
 		// Status display elements
 		lv_obj_t* status_area = lv_obj_create(screen);
-		lv_obj_set_size(status_area, 210, 180);
-		lv_obj_align(status_area, LV_ALIGN_TOP_MID, -70, 10);
+		lv_obj_set_size(status_area, status_area_sizeX, status_area_sizeY);
+		lv_obj_align(status_area, LV_ALIGN_TOP_MID, status_area_align_offsetX, status_area_align_offsetY);
 		lv_obj_add_style(status_area, &styles->style, LV_PART_MAIN);
 		// Disable scroll bars
 		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
 
 		elements.status_overall = lv_label_create(status_area);
-		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -38);
+		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, status_overall_align_offsetX, status_overall_align_offsetY);
 		lv_label_set_recolor(elements.status_overall, true);
 		lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
 
 		elements.status_vcstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
+		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, status_vcstatus_align_offsetX, status_vcstatus_align_offsetY);
 		lv_label_set_recolor(elements.status_vcstatus, true);
 		lv_label_set_text(elements.status_vcstatus, "VC: ???");
 
 		elements.status_mcustatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
+		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, status_mcustatus_align_offsetX, status_mcustatus_align_offsetY);
 		lv_label_set_recolor(elements.status_mcustatus, true);
 		lv_label_set_text(elements.status_mcustatus, "MC: ???");
 
 		elements.status_bmsstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
+		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, status_bmsstatus_align_offsetX, status_bmsstatus_align_offsetY);
 		lv_label_set_recolor(elements.status_bmsstatus, true);
 		lv_label_set_text(elements.status_bmsstatus, "BMS: ???");
-
+		
 		// BMS-related display elements
 		lv_obj_t* bms_area = lv_obj_create(screen);
-		lv_obj_set_size(bms_area, 190, 180);
-		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
+		lv_obj_set_size(bms_area, bms_area_sizeX, bms_area_sizeY);
+		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, bms_area_align_offsetX, bms_area_align_offsetY);
 		lv_obj_add_style(bms_area, &styles->style, LV_PART_MAIN);
 		// Disable scroll bars
 		lv_obj_set_scrollbar_mode(bms_area, LV_SCROLLBAR_MODE_OFF);
 
 		// SOC Label
 		elements.bms_soc_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -50);
+		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, bms_soc_label_align_offsetX, bms_soc_label_align_offsetY);
 		lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
 
 		// Cell Voltages Label
 		elements.bms_cellvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -25);
+		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, bms_cellvoltage_label_align_offsetX, bms_cellvoltage_label_align_offsetY);
 		lv_label_set_text(elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
 
 		// Cell Voltages Label
 		elements.bms_packvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, 0);
+		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, bms_packvoltage_label_align_offsetX, bms_packvoltage_label_align_offsetY);
 		lv_label_set_text(elements.bms_packvoltage_label, "PACK = ???.? V");
 
 		// Current Label
 		elements.bms_current_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 25);
+		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, bms_current_label_align_offsetX, bms_current_label_align_offsetY);
 		lv_label_set_text(elements.bms_current_label, "I = ?.?? A");
 
 		// Current Label
 		elements.bms_maxcurrent_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 50);
+		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, bms_maxcurrent_label_align_offsetX, bms_maxcurrent_label_align_offsetY);
 		lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
-
+		
 		// Fault text area
 		elements.faults_textarea = lv_textarea_create(screen);
-		lv_obj_set_size(elements.faults_textarea, 405, 60);
-		lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
+		lv_obj_set_size(elements.faults_textarea, fault_area_sizeX, fault_area_sizeY);
+		lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, fault_area_align_offsetX, fault_area_align_offsetY);
 		lv_obj_add_style(elements.faults_textarea, &styles->faultstyle, LV_PART_MAIN);
-
+		*/
 		Serial.printf("Initialized Debug Screen\n");
 
 		return screen;
@@ -213,6 +214,9 @@ namespace ScreenDebug {
 			}
 
 		}*/
+
+		//tmp
+		/*
 		if(data.vc_status != lastdata.vc_status) {
 			if(data.vc_status == 2) {
 				lv_label_set_text(elements.status_overall, "#00ff00 READY TO DRIVE#");
@@ -314,5 +318,6 @@ namespace ScreenDebug {
 		}
 
 		lastdata = data;
+		*/
 	}
 }

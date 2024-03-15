@@ -9,7 +9,7 @@
 
 #include "lvgl.h"
 
-#define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 10)
+#define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 10) //default /10
 
 namespace DisplayManager {
 

@@ -1,4 +1,5 @@
 #include "screen-drive.h"
+#include "tft-manager.h"
 
 #include <Arduino.h>
 
