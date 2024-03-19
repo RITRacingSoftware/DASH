@@ -117,7 +117,7 @@ namespace ScreenDebug {
 		elements.mphlabel = lv_label_create(screen);
 		lv_label_set_text(elements.mphlabel, "??.?\nMPH");
 		lv_obj_align_to(elements.mphlabel, elements.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, mphlabel_align_offsetX, mphlabel_align_offsetY);
-		/*
+		
 		// Status display elements
 		lv_obj_t* status_area = lv_obj_create(screen);
 		lv_obj_set_size(status_area, status_area_sizeX, status_area_sizeY);
@@ -184,7 +184,7 @@ namespace ScreenDebug {
 		lv_obj_set_size(elements.faults_textarea, fault_area_sizeX, fault_area_sizeY);
 		lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, fault_area_align_offsetX, fault_area_align_offsetY);
 		lv_obj_add_style(elements.faults_textarea, &styles->faultstyle, LV_PART_MAIN);
-		*/
+		
 		Serial.printf("Initialized Debug Screen\n");
 
 		return screen;
@@ -216,7 +216,6 @@ namespace ScreenDebug {
 		}*/
 
 		//tmp
-		/*
 		if(data.vc_status != lastdata.vc_status) {
 			if(data.vc_status == 2) {
 				lv_label_set_text(elements.status_overall, "#00ff00 READY TO DRIVE#");
@@ -318,6 +317,6 @@ namespace ScreenDebug {
 		}
 
 		lastdata = data;
-		*/
+		
 	}
 }

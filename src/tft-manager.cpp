@@ -11,8 +11,8 @@ namespace TFTManager {
 	Adafruit_RA8875* driver;
 
 	void initScreen() {
-		//driver->begin(RA8875_init_res);
-		driver->begin(RA8875_800x480);
+		driver->begin(RA8875_init_res);
+		//driver->begin(RA8875_800x480);
 		driver->displayOn(true);
 		driver->GPIOX(true); // Enable TFT - display enable tied to GPIOX
 		driver->PWM1config(true, RA8875_PWM_CLK_DIV1024); // PWM output for backlight
