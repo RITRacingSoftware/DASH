@@ -28,6 +28,9 @@ namespace ScreenDebug {
 		lv_obj_t* status_vcstatus;
 		lv_obj_t* status_mcustatus;
 		lv_obj_t* status_bmsstatus;
+		lv_obj_t* bms_test_label1;
+		lv_obj_t* bms_test_label2;
+		lv_obj_t* bms_test_label3;
 
 		lv_obj_t* faults_textarea;
 
@@ -178,6 +181,19 @@ namespace ScreenDebug {
 		elements.bms_maxcurrent_label = lv_label_create(bms_area);
 		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, bms_maxcurrent_label_align_offsetX, bms_maxcurrent_label_align_offsetY);
 		lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
+		//test label
+		elements.bms_test_label1 = lv_label_create(bms_area);
+		lv_obj_align(elements.bms_test_label1, LV_ALIGN_CENTER, bms_maxcurrent_label_align_offsetX, bms_maxcurrent_label_align_offsetY - 10);
+		lv_label_set_text(elements.bms_test_label1, "some value = ?.?? A");
+
+		elements.bms_test_label2 = lv_label_create(bms_area);
+		lv_obj_align(elements.bms_test_label1, LV_ALIGN_CENTER, bms_maxcurrent_label_align_offsetX, bms_maxcurrent_label_align_offsetY - 20);
+		lv_label_set_text(elements.bms_test_label1, "some value = ?.?? A");
+
+		elements.bms_test_label3 = lv_label_create(bms_area);
+		lv_obj_align(elements.bms_test_label1, LV_ALIGN_CENTER, bms_maxcurrent_label_align_offsetX, bms_maxcurrent_label_align_offsetY - 30);
+		lv_label_set_text(elements.bms_test_label1, "some value = ?.?? A");
+
 		
 		// Fault text area
 		elements.faults_textarea = lv_textarea_create(screen);
@@ -307,7 +323,7 @@ namespace ScreenDebug {
 				data.bms_cellvoltages_min, data.bms_cellvoltages_max);
 		}
 		if(data.bms_packvoltage != lastdata.bms_packvoltage) {
-			lv_label_set_text_fmt(elements.bms_packvoltage_label, "PACK = %3.1f V", data.bms_packvoltage);
+			lv_label_set_text_fmt(elements.bms_packvoltage_label, "PACK = %3.3f V", data.bms_packvoltage);
 		}
 		if(data.bms_buscurrent != lastdata.bms_buscurrent) {
 			lv_label_set_text_fmt(elements.bms_current_label, "I = %1.2f A", data.bms_buscurrent);
@@ -315,8 +331,26 @@ namespace ScreenDebug {
 				lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent);
 			}
 		}
+		/*
+		if(data.vc_status != lastdata.bms_buscurrent) {
+			lv_label_set_text_fmt(elements.bms_current_label, "I = %1.2f A", data.bms_buscurrent);
+			if(data.bms_maxcurrent != lastdata.bms_maxcurrent) {
+				lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent);
+			}
+		}		
+		
+		float lv_voltage; //voltage of lv batt how get? need dbc update perhaps
+		float goPedal_A;
+		float goPedal_B;
+		float goPedal_AVG;
+		float nogo_pressure;
+		*/
 
-		lastdata = data;
+		if(data.goPedal_AVG != lastdata.goPedal_AVG ){
+			lv_label_set_text_fmt(elements.bms_test_label1, "go pedal= %1.3f ", data.goPedal_A);
+			lv_label_set_text_fmt(elements.bms_test_label2, "go pedal= %1.3f ", data.goPedal_B);
+			lv_label_set_text_fmt(elements.bms_test_label3, "go pedal= %1.3f ", data.goPedal_AVG);
+		}
 		
 	}
 }

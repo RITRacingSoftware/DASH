@@ -1,4 +1,3 @@
-
 #define PIN_RA8875_CS 10
 #define PIN_RA8875_RESET 9
 

@@ -22,7 +22,7 @@ namespace DataManager {
 		data.bms_maxcurrent = -100000;
 		//Assume we have a fault until we certianly don't
 		data.bms_faultvector = 0x8000;
-
+		data.lv_voltage = 0.0;
 		Serial.printf("Initialized DataManager\n");
 	}
 
@@ -116,6 +116,15 @@ namespace DataManager {
 					else {
 						data.bms_limplevel = temp_limp;
 					}
+				}
+				//test 
+				case FORMULA_MAIN_DBC_VC_PEDAL_INPUTS_FRAME_ID: {
+					formula_main_dbc_vc_pedal_inputs_t vcPedals;
+					formula_main_dbc_vc_pedal_inputs_unpack(&vcPedals, message.data, message.len);
+					uint16_t acPedal_A = vcPedals.vc_pedal_inputs_accel_position_a;
+					uint16_t acPedal_B = vcPedals.vc_pedal_inputs_accel_position_b;
+					uint16_t acPedal_avg = vcPedals.vc_pedal_inputs_accel_position_avg;
+					uint16_t bp = vcPedals.vc_pedal_inputs_brake_pressure;
 				}
 			}
 		}

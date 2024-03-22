@@ -18,6 +18,12 @@ namespace DataManager {
 		float bms_buscurrent;
 		float bms_maxcurrent;
 
+		float lv_voltage; //voltage of lv batt how get? need dbc update perhaps
+		float goPedal_A;
+		float goPedal_B;
+		float goPedal_AVG;
+		float nogo_pressure;
+
 		uint8_t bms_limplevel;
 
 		// This mirrors the formula_dbc_bms_voltages_t struct
