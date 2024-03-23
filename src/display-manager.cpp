@@ -63,7 +63,7 @@ namespace DisplayManager {
 		lv_style_init(&styles.faultstyle);
 		lv_style_set_bg_color(&styles.faultstyle, lv_color_black());
 		lv_style_set_text_color(&styles.faultstyle, lv_color_white());
-		lv_style_set_text_font(&styles.faultstyle, &lv_font_montserrat_14);
+		lv_style_set_text_font(&styles.faultstyle, &lv_font_montserrat_16);
 		lv_style_set_radius(&styles.faultstyle, 2);
 	}
 

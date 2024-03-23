@@ -126,22 +126,22 @@ namespace ScreenDebug {
 		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
 
 		elements.status_overall = lv_label_create(status_area);
-		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -38);
+		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -45);
 		lv_label_set_recolor(elements.status_overall, true);
 		lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
 
 		elements.status_vcstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -13);
+		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -15);
 		lv_label_set_recolor(elements.status_vcstatus, true);
 		lv_label_set_text(elements.status_vcstatus, "VC: ???");
 
 		elements.status_mcustatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, 12);
+		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, 15);
 		lv_label_set_recolor(elements.status_mcustatus, true);
 		lv_label_set_text(elements.status_mcustatus, "MC: ???");
 
 		elements.status_bmsstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 37);
+		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 45);
 		lv_label_set_recolor(elements.status_bmsstatus, true);
 		lv_label_set_text(elements.status_bmsstatus, "BMS: ???");
 
@@ -155,12 +155,12 @@ namespace ScreenDebug {
 
 		// SOC Label
 		elements.bms_soc_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -50);
+		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -60);
 		lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
 
 		// Cell Voltages Label
 		elements.bms_cellvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -25);
+		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -30);
 		lv_label_set_text(elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
 
 		// Cell Voltages Label
@@ -170,12 +170,12 @@ namespace ScreenDebug {
 
 		// Current Label
 		elements.bms_current_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 25);
+		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 30);
 		lv_label_set_text(elements.bms_current_label, "I = ?.?? A");
 
 		// Current Label
 		elements.bms_maxcurrent_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 50);
+		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 60);
 		lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
 
 		// Fault text area
