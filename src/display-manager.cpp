@@ -13,7 +13,7 @@
 
 namespace DisplayManager {
 
-	bool active_screen = 1; // 0 = debug, 1 = drive
+	bool active_screen = 0; // 0 = debug, 1 = drive
 	lv_obj_t* screen_debug;
 	lv_obj_t* screen_drive;
 
