@@ -11,8 +11,8 @@ namespace DataManager {
 	car_data_t data;
 
 	// Calculated using GNU units to prevent precision loss
-	// > units "1/minute * 11/40 * 16in * pi" "mph"
-	const double RPM_TO_MPH = .0130899;
+	// > units "1/minute * 11/45 * 16in * pi" "mph"
+	const double RPM_TO_MPH = .011635528;
 
 	void init() {
 		Serial.printf("Initializing DataManager\n");
