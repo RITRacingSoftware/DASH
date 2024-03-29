@@ -22,11 +22,13 @@ namespace ScreenDebug {
 		lv_obj_t* bms_packvoltage_label;
 		lv_obj_t* bms_current_label;
 		lv_obj_t* bms_maxcurrent_label;
+		lv_obj_t* bms_maxtemp_label;
 
 		lv_obj_t* status_overall;
 		lv_obj_t* status_vcstatus;
 		lv_obj_t* status_mcustatus;
 		lv_obj_t* status_bmsstatus;
+		lv_obj_t* vsm_state_label;
 
 		lv_obj_t* faults_textarea;
 
@@ -145,6 +147,11 @@ namespace ScreenDebug {
 		lv_label_set_recolor(elements.status_bmsstatus, true);
 		lv_label_set_text(elements.status_bmsstatus, "BMS: ???");
 
+		// VSM state label
+		elements.vsm_state_label = lv_label_create(status_area);
+		lv_obj_align(elements.vsm_state_label, LV_ALIGN_CENTER, 0, 75);
+		lv_label_set_text(elements.vsm_state_label, "VSM = ?");
+
 		// BMS-related display elements
 		lv_obj_t* bms_area = lv_obj_create(screen);
 		lv_obj_set_size(bms_area, 320, 320);
@@ -155,28 +162,33 @@ namespace ScreenDebug {
 
 		// SOC Label
 		elements.bms_soc_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -60);
+		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -75);
 		lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
 
 		// Cell Voltages Label
 		elements.bms_cellvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -30);
+		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -45);
 		lv_label_set_text(elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
 
 		// Cell Voltages Label
 		elements.bms_packvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, 0);
+		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, -15);
 		lv_label_set_text(elements.bms_packvoltage_label, "PACK = ???.? V");
 
 		// Current Label
 		elements.bms_current_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 30);
+		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 15);
 		lv_label_set_text(elements.bms_current_label, "I = ?.?? A");
 
-		// Current Label
+		// Peak current Label
 		elements.bms_maxcurrent_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 60);
+		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 45);
 		lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
+
+		// Max temp
+		elements.bms_maxtemp_label = lv_label_create(bms_area);
+		lv_obj_align(elements.bms_maxtemp_label, LV_ALIGN_CENTER, 0, 75);
+		lv_label_set_text(elements.bms_maxtemp_label, "TEMP = ??? C");
 
 		// Fault text area
 		elements.faults_textarea = lv_textarea_create(screen);
@@ -242,6 +254,10 @@ namespace ScreenDebug {
 				lv_label_set_text_fmt(elements.status_mcustatus, "MC: %s",
 					MCU_STATUS_MESSAGES[0]);
 			}
+		}
+
+		if(data.mcu_vsm_state != lastdata.mcu_vsm_state) {
+			lv_label_set_text_fmt(elements.vsm_state_label, "VSM = %d", data.mcu_vsm_state);
 		}
 
 		if(data.vc_faultvector != lastdata.vc_faultvector ||
@@ -311,6 +327,9 @@ namespace ScreenDebug {
 			if(data.bms_maxcurrent != lastdata.bms_maxcurrent) {
 				lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent);
 			}
+		}
+		if(data.bms_maxtemp != lastdata.bms_maxtemp) {
+			lv_label_set_text_fmt(elements.bms_maxtemp_label, "TEMP = %3.0f C", data.bms_maxtemp);
 		}
 
 		lastdata = data;

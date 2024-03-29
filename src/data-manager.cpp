@@ -35,8 +35,7 @@ namespace DataManager {
 				case FORMULA_MAIN_DBC_MCU_MOTOR_POSITION_INFO_FRAME_ID: {
 					formula_main_dbc_mcu_motor_position_info_t motor_position;
 					formula_main_dbc_mcu_motor_position_info_unpack(&motor_position, message.data, message.len);
-					// TODO?: Motor is backwards, need to invert values
-					data.mcu_motorrpm = -motor_position.d2_motor_speed;
+					data.mcu_motorrpm = motor_position.d2_motor_speed;
 					float wheelmph = data.mcu_motorrpm * RPM_TO_MPH;
 					data.mcu_wheelspeed = wheelmph;
 					break; }
@@ -45,6 +44,7 @@ namespace DataManager {
 					formula_main_dbc_bms_status_unpack(&bms_status, message.data, message.len);
 					data.bms_soc = bms_status.bms_status_soc;
 					data.bms_packvoltage = bms_status.bms_status_pack_voltage * 0.1;
+					data.bms_maxtemp = formula_main_dbc_bms_status_bms_status_max_temperature_decode(bms_status.bms_status_max_temperature);
 					break; }
 				case FORMULA_MAIN_DBC_BMS_CURRENT_FRAME_ID: {
 					formula_main_dbc_bms_current_t current;
@@ -79,7 +79,7 @@ namespace DataManager {
 					formula_main_dbc_vc_status_t vcstatus;
 					formula_main_dbc_vc_status_unpack(&vcstatus, message.data, message.len);
 					data.vc_status = vcstatus.vc_status_vehicle_state;
-					data.mcu_status = vcstatus.vc_status_mc_ready;
+					data.mcu_status = vcstatus.vc_status_mc_state;
 					break; }
 				case FORMULA_MAIN_DBC_VC_FAULT_VECTOR_FRAME_ID: {
 					uint8_t mask = 0xf;
@@ -116,15 +116,13 @@ namespace DataManager {
 					else {
 						data.bms_limplevel = temp_limp;
 					}
+					break;
 				}
-				//test 
-				case FORMULA_MAIN_DBC_VC_PEDAL_INPUTS_FRAME_ID: {
-					formula_main_dbc_vc_pedal_inputs_t vcPedals;
-					formula_main_dbc_vc_pedal_inputs_unpack(&vcPedals, message.data, message.len);
-					uint16_t acPedal_A = vcPedals.vc_pedal_inputs_accel_position_a;
-					uint16_t acPedal_B = vcPedals.vc_pedal_inputs_accel_position_b;
-					uint16_t acPedal_avg = vcPedals.vc_pedal_inputs_accel_position_avg;
-					uint16_t bp = vcPedals.vc_pedal_inputs_brake_pressure;
+				case FORMULA_MAIN_DBC_MCU_INTERNAL_STATES_FRAME_ID: {
+					formula_main_dbc_mcu_internal_states_t states;
+					formula_main_dbc_mcu_internal_states_unpack(&states, message.data, message.len);
+					data.mcu_vsm_state = states.d1_vsm_state;
+					break;
 				}
 			}
 		}

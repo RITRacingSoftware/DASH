@@ -12,11 +12,13 @@ namespace DataManager {
 		uint8_t vc_status;
 		uint8_t vc_faultvector;
 		uint8_t mcu_status;
+		uint8_t mcu_vsm_state;
+		
 		uint16_t bms_faultvector;
-
 		uint8_t bms_soc;
 		float bms_buscurrent;
 		float bms_maxcurrent;
+		float bms_maxtemp;
 
 		float lv_voltage; //voltage of lv batt how get? need dbc update perhaps
 		float goPedal_A;
