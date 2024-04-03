@@ -44,8 +44,15 @@ namespace DataManager {
 					formula_main_dbc_bms_status_unpack(&bms_status, message.data, message.len);
 					data.bms_soc = bms_status.bms_status_soc;
 					data.bms_packvoltage = bms_status.bms_status_pack_voltage * 0.1;
-					data.bms_maxtemp = formula_main_dbc_bms_status_bms_status_max_temperature_decode(bms_status.bms_status_max_temperature);
 					break; }
+				case FORMULA_MAIN_DBC_BMS_CELL_OVERVIEW_FRAME_ID: {
+					formula_main_dbc_bms_cell_overview_t cells;
+					formula_main_dbc_bms_cell_overview_unpack(&cells, message.data, message.len);
+					data.bms_cellvoltages_min = formula_main_dbc_bms_cell_overview_bms_overview_volt_min_decode(cells.bms_overview_volt_min);
+					data.bms_cellvoltages_max = formula_main_dbc_bms_cell_overview_bms_overview_volt_max_decode(cells.bms_overview_volt_max);
+					data.bms_maxtemp = formula_main_dbc_bms_cell_overview_bms_overview_temp_max_decode(cells.bms_overview_temp_max);
+					break;
+				}
 				case FORMULA_MAIN_DBC_BMS_CURRENT_FRAME_ID: {
 					formula_main_dbc_bms_current_t current;
 					formula_main_dbc_bms_current_unpack(&current, message.data, message.len);
@@ -53,27 +60,6 @@ namespace DataManager {
 					if(data.bms_buscurrent > data.bms_maxcurrent) {
 						data.bms_maxcurrent = data.bms_buscurrent;
 					}
-					break; }
-				case FORMULA_MAIN_DBC_BMS_VOLTAGES_FRAME_ID: {
-					formula_main_dbc_bms_voltages_t* voltages = (formula_main_dbc_bms_voltages_t*)
-						&(data.bms_cellvoltages_struct);
-					formula_main_dbc_bms_voltages_unpack(voltages, message.data, message.len);
-
-					uint16_t min = 65535;
-					uint16_t max = 0;
-
-					for(int i = 0; i < NUM_BMS_CELLS; i++) {
-						uint16_t cell = data.bms_cellvoltages_struct.bms_voltages_cell[i];
-						if(cell < min) {
-							min = cell;
-						}
-						if(cell > max) {
-							max = cell;
-						}
-					}
-
-					data.bms_cellvoltages_min = min * 0.01;
-					data.bms_cellvoltages_max = max * 0.01;
 					break; }
 				case FORMULA_MAIN_DBC_VC_STATUS_FRAME_ID: {
 					formula_main_dbc_vc_status_t vcstatus;
