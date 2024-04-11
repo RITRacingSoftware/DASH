@@ -6,6 +6,7 @@
 #include "display-manager.h"
 
 #include "lvgl.h"
+#include "led_bar.h"
 
 namespace ScreenDebug {
 	lv_obj_t* screen;
@@ -34,6 +35,12 @@ namespace ScreenDebug {
 
 		lv_style_t limp_style;
 	} elements;
+
+	//for 20 led light bar
+	struct ledState {
+		uint8_t socColor;
+		uint8_t socPerc;
+	};
 
 	const char* VC_STATUS_MESSAGES[] = {
 		"NOT READY",
@@ -91,6 +98,7 @@ namespace ScreenDebug {
 		lv_palette_main(LV_PALETTE_RED),
 	};
 
+	
 	lv_obj_t* init(DisplayManager::styles_t* styles) {
 		Serial.printf("Initializing Debug Screen\n");
 

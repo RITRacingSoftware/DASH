@@ -6,6 +6,7 @@
 #include "can-manager.h"
 #include "display-manager.h"
 #include "formula_main_dbc.h"
+#include "led_bar.h"
 
 namespace DataManager {
 	car_data_t data;
@@ -18,6 +19,7 @@ namespace DataManager {
 		Serial.printf("Initializing DataManager\n");
 		DisplayManager::init();
 		CANManager::init();
+		ledControl::init();
 
 		data.bms_maxcurrent = -100000;
 		//Assume we have a fault until we certianly don't
