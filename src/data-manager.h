@@ -20,7 +20,7 @@ namespace DataManager {
 		float bms_maxcurrent;
 		float bms_maxtemp;
 
-		float lv_voltage; //voltage of lv batt how get? need dbc update perhaps
+		float lv_voltage;
 		float goPedal_A;
 		float goPedal_B;
 		float goPedal_AVG;
@@ -38,6 +38,13 @@ namespace DataManager {
 		float bms_cellvoltages_min;
 		float bms_cellvoltages_max;
 		float bms_packvoltage;
+
+		float tiretemp_fl;
+		float tiretemp_fr;
+		float tiretemp_rl;
+		float tiretemp_rr;
+
+		float rotortemp;
 	} car_data_t;
 
 	void init();

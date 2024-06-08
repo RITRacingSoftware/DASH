@@ -1,7 +1,9 @@
 #include "data-manager.h"
 
 #include <cstdint>
+#include <cmath>
 #include <Arduino.h>
+
 
 #include "can-manager.h"
 #include "display-manager.h"
@@ -108,6 +110,32 @@ namespace DataManager {
 					formula_main_dbc_mcu_internal_states_t states;
 					formula_main_dbc_mcu_internal_states_unpack(&states, message.data, message.len);
 					data.mcu_vsm_state = states.d1_vsm_state;
+					break;
+				}
+				case FORMULA_MAIN_DBC_C70_TIRE_TEMPS_FRAME_ID: {
+					formula_main_dbc_c70_tire_temps_t temps;
+					formula_main_dbc_c70_tire_temps_unpack(&temps, message.data, message.len);
+					data.tiretemp_fl = formula_main_dbc_c70_tire_temps_tire_temp_fl_max_decode(temps.tire_temp_fl_max);
+					data.tiretemp_fr = formula_main_dbc_c70_tire_temps_tire_temp_fr_max_decode(temps.tire_temp_fr_max);
+					data.tiretemp_rl = formula_main_dbc_c70_tire_temps_tire_temp_rl_max_decode(temps.tire_temp_rl_max);
+					data.tiretemp_rr = formula_main_dbc_c70_tire_temps_tire_temp_rr_max_decode(temps.tire_temp_rr_max);
+					break;
+				}
+				case FORMULA_MAIN_DBC_C70_ROTOR_TEMPS_FRAME_ID: {
+					formula_main_dbc_c70_rotor_temps_t temps;
+					formula_main_dbc_c70_rotor_temps_unpack(&temps, message.data, message.len);
+					float rotortemp_fl = formula_main_dbc_c70_rotor_temps_rotor_temp_fl_max_decode(temps.rotor_temp_fl_max);
+					float rotortemp_fr = formula_main_dbc_c70_rotor_temps_rotor_temp_fr_max_decode(temps.rotor_temp_fr_max);
+					float rotortemp_rl = formula_main_dbc_c70_rotor_temps_rotor_temp_rl_max_decode(temps.rotor_temp_rl_max);
+					float rotortemp_rr = formula_main_dbc_c70_rotor_temps_rotor_temp_rr_max_decode(temps.rotor_temp_rr_max);
+					float rotortemp_max = fmax(fmax(rotortemp_fl, rotortemp_fr), fmax(rotortemp_rl, rotortemp_rr));
+					data.rotortemp = rotortemp_max;
+					break;
+				}
+				case FORMULA_MAIN_DBC_PBX_STATUS_FRAME_ID: {
+					formula_main_dbc_pbx_status_t status;
+					formula_main_dbc_pbx_status_unpack(&status, message.data, message.len);
+					data.lv_voltage = formula_main_dbc_pbx_status_pbx_lv_voltage_decode(status.pbx_lv_voltage);
 					break;
 				}
 			}
