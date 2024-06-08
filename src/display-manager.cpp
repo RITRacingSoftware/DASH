@@ -11,9 +11,11 @@
 
 #define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 16) //default /10 for 480x800
 
+LV_FONT_DECLARE(font_montserrat_40_compressed);
+
 namespace DisplayManager {
 
-	bool active_screen = 0; // 0 = debug, 1 = drive
+	bool active_screen = 1; // 0 = debug, 1 = drive
 	lv_obj_t* screen_debug;
 	lv_obj_t* screen_drive;
 
@@ -47,6 +49,7 @@ namespace DisplayManager {
 		lv_style_set_bg_color(&styles.style, lv_color_black());
 		lv_style_set_text_color(&styles.style, lv_color_white());
 		lv_style_set_radius(&styles.style, 2);
+		lv_style_set_text_font(&styles.style, &font_montserrat_40_compressed);
 
 		// Progress bar style
 		lv_style_init(&styles.barstyle);
@@ -63,7 +66,7 @@ namespace DisplayManager {
 		lv_style_init(&styles.faultstyle);
 		lv_style_set_bg_color(&styles.faultstyle, lv_color_black());
 		lv_style_set_text_color(&styles.faultstyle, lv_color_white());
-		lv_style_set_text_font(&styles.faultstyle, &lv_font_montserrat_16);
+		lv_style_set_text_font(&styles.faultstyle, &font_montserrat_16_compressed);
 		lv_style_set_radius(&styles.faultstyle, 2);
 	}
 
@@ -76,7 +79,7 @@ namespace DisplayManager {
 		initStyles();
 		screen_debug = ScreenDebug::init(&styles);
 		screen_drive = ScreenDrive::init(&styles);
-		lv_scr_load(screen_debug);
+		lv_scr_load(screen_drive);
 		Serial.printf("Initialized Screens\n");
 		Serial.printf("Initialized DisplayManager\n");
 	}
