@@ -9,6 +9,30 @@
 #include "lvgl.h"
 
 namespace ScreenDrive {
+	// The dbc seems to be outdated/not match what the VC is sending, I know this
+	// isn't the correct way to fix it but I'm doing it for now to make it match the VC
+	const char* VC_FAULT_MESSAGES[] = {
+		"VC BRAKE SENSOR IRRATIONAL",
+		// "VC ACCELERATOR IRRATIONAL",
+		"VC APPS SENSOR DISAGREEMENT",
+		"VC APPS DOUBLE PEDAL",
+		// "VC HARDFAULT",
+	};
+
+	const char* BMS_FAULT_MESSAGES[] = {
+		"BMS SLAVE COMM CELLS",
+		"BMS SLAVE COMM TEMPS",
+		"BMS SLAVE COMM DRAIN REQUEST",
+		"BMS CURRENT SENSOR COMM",
+		"BMS OVER CURRENT",
+		"BMS CELL VOLTAGE IRRATIONAL",
+		"BMS CELL VOLTAGE DIFF",
+		"BMS OUT OF JUICE",
+		"BMS TEMPERATURE IRRATIONAL",
+		"BMS OVER TEMPERATURE",
+		"BMS DRAIN FAILURE",
+	};
+
 	lv_obj_t* screen;
 	DataManager::car_data_t lastdata;
 
@@ -149,15 +173,13 @@ namespace ScreenDrive {
 		lv_obj_set_size(elements.faults_area, 390, 160);
 		lv_obj_align(elements.faults_area, LV_ALIGN_RIGHT_MID, -20, 50);
 		lv_obj_add_style(elements.faults_area, &styles->faultstyle, LV_PART_MAIN);
+		lv_textarea_set_text(elements.faults_area, "FAULTS:");
 
 		Serial.printf("Initialized Drive Screen\n");
 		return screen;
 	}
 
 	void update(DataManager::car_data_t data) {
-		// Temporary stuff
-		lv_textarea_set_text(elements.faults_area, "FAULTS: ");
-
 		// Status elements
 		if(data.vc_status != lastdata.vc_status) {
 			if(data.vc_status == 2) {
@@ -247,6 +269,50 @@ namespace ScreenDrive {
 		}
 		if(data.bms_maxtemp != lastdata.bms_maxtemp) {
 			lv_label_set_text_fmt(elements.hv_temp_label, "TEMP %3.0f C", data.bms_maxtemp);
+		}
+
+		// Faults
+		if(data.vc_faultvector != lastdata.vc_faultvector ||
+			data.bms_faultvector != lastdata.bms_faultvector) {
+			// If any fault message changes, we must update them all...
+
+			bool firstfault = true; // Used for pretty-printing
+			uint8_t vc_faultnum = 0;
+			uint8_t bms_faultnum = 0;
+
+			lv_textarea_set_text(elements.faults_area, "Faults: ");
+
+			// Loop over possible VC faults
+			for(int i = 0; i < 5; i++) {
+				bool faulted = (data.vc_faultvector >> i) & 1;
+				if(faulted) {
+					if(!firstfault) {
+						// Pretty printing
+						lv_textarea_add_text(elements.faults_area, ", ");
+					}
+					firstfault = false;
+					lv_textarea_add_text(elements.faults_area, VC_FAULT_MESSAGES[i]);
+					vc_faultnum++;
+				}
+			}
+
+			// Loop over possible BMS faults
+			for(int i = 0; i < 11; i++) {
+				bool faulted = (data.bms_faultvector >> i) & 1;
+				if(faulted) {
+					if(!firstfault) {
+						// Pretty printing
+						lv_textarea_add_text(elements.faults_area, ", ");
+					}
+					firstfault = false;
+					lv_textarea_add_text(elements.faults_area, BMS_FAULT_MESSAGES[i]);
+					bms_faultnum++;
+				}
+			}
+
+			if(vc_faultnum == 0 && bms_faultnum == 0) {
+				lv_textarea_set_text(elements.faults_area, "");
+			}
 		}
 
 		lastdata = data;
