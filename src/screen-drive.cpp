@@ -38,10 +38,20 @@ namespace ScreenDrive {
 		lv_obj_t* lv_voltage_label;
 	} elements;
 
-	lv_style_t mph_style;
+	lv_style_t temp_cold_style;
+	lv_style_t temp_optimal_style;
+	lv_style_t temp_hot_style;
 
 	lv_obj_t* init(DisplayManager::styles_t* styles) {
 		Serial.printf("Initializing Drive Screen\n");
+
+		//Styles
+		lv_style_init(&temp_cold_style);
+		lv_style_set_bg_color(&temp_cold_style, lv_palette_main(LV_PALETTE_BLUE));
+		lv_style_init(&temp_optimal_style);
+		lv_style_set_bg_color(&temp_optimal_style, lv_palette_main(LV_PALETTE_GREEN));
+		lv_style_init(&temp_hot_style);
+		lv_style_set_bg_color(&temp_hot_style, lv_palette_main(LV_PALETTE_RED));
 
 		screen = lv_obj_create(NULL);
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
@@ -168,17 +178,62 @@ namespace ScreenDrive {
 		if (data.rotortemp != lastdata.rotortemp) {
 			lv_bar_set_value(elements.brake_temp_bar, data.rotortemp, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.brake_temp_label, "%0.0f C", data.rotortemp);
+			if (data.rotortemp < 200) {
+				lv_obj_set_style_bg_color(elements.brake_temp_bar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+			}
+			else if (data.rotortemp < 450) {
+				lv_obj_set_style_bg_color(elements.brake_temp_bar, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
+			}
+			else {
+				lv_obj_set_style_bg_color(elements.brake_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
+			}
 		}
 		if (data.tiretemp_fl != lastdata.tiretemp_fl || data.tiretemp_fr != lastdata.tiretemp_fr ||
 		        data.tiretemp_rl != lastdata.tiretemp_rl || data.tiretemp_rr != lastdata.tiretemp_rr) {
 			lv_bar_set_value(elements.fl_temp_bar, data.tiretemp_fl, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.fl_temp_label, "%0.0f C", data.tiretemp_fl);
+			if (data.tiretemp_fl < 40) {
+				lv_obj_set_style_bg_color(elements.fl_temp_bar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+			}
+			else if (data.tiretemp_fl < 90) {
+				lv_obj_set_style_bg_color(elements.fl_temp_bar, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
+			}
+			else {
+				lv_obj_set_style_bg_color(elements.fl_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
+			}
 			lv_bar_set_value(elements.fr_temp_bar, data.tiretemp_fr, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.fr_temp_label, "%0.0f C", data.tiretemp_fr);
+			if (data.tiretemp_fr < 40) {
+				lv_obj_set_style_bg_color(elements.fr_temp_bar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+			}
+			else if (data.tiretemp_fr < 90) {
+				lv_obj_set_style_bg_color(elements.fr_temp_bar, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
+			}
+			else {
+				lv_obj_set_style_bg_color(elements.fr_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
+			}
 			lv_bar_set_value(elements.rl_temp_bar, data.tiretemp_rl, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.rl_temp_label, "%0.0f C", data.tiretemp_rl);
+			if (data.tiretemp_rl < 40) {
+				lv_obj_set_style_bg_color(elements.rl_temp_bar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+			}
+			else if (data.tiretemp_rl < 90) {
+				lv_obj_set_style_bg_color(elements.rl_temp_bar, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
+			}
+			else {
+				lv_obj_set_style_bg_color(elements.rl_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
+			}
 			lv_bar_set_value(elements.rr_temp_bar, data.tiretemp_rr, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.rr_temp_label, "%0.0f C", data.tiretemp_rr);
+			if (data.tiretemp_rr < 40) {
+				lv_obj_set_style_bg_color(elements.rr_temp_bar, lv_palette_main(LV_PALETTE_BLUE), LV_PART_INDICATOR);
+			}
+			else if (data.tiretemp_rr < 90) {
+				lv_obj_set_style_bg_color(elements.rr_temp_bar, lv_palette_main(LV_PALETTE_GREEN), LV_PART_INDICATOR);
+			}
+			else {
+				lv_obj_set_style_bg_color(elements.rr_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
+			}
 		}
 
 		// HV Elements
