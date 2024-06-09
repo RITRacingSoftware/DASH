@@ -173,7 +173,7 @@ namespace ScreenDrive {
 		lv_obj_set_size(elements.faults_area, 390, 160);
 		lv_obj_align(elements.faults_area, LV_ALIGN_RIGHT_MID, -20, 50);
 		lv_obj_add_style(elements.faults_area, &styles->faultstyle, LV_PART_MAIN);
-		lv_textarea_set_text(elements.faults_area, "FAULTS:");
+		lv_textarea_set_text(elements.faults_area, "");
 
 		Serial.printf("Initialized Drive Screen\n");
 		return screen;
@@ -183,14 +183,14 @@ namespace ScreenDrive {
 		// Status elements
 		if(data.vc_status != lastdata.vc_status) {
 			if(data.vc_status == 2) {
-				lv_label_set_text(elements.rtd_label, "#00ff00 READY TO DRIVE#");
+				lv_label_set_text(elements.rtd_label, "#00ff00 READY#");
 			}
 			else {
 				lv_label_set_text(elements.rtd_label, "#ff0000 NOT READY#");
 			}
 		}
 		if (data.mcu_wheelspeed != lastdata.mcu_wheelspeed) {
-			lv_label_set_text_fmt(elements.mph_label, "MPH: %2.0f V", data.mcu_wheelspeed);
+			lv_label_set_text_fmt(elements.mph_label, "MPH: %2.0f", data.mcu_wheelspeed);
 		}
 		if (data.lv_voltage != lastdata.lv_voltage) {
 			lv_label_set_text_fmt(elements.lv_voltage_label, "LV: %2.1f V", data.lv_voltage);
@@ -280,7 +280,7 @@ namespace ScreenDrive {
 			uint8_t vc_faultnum = 0;
 			uint8_t bms_faultnum = 0;
 
-			lv_textarea_set_text(elements.faults_area, "Faults: ");
+			lv_textarea_set_text(elements.faults_area, "FAULTS: ");
 
 			// Loop over possible VC faults
 			for(int i = 0; i < 5; i++) {
