@@ -53,11 +53,11 @@ namespace ScreenDebug {
 	// The dbc seems to be outdated/not match what the VC is sending, I know this
 	// isn't the correct way to fix it but I'm doing it for now to make it match the VC
 	const char* VC_FAULT_MESSAGES[] = {
-		"VC brake sensor irrational",
-		// "VC accelerator irrational",
-		"VC APPS sensor disagreement",
-		"VC APPS double pedal",
-		// "VC hardfault",
+		"VC BRAKE SENSOR IRRATIONAL",
+		// "VC ACCELERATOR IRRATIONAL",
+		"VC APPS SENSOR DISAGREEMENT",
+		"VC APPS DOUBLE PEDAL",
+		// "VC HARDFAULT",
 	};
 
 	const char* MCU_STATUS_MESSAGES[] = {
@@ -69,17 +69,17 @@ namespace ScreenDebug {
 	};
 
 	const char* BMS_FAULT_MESSAGES[] = {
-		"BMS slave comm cells",
-		"BMS slave comm temps",
-		"BMS slave comm drain request",
-		"BMS current sensor comm",
-		"BMS over current",
-		"BMS cell voltage irrational",
-		"BMS cell voltage diff",
-		"BMS out of juice",
-		"BMS temperature irrational",
-		"BMS over temperature",
-		"BMS drain failure",
+		"BMS SLAVE COMM CELLS",
+		"BMS SLAVE COMM TEMPS",
+		"BMS SLAVE COMM DRAIN REQUEST",
+		"BMS CURRENT SENSOR COMM",
+		"BMS OVER CURRENT",
+		"BMS CELL VOLTAGE IRRATIONAL",
+		"BMS CELL VOLTAGE DIFF",
+		"BMS OUT OF JUICE",
+		"BMS TEMPERATURE IRRATIONAL",
+		"BMS OVER TEMPERATURE",
+		"BMS DRAIN FAILURE",
 	};
 
 	const lv_color_t LIMP_COLORS[] = {

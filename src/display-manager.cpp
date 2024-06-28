@@ -79,7 +79,13 @@ namespace DisplayManager {
 		initStyles();
 		screen_debug = ScreenDebug::init(&styles);
 		screen_drive = ScreenDrive::init(&styles);
-		lv_scr_load(screen_drive);
+		if (active_screen == 0) {
+			lv_scr_load(screen_debug);
+		}
+		else {
+			lv_scr_load(screen_drive);
+		}
+
 		Serial.printf("Initialized Screens\n");
 		Serial.printf("Initialized DisplayManager\n");
 	}

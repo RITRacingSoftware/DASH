@@ -211,7 +211,8 @@ namespace ScreenDrive {
 			}
 		}
 		if (data.tiretemp_fl != lastdata.tiretemp_fl || data.tiretemp_fr != lastdata.tiretemp_fr ||
-		        data.tiretemp_rl != lastdata.tiretemp_rl || data.tiretemp_rr != lastdata.tiretemp_rr) {
+		    data.tiretemp_rl != lastdata.tiretemp_rl || data.tiretemp_rr != lastdata.tiretemp_rr) {
+
 			lv_bar_set_value(elements.fl_temp_bar, data.tiretemp_fl, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.fl_temp_label, "%0.0f C", data.tiretemp_fl);
 			if (data.tiretemp_fl < 40) {
@@ -223,6 +224,7 @@ namespace ScreenDrive {
 			else {
 				lv_obj_set_style_bg_color(elements.fl_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
 			}
+
 			lv_bar_set_value(elements.fr_temp_bar, data.tiretemp_fr, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.fr_temp_label, "%0.0f C", data.tiretemp_fr);
 			if (data.tiretemp_fr < 40) {
@@ -234,6 +236,7 @@ namespace ScreenDrive {
 			else {
 				lv_obj_set_style_bg_color(elements.fr_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
 			}
+
 			lv_bar_set_value(elements.rl_temp_bar, data.tiretemp_rl, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.rl_temp_label, "%0.0f C", data.tiretemp_rl);
 			if (data.tiretemp_rl < 40) {
@@ -245,6 +248,7 @@ namespace ScreenDrive {
 			else {
 				lv_obj_set_style_bg_color(elements.rl_temp_bar, lv_palette_main(LV_PALETTE_RED), LV_PART_INDICATOR);
 			}
+
 			lv_bar_set_value(elements.rr_temp_bar, data.tiretemp_rr, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.rr_temp_label, "%0.0f C", data.tiretemp_rr);
 			if (data.tiretemp_rr < 40) {
