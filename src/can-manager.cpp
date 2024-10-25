@@ -3,7 +3,6 @@
 #include <cstdint>
 #include <queue>
 #include <Arduino.h>
-#include <LibPrintf.h>
 #include "FlexCAN_T4.h"
 #include "formula_main_dbc.h"
 

@@ -1,7 +1,7 @@
 #include "screen-debug.h"
 
 #include <Arduino.h>
-#include <LibPrintf.h>
+
 
 #include "data-manager.h"
 #include "display-manager.h"

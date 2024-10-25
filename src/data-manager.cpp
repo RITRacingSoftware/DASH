@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <cmath>
 #include <Arduino.h>
-#include <LibPrintf.h>
+
 
 #include "can-manager.h"
 #include "display-manager.h"
