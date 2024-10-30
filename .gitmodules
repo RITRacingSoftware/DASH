@@ -12,5 +12,3 @@
 [submodule "lib/SDL2"]
 	path = lib/SDL2
 	url = https://github.com/libsdl-org/SDL/tree/release-2.30.8
-[submodule "Formula-Main-DBC"]
-	branch = lib/f33
