@@ -5,6 +5,7 @@
 #include <Arduino.h>
 #include "FlexCAN_T4.h"
 #include "c_files\formula_main_dbc.h"
+#include "c_files\inverter_dbc.h"
 
 #define CAN_BAUD_RATE 1000000
 #define READY_TO_DRIVE_ID 0x0AA

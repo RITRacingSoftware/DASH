@@ -6,6 +6,7 @@
 #include "tft-manager.h"
 #include "screen-debug.h"
 #include "screen-drive.h"
+#include "io-manager.h"
 
 #include "lvgl.h"
 
