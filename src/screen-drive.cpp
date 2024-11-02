@@ -97,6 +97,7 @@ namespace ScreenDrive {
 		lv_label_set_text(elements.lv_voltage_label, "LV: ??.?");
 
 		// Temps
+		//Brake Temprature
 		elements.brake_temp_bar = lv_bar_create(screen);
 		lv_bar_set_range(elements.brake_temp_bar, 0, 580);
 		lv_obj_set_size(elements.brake_temp_bar, 360, 110);
@@ -104,9 +105,10 @@ namespace ScreenDrive {
 		lv_obj_add_style(elements.brake_temp_bar, &styles->barstyle, 0);
 		lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
 		elements.brake_temp_label = lv_label_create(screen);
-		lv_label_set_text(elements.brake_temp_label, "?? C");
+		lv_label_set_text(elements.brake_temp_label, "BRAKE TEMP ?? C");
 		lv_obj_align_to(elements.brake_temp_label, elements.brake_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
+		//Front Left Tires
 		elements.fl_temp_bar = lv_bar_create(screen);
 		lv_bar_set_range(elements.fl_temp_bar, 0, 100);
 		lv_obj_set_size(elements.fl_temp_bar, 175, 110);
@@ -117,6 +119,7 @@ namespace ScreenDrive {
 		lv_label_set_text(elements.fl_temp_label, "?? C");
 		lv_obj_align_to(elements.fl_temp_label, elements.fl_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
+		//Front Right Tires
 		elements.fr_temp_bar = lv_bar_create(screen);
 		lv_bar_set_range(elements.fr_temp_bar, 0, 100);
 		lv_obj_set_size(elements.fr_temp_bar, 175, 110);
@@ -127,6 +130,7 @@ namespace ScreenDrive {
 		lv_label_set_text(elements.fr_temp_label, "?? C");
 		lv_obj_align_to(elements.fr_temp_label, elements.fr_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
+		//Rear Left Tires
 		elements.rl_temp_bar = lv_bar_create(screen);
 		lv_bar_set_range(elements.rl_temp_bar, 0, 100);
 		lv_obj_set_size(elements.rl_temp_bar, 175, 110);
@@ -136,7 +140,8 @@ namespace ScreenDrive {
 		elements.rl_temp_label = lv_label_create(screen);
 		lv_label_set_text(elements.rl_temp_label, "?? C");
 		lv_obj_align_to(elements.rl_temp_label, elements.rl_temp_bar, LV_ALIGN_CENTER, 0, 0);
-
+		
+		//Rear Right
 		elements.rr_temp_bar = lv_bar_create(screen);
 		lv_bar_set_range(elements.rr_temp_bar, 0, 100);
 		lv_obj_set_size(elements.rr_temp_bar, 175, 110);
