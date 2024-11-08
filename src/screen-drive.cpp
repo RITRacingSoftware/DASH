@@ -66,6 +66,8 @@ namespace ScreenDrive {
 	lv_style_t temp_optimal_style;
 	lv_style_t temp_hot_style;
 
+	lv_style_t container_style;
+
 	lv_obj_t* init(DisplayManager::styles_t* styles) {
 		Serial.printf("Initializing Drive Screen\n");
 
@@ -76,6 +78,9 @@ namespace ScreenDrive {
 		lv_style_set_bg_color(&temp_optimal_style, lv_palette_main(LV_PALETTE_GREEN));
 		lv_style_init(&temp_hot_style);
 		lv_style_set_bg_color(&temp_hot_style, lv_palette_main(LV_PALETTE_RED));
+
+		lv_style_init(&container_style);
+		lv_style_set_border_width(&container_style, 2);
 
 		screen = lv_obj_create(NULL);
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
@@ -102,9 +107,10 @@ namespace ScreenDrive {
 		lv_bar_set_range(elements.brake_temp_bar, 0, 580);
 		lv_obj_set_size(elements.brake_temp_bar, 360, 110);
 		lv_obj_align(elements.brake_temp_bar, LV_ALIGN_TOP_LEFT, 20, 20);
+		elements.brake_temp_label = lv_label_create(screen);
 		lv_obj_add_style(elements.brake_temp_bar, &styles->barstyle, 0);
 		lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.brake_temp_label = lv_label_create(screen);
+		lv_obj_add_style(elements.brake_temp_bar, &container_style, 0);
 		lv_label_set_text(elements.brake_temp_label, "BRAKE TEMP ?? C");
 		lv_obj_align_to(elements.brake_temp_label, elements.brake_temp_bar, LV_ALIGN_CENTER, 0, 0);
 

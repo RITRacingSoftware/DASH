@@ -51,11 +51,12 @@ namespace DisplayManager {
 		lv_style_set_text_color(&styles.style, lv_color_white());
 		lv_style_set_radius(&styles.style, 2);
 		lv_style_set_text_font(&styles.style, &font_montserrat_40_compressed);
+		lv_style_set_border_width(&styles.style, 0);
 
 		// Progress bar style
 		lv_style_init(&styles.barstyle);
 		lv_style_set_border_color(&styles.barstyle, lv_color_white());
-		lv_style_set_border_width(&styles.barstyle, 2);
+		// lv_style_set_border_width(&styles.barstyle, 2);
 		lv_style_set_radius(&styles.barstyle, 2);
 		lv_style_set_pad_all(&styles.barstyle, 4);
 

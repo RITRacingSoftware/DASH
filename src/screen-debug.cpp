@@ -14,6 +14,7 @@ namespace ScreenDebug {
 
 	// Display elements to keep
 	struct elements_s {
+		lv_obj_t* faul_box; 
 		lv_obj_t* rpmbar;
 		lv_obj_t* rpmlabel;
 		lv_obj_t* mphlabel;
@@ -34,6 +35,7 @@ namespace ScreenDebug {
 		lv_obj_t* faults_textarea;
 
 		lv_style_t limp_style;
+		lv_style_t borderless_style;
 	} elements;
 
 	const char* VC_STATUS_MESSAGES[] = {
@@ -103,6 +105,16 @@ namespace ScreenDebug {
 		lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[0]);
 		lv_style_set_text_color(&elements.limp_style, lv_color_white());
 		lv_obj_add_style(screen, &elements.limp_style, LV_PART_MAIN);
+
+		lv_style_init(&elements.borderless_style);
+		// lv_style_int_t(&elements.bord);
+
+		// elements.leftsection = lv_tileview(screen);
+		// lv_obj_add_style(elements.leftsection, &styles->borderless_style)
+		// elements.centersection = lv_widget(screen);
+		// lv_obj_add_style(elements.centersection, &styles->borderless_style)
+		// elements.rightsection = lv_widget(screen);
+		// lv_obj_add_style(elements.rightsection, &styles->borderless_style)
 
 		// RPM Bar
 		elements.rpmbar = lv_bar_create(screen);
@@ -196,6 +208,8 @@ namespace ScreenDebug {
 		lv_obj_set_size(elements.faults_textarea, 680, 130);
 		lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
 		lv_obj_add_style(elements.faults_textarea, &styles->faultstyle, LV_PART_MAIN);
+
+		
 
 		Serial.printf("Initialized Debug Screen\n");
 
