@@ -36,8 +36,17 @@ namespace ScreenDrive {
 	lv_obj_t* screen;
 	DataManager::car_data_t lastdata;
 
+	struct screen_elements_s{
+		lv_obj_t top, left, mid , right;
+
+	} screenobj;
+	
+
+
 	// Display elements to keep
 	struct elements_s {
+
+
 		lv_obj_t* brake_temp_bar;
 		lv_obj_t* brake_temp_label;
 
@@ -87,120 +96,128 @@ namespace ScreenDrive {
 		screen = lv_obj_create(NULL);
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 
-		// Status elements
-		elements.rtd_label = lv_label_create(screen);
-		lv_obj_align(elements.rtd_label, LV_ALIGN_BOTTOM_LEFT, 20, -30);
-		lv_label_set_recolor(elements.rtd_label, true);
-		lv_label_set_text(elements.rtd_label, "#ff0000 NOT READY#");
+		lv_obj_set_layout(screenobj.top, LV_LAYOUT_FLEX);
+		lv_obj_align()
+		lv_obj_set_layout(screenobj.left, LV_LAYOUT_FLEX);
 
-		elements.mph_label = lv_label_create(screen);
-		lv_obj_align(elements.mph_label, LV_ALIGN_BOTTOM_MID, 0, -30);
-		lv_label_set_recolor(elements.mph_label, true);
-		lv_label_set_text(elements.mph_label, "MPH: ??");
+		lv_obj_set_layout(screenobj.mid, LV_LAYOUT_FLEX);
 
-		elements.lv_voltage_label = lv_label_create(screen);
-		lv_obj_align(elements.lv_voltage_label, LV_ALIGN_BOTTOM_RIGHT, -40, -30);
-		lv_label_set_recolor(elements.lv_voltage_label, true);
-		lv_label_set_text(elements.lv_voltage_label, "LV: ??.?");
+		lv_obj_set_layout(screenobj.right, LV_LAYOUT_FLEX);
 
-		// Temps
-		//Brake Temprature
+		// // Status elements
+		// elements.rtd_label = lv_label_create(screen);
+		// lv_obj_align(elements.rtd_label, LV_ALIGN_BOTTOM_LEFT, 20, -30);
+		// lv_label_set_recolor(elements.rtd_label, true);
+		// lv_label_set_text(elements.rtd_label, "#ff0000 NOT READY#");
+
+		// elements.mph_label = lv_label_create(screen);
+		// lv_obj_align(elements.mph_label, LV_ALIGN_BOTTOM_MID, 0, -30);
+		// lv_label_set_recolor(elements.mph_label, true);
+		// lv_label_set_text(elements.mph_label, "MPH: ??");
+
+		// elements.lv_voltage_label = lv_label_create(screen);
+		// lv_obj_align(elements.lv_voltage_label, LV_ALIGN_BOTTOM_RIGHT, -40, -30);
+		// lv_label_set_recolor(elements.lv_voltage_label, true);
+		// lv_label_set_text(elements.lv_voltage_label, "LV: ??.?");
+
+		// // Temps
+		// //Brake Temprature
 		
-		elements.brake_temp_bar = lv_bar_create(screen);
-		lv_bar_set_range(elements.brake_temp_bar, 0, 580);
-		lv_obj_set_size(elements.brake_temp_bar, 360, 110);
-		lv_obj_align(elements.brake_temp_bar, LV_ALIGN_TOP_LEFT, 20, 20);
-		elements.brake_temp_label = lv_label_create(screen);
-		lv_obj_add_style(elements.brake_temp_bar, &styles->barstyle, 0);
-		lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		lv_obj_add_style(elements.brake_temp_bar, &container_style, 0);
-		lv_label_set_text(elements.brake_temp_label, "-- C");
-		lv_obj_align_to(elements.brake_temp_label, elements.brake_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		// elements.brake_temp_bar = lv_bar_create(screen);
+		// lv_bar_set_range(elements.brake_temp_bar, 0, 580);
+		// lv_obj_set_size(elements.brake_temp_bar, 360, 110);
+		// lv_obj_align(elements.brake_temp_bar, LV_ALIGN_TOP_LEFT, 20, 20);
+		// elements.brake_temp_label = lv_label_create(screen);
+		// lv_obj_add_style(elements.brake_temp_bar, &styles->barstyle, 0);
+		// lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// lv_obj_add_style(elements.brake_temp_bar, &container_style, 0);
+		// lv_label_set_text(elements.brake_temp_label, "-- C");
+		// lv_obj_align_to(elements.brake_temp_label, elements.brake_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
-		//Container to contain the four brake temp thingys
-		// https://docs.lvgl.io/7.11/widgets/cont.html
-		// elements.brake_temp_container = lv_cont_create(screen, NULL);
-		elements.brake_temp_container = lv_obj_create(screen);
-		lv_obj_set_layout(elements.brake_temp_container, LV_LAYOUT_GRID);
-		lv_obj_set_size(elements.brake_temp_container, 175 * 2 + 10, 110 * 2 + 10);
-		lv_obj_align(elements.brake_temp_container, LV_ALIGN_TOP_LEFT, 20, 140);
-		lv_obj_add_style(elements.brake_temp_container, &container_style, 0);
+		// //Container to contain the four brake temp thingys
+		// // https://docs.lvgl.io/7.11/widgets/cont.html
+		// // elements.brake_temp_container = lv_cont_create(screen, NULL);
+		// elements.brake_temp_container = lv_obj_create(screen);
+		// lv_obj_set_layout(elements.brake_temp_container, LV_LAYOUT_GRID);
+		// lv_obj_set_size(elements.brake_temp_container, 6 * 2 + 10, 110 * 2 + 10);
+		// lv_obj_align(elements.brake_temp_container, LV_ALIGN_TOP_LEFT, 20, 140);
+		// lv_obj_add_style(elements.brake_temp_container, &container_style, 0);
 
-		//Front Left Tires
-		elements.fl_temp_bar = lv_bar_create(elements.brake_temp_container);
-		lv_bar_set_range(elements.fl_temp_bar, 0, 100);
-		lv_obj_set_size(elements.fl_temp_bar, 175, 110);
-		lv_obj_add_style(elements.fl_temp_bar, &container_style, 0);
-		lv_obj_set_style_bg_color(elements.fl_temp_bar, lv_palette_main(LV_PALETTE_LIME), 0);
-		elements.fl_temp_label = lv_label_create(elements.fl_temp_bar);
-		lv_obj_add_style(elements.fl_temp_label, &container_style, 0);
-		lv_obj_set_style_bg_color(elements.fl_temp_label, lv_palette_main(LV_PALETTE_LIME), 0);
-		lv_label_set_text(elements.fl_temp_label, "-- C");
-		lv_obj_align_to(elements.fl_temp_label, elements.fl_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		// //Front Left Tires
+		// elements.fl_temp_bar = lv_bar_create(elements.brake_temp_container);
+		// lv_bar_set_range(elements.fl_temp_bar, 0, 100);
+		// lv_obj_set_size(elements.fl_temp_bar, 175, 110);
+		// lv_obj_add_style(elements.fl_temp_bar, &container_style, 0);
+		// lv_obj_set_style_bg_color(elements.fl_temp_bar, lv_palette_main(LV_PALETTE_LIME), 0);
+		// elements.fl_temp_label = lv_label_create(elements.fl_temp_bar);
+		// lv_obj_add_style(elements.fl_temp_label, &container_style, 0);
+		// lv_obj_set_style_bg_color(elements.fl_temp_label, lv_palette_main(LV_PALETTE_LIME), 0);
+		// lv_label_set_text(elements.fl_temp_label, "-- C");
+		// lv_obj_align_to(elements.fl_temp_label, elements.fl_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
-		//Front Right Tires
-		elements.fr_temp_bar = lv_bar_create(elements.brake_temp_container);
-		lv_bar_set_range(elements.fr_temp_bar, 0, 100);
-		lv_obj_set_size(elements.fr_temp_bar, 175, 110);
-		// lv_obj_align(elements.fr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 140);
-		lv_obj_add_style(elements.fr_temp_bar, &styles->barstyle, 0);
-		lv_obj_add_style(elements.fr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.fr_temp_label = lv_label_create(elements.fr_temp_bar);
-		lv_label_set_text(elements.fr_temp_label, "-- C");
-		// lv_obj_align_to(elements.fr_temp_label, elements.fr_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		// //Front Right Tires
+		// elements.fr_temp_bar = lv_bar_create(elements.brake_temp_container);
+		// lv_bar_set_range(elements.fr_temp_bar, 0, 100);
+		// lv_obj_set_size(elements.fr_temp_bar, 175, 110);
+		// // lv_obj_align(elements.fr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 140);
+		// lv_obj_add_style(elements.fr_temp_bar, &styles->barstyle, 0);
+		// lv_obj_add_style(elements.fr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// elements.fr_temp_label = lv_label_create(elements.fr_temp_bar);
+		// lv_label_set_text(elements.fr_temp_label, "-- C");
+		// // lv_obj_align_to(elements.fr_temp_label, elements.fr_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
-		//Rear Left Tires
-		elements.rl_temp_bar = lv_bar_create(elements.brake_temp_container);
-		lv_bar_set_range(elements.rl_temp_bar, 0, 100);
-		lv_obj_set_size(elements.rl_temp_bar, 175, 110);
-		// lv_obj_align(elements.rl_temp_bar, LV_ALIGN_TOP_LEFT, 20, 260);
-		lv_obj_add_style(elements.rl_temp_bar, &styles->barstyle, 0);
-		lv_obj_add_style(elements.rl_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.rl_temp_label = lv_label_create(elements.rl_temp_bar);
-		lv_label_set_text(elements.rl_temp_label, "-- C");
-		// lv_obj_align_to(elements.rl_temp_label, elements.rl_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		// //Rear Left Tires
+		// elements.rl_temp_bar = lv_bar_create(elements.brake_temp_container);
+		// lv_bar_set_range(elements.rl_temp_bar, 0, 100);
+		// lv_obj_set_size(elements.rl_temp_bar, 175, 110);
+		// // lv_obj_align(elements.rl_temp_bar, LV_ALIGN_TOP_LEFT, 20, 260);
+		// lv_obj_add_style(elements.rl_temp_bar, &styles->barstyle, 0);
+		// lv_obj_add_style(elements.rl_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// elements.rl_temp_label = lv_label_create(elements.rl_temp_bar);
+		// lv_label_set_text(elements.rl_temp_label, "-- C");
+		// // lv_obj_align_to(elements.rl_temp_label, elements.rl_temp_bar, LV_ALIGN_CENTER, 0, 0);
 		
-		//Rear Right
-		elements.rr_temp_bar = lv_bar_create(elements.brake_temp_container);
-		lv_bar_set_range(elements.rr_temp_bar, 0, 100);
-		lv_obj_set_size(elements.rr_temp_bar, 175, 110);
-		// lv_obj_align(elements.rr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 260);
-		lv_obj_add_style(elements.rr_temp_bar, &styles->barstyle, 0);
-		lv_obj_add_style(elements.rr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.rr_temp_label = lv_label_create(elements.rr_temp_bar);
-		lv_label_set_text(elements.rr_temp_label, "-- C");
-		// lv_obj_align_to(elements.rr_temp_label, elements.rr_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		// //Rear Right
+		// elements.rr_temp_bar = lv_bar_create(elements.brake_temp_container);
+		// lv_bar_set_range(elements.rr_temp_bar, 0, 100);
+		// lv_obj_set_size(elements.rr_temp_bar, 175, 110);
+		// // lv_obj_align(elements.rr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 260);
+		// lv_obj_add_style(elements.rr_temp_bar, &styles->barstyle, 0);
+		// lv_obj_add_style(elements.rr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// elements.rr_temp_label = lv_label_create(elements.rr_temp_bar);
+		// lv_label_set_text(elements.rr_temp_label, "-- C");
+		// // lv_obj_align_to(elements.rr_temp_label, elements.rr_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
 		
-		// HV Stuff
-		lv_obj_t* hv_area = lv_obj_create(screen);
-		lv_obj_set_size(hv_area, 390, 180);
-		lv_obj_align(hv_area, LV_ALIGN_TOP_RIGHT, -20, 20);
-		lv_obj_add_style(hv_area, &styles->style, LV_PART_MAIN);
+		// // HV Stuff
+		// lv_obj_t* hv_area = lv_obj_create(screen);
+		// lv_obj_set_size(hv_area, 390, 180);
+		// lv_obj_align(hv_area, LV_ALIGN_TOP_RIGHT, -20, 20);
+		// lv_obj_add_style(hv_area, &styles->style, LV_PART_MAIN);
 
-		elements.hv_voltage_label = lv_label_create(hv_area);
-		lv_obj_align(elements.hv_voltage_label, LV_ALIGN_TOP_MID, 0, -5);
-		lv_label_set_recolor(elements.hv_voltage_label, true);
-		lv_label_set_text(elements.hv_voltage_label, "HV: ---V (--%)");
+		// elements.hv_voltage_label = lv_label_create(hv_area);
+		// lv_obj_align(elements.hv_voltage_label, LV_ALIGN_TOP_MID, 0, -5);
+		// lv_label_set_recolor(elements.hv_voltage_label, true);
+		// lv_label_set_text(elements.hv_voltage_label, "HV: ---V (--%)");
 
-		elements.hv_cells_label = lv_label_create(hv_area);
-		lv_obj_align(elements.hv_cells_label, LV_ALIGN_CENTER, 0, 0);
-		lv_label_set_recolor(elements.hv_cells_label, true);
-		lv_label_set_text(elements.hv_cells_label, "CELLS: -.----.-- V");
+		// elements.hv_cells_label = lv_label_create(hv_area);
+		// lv_obj_align(elements.hv_cells_label, LV_ALIGN_CENTER, 0, 0);
+		// lv_label_set_recolor(elements.hv_cells_label, true);
+		// lv_label_set_text(elements.hv_cells_label, "CELLS: -.----.-- V");
 
-		elements.hv_temp_label = lv_label_create(hv_area);
-		lv_obj_align(elements.hv_temp_label, LV_ALIGN_BOTTOM_MID, 0, 5);
-		lv_label_set_recolor(elements.hv_temp_label, true);
-		lv_label_set_text(elements.hv_temp_label, "MAX TEMP: ?? C");
+		// elements.hv_temp_label = lv_label_create(hv_area);
+		// lv_obj_align(elements.hv_temp_label, LV_ALIGN_BOTTOM_MID, 0, 5);
+		// lv_label_set_recolor(elements.hv_temp_label, true);
+		// lv_label_set_text(elements.hv_temp_label, "MAX TEMP: ?? C");
 
-		// Fault text area
-		elements.faults_area = lv_textarea_create(screen);
-		lv_obj_set_size(elements.faults_area, 390, 160);
-		lv_obj_align(elements.faults_area, LV_ALIGN_RIGHT_MID, -20, 50);
-		lv_obj_add_style(elements.faults_area, &styles->faultstyle, LV_PART_MAIN);
-		lv_textarea_set_text(elements.faults_area, "");
+		// // Fault text area
+		// elements.faults_area = lv_textarea_create(screen);
+		// lv_obj_set_size(elements.faults_area, 390, 160);
+		// lv_obj_align(elements.faults_area, LV_ALIGN_RIGHT_MID, -20, 50);
+		// lv_obj_add_style(elements.faults_area, &styles->faultstyle, LV_PART_MAIN);
+		// lv_textarea_set_text(elements.faults_area, "");
 
-		Serial.printf("Initialized Drive Screen\n");
+		// Serial.printf("Initialized Drive Screen\n");
 		return screen;
 	}
 
