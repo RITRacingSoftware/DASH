@@ -41,6 +41,7 @@ namespace ScreenDrive {
 		lv_obj_t* brake_temp_bar;
 		lv_obj_t* brake_temp_label;
 
+		lv_obj_t* brake_temp_container;
 		lv_obj_t* fl_temp_bar;
 		lv_obj_t* fl_temp_label;
 		lv_obj_t* fr_temp_bar;
@@ -81,6 +82,7 @@ namespace ScreenDrive {
 
 		lv_style_init(&container_style);
 		lv_style_set_border_width(&container_style, 2);
+		lv_style_set_border_color(&container_style, lv_palette_main(LV_PALETTE_BLUE));
 
 		screen = lv_obj_create(NULL);
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
@@ -103,6 +105,7 @@ namespace ScreenDrive {
 
 		// Temps
 		//Brake Temprature
+		
 		elements.brake_temp_bar = lv_bar_create(screen);
 		lv_bar_set_range(elements.brake_temp_bar, 0, 580);
 		lv_obj_set_size(elements.brake_temp_bar, 360, 110);
@@ -111,53 +114,64 @@ namespace ScreenDrive {
 		lv_obj_add_style(elements.brake_temp_bar, &styles->barstyle, 0);
 		lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
 		lv_obj_add_style(elements.brake_temp_bar, &container_style, 0);
-		lv_label_set_text(elements.brake_temp_label, "BRAKE TEMP ?? C");
+		lv_label_set_text(elements.brake_temp_label, "-- C");
 		lv_obj_align_to(elements.brake_temp_label, elements.brake_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
+		//Container to contain the four brake temp thingys
+		// https://docs.lvgl.io/7.11/widgets/cont.html
+		// elements.brake_temp_container = lv_cont_create(screen, NULL);
+		elements.brake_temp_container = lv_obj_create(screen);
+		lv_obj_set_layout(elements.brake_temp_container, LV_LAYOUT_GRID);
+		lv_obj_set_size(elements.brake_temp_container, 175 * 2 + 10, 110 * 2 + 10);
+		lv_obj_align(elements.brake_temp_container, LV_ALIGN_TOP_LEFT, 20, 140);
+		lv_obj_add_style(elements.brake_temp_container, &container_style, 0);
+
 		//Front Left Tires
-		elements.fl_temp_bar = lv_bar_create(screen);
+		elements.fl_temp_bar = lv_bar_create(elements.brake_temp_container);
 		lv_bar_set_range(elements.fl_temp_bar, 0, 100);
 		lv_obj_set_size(elements.fl_temp_bar, 175, 110);
-		lv_obj_align(elements.fl_temp_bar, LV_ALIGN_TOP_LEFT, 20, 140);
-		lv_obj_add_style(elements.fl_temp_bar, &styles->barstyle, 0);
-		lv_obj_add_style(elements.fl_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.fl_temp_label = lv_label_create(screen);
-		lv_label_set_text(elements.fl_temp_label, "?? C");
+		lv_obj_add_style(elements.fl_temp_bar, &container_style, 0);
+		lv_obj_set_style_bg_color(elements.fl_temp_bar, lv_palette_main(LV_PALETTE_LIME), 0);
+		elements.fl_temp_label = lv_label_create(elements.fl_temp_bar);
+		lv_obj_add_style(elements.fl_temp_label, &container_style, 0);
+		lv_obj_set_style_bg_color(elements.fl_temp_label, lv_palette_main(LV_PALETTE_LIME), 0);
+		lv_label_set_text(elements.fl_temp_label, "-- C");
 		lv_obj_align_to(elements.fl_temp_label, elements.fl_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
 		//Front Right Tires
-		elements.fr_temp_bar = lv_bar_create(screen);
+		elements.fr_temp_bar = lv_bar_create(elements.brake_temp_container);
 		lv_bar_set_range(elements.fr_temp_bar, 0, 100);
 		lv_obj_set_size(elements.fr_temp_bar, 175, 110);
-		lv_obj_align(elements.fr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 140);
+		// lv_obj_align(elements.fr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 140);
 		lv_obj_add_style(elements.fr_temp_bar, &styles->barstyle, 0);
 		lv_obj_add_style(elements.fr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.fr_temp_label = lv_label_create(screen);
-		lv_label_set_text(elements.fr_temp_label, "?? C");
-		lv_obj_align_to(elements.fr_temp_label, elements.fr_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		elements.fr_temp_label = lv_label_create(elements.fr_temp_bar);
+		lv_label_set_text(elements.fr_temp_label, "-- C");
+		// lv_obj_align_to(elements.fr_temp_label, elements.fr_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
 		//Rear Left Tires
-		elements.rl_temp_bar = lv_bar_create(screen);
+		elements.rl_temp_bar = lv_bar_create(elements.brake_temp_container);
 		lv_bar_set_range(elements.rl_temp_bar, 0, 100);
 		lv_obj_set_size(elements.rl_temp_bar, 175, 110);
-		lv_obj_align(elements.rl_temp_bar, LV_ALIGN_TOP_LEFT, 20, 260);
+		// lv_obj_align(elements.rl_temp_bar, LV_ALIGN_TOP_LEFT, 20, 260);
 		lv_obj_add_style(elements.rl_temp_bar, &styles->barstyle, 0);
 		lv_obj_add_style(elements.rl_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.rl_temp_label = lv_label_create(screen);
-		lv_label_set_text(elements.rl_temp_label, "?? C");
-		lv_obj_align_to(elements.rl_temp_label, elements.rl_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		elements.rl_temp_label = lv_label_create(elements.rl_temp_bar);
+		lv_label_set_text(elements.rl_temp_label, "-- C");
+		// lv_obj_align_to(elements.rl_temp_label, elements.rl_temp_bar, LV_ALIGN_CENTER, 0, 0);
 		
 		//Rear Right
-		elements.rr_temp_bar = lv_bar_create(screen);
+		elements.rr_temp_bar = lv_bar_create(elements.brake_temp_container);
 		lv_bar_set_range(elements.rr_temp_bar, 0, 100);
 		lv_obj_set_size(elements.rr_temp_bar, 175, 110);
-		lv_obj_align(elements.rr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 260);
+		// lv_obj_align(elements.rr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 260);
 		lv_obj_add_style(elements.rr_temp_bar, &styles->barstyle, 0);
 		lv_obj_add_style(elements.rr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		elements.rr_temp_label = lv_label_create(screen);
-		lv_label_set_text(elements.rr_temp_label, "?? C");
-		lv_obj_align_to(elements.rr_temp_label, elements.rr_temp_bar, LV_ALIGN_CENTER, 0, 0);
+		elements.rr_temp_label = lv_label_create(elements.rr_temp_bar);
+		lv_label_set_text(elements.rr_temp_label, "-- C");
+		// lv_obj_align_to(elements.rr_temp_label, elements.rr_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
+		
 		// HV Stuff
 		lv_obj_t* hv_area = lv_obj_create(screen);
 		lv_obj_set_size(hv_area, 390, 180);
@@ -167,12 +181,12 @@ namespace ScreenDrive {
 		elements.hv_voltage_label = lv_label_create(hv_area);
 		lv_obj_align(elements.hv_voltage_label, LV_ALIGN_TOP_MID, 0, -5);
 		lv_label_set_recolor(elements.hv_voltage_label, true);
-		lv_label_set_text(elements.hv_voltage_label, "HV: ???V (??%)");
+		lv_label_set_text(elements.hv_voltage_label, "HV: ---V (--%)");
 
 		elements.hv_cells_label = lv_label_create(hv_area);
 		lv_obj_align(elements.hv_cells_label, LV_ALIGN_CENTER, 0, 0);
 		lv_label_set_recolor(elements.hv_cells_label, true);
-		lv_label_set_text(elements.hv_cells_label, "CELLS: ?.??-?.?? V");
+		lv_label_set_text(elements.hv_cells_label, "CELLS: -.----.-- V");
 
 		elements.hv_temp_label = lv_label_create(hv_area);
 		lv_obj_align(elements.hv_temp_label, LV_ALIGN_BOTTOM_MID, 0, 5);
