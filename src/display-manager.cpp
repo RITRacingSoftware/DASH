@@ -107,10 +107,10 @@ namespace DisplayManager {
 	void switchScreens(int new_screen) {
 		if(new_screen != active_screen) {
 			if(new_screen == 0) {
-				lv_scr_load(screen_debug);
+				lv_scr_load_anim(screen_debug, LV_SCR_LOAD_ANIM_FADE_IN, 1, 0, true);
 			}
 			else {
-				lv_scr_load(screen_drive);
+				lv_scr_load_anim(screen_drive, LV_SCR_LOAD_ANIM_FADE_IN, 1, 0, true);
 			}
 
 			active_screen = new_screen;

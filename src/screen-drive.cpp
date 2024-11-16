@@ -37,7 +37,10 @@ namespace ScreenDrive {
 	DataManager::car_data_t lastdata;
 
 	struct screen_elements_s{
-		lv_obj_t top, left, mid , right;
+		lv_obj_t* top;
+		lv_obj_t* left;
+		lv_obj_t* mid;
+		lv_obj_t* right;
 
 	} screenobj;
 	
@@ -94,15 +97,42 @@ namespace ScreenDrive {
 		lv_style_set_border_color(&container_style, lv_palette_main(LV_PALETTE_BLUE));
 
 		screen = lv_obj_create(NULL);
-		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
+		screenobj.top = lv_obj_create(screen);
+		screenobj.left = lv_obj_create(screen);
+		screenobj.mid = lv_obj_create(screen);
+		screenobj.right = lv_obj_create(screen);
 
+		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
+		
 		lv_obj_set_layout(screenobj.top, LV_LAYOUT_FLEX);
-		lv_obj_align()
+		lv_obj_set_content_width(screenobj.top, lv_pct(100));
+		lv_obj_set_content_height(screenobj.top, lv_pct(10));
+
+
 		lv_obj_set_layout(screenobj.left, LV_LAYOUT_FLEX);
+		lv_obj_set_content_width(screenobj.left, lv_pct(33));
+		lv_obj_set_content_height(screenobj.left, lv_pct(90));
+
 
 		lv_obj_set_layout(screenobj.mid, LV_LAYOUT_FLEX);
+		lv_obj_set_content_width(screenobj.mid, lv_pct(33));
+		lv_obj_set_content_height(screenobj.mid, lv_pct(90));
+
 
 		lv_obj_set_layout(screenobj.right, LV_LAYOUT_FLEX);
+		lv_obj_set_content_width(screenobj.right, lv_pct(33));
+		lv_obj_set_content_height(screenobj.right, lv_pct(90));
+
+		lv_obj_t* testtop = lv_label_create(screenobj.top);
+		lv_obj_t* testleft = lv_label_create(screenobj.left);
+		lv_obj_t* testmid = lv_label_create(screenobj.mid);
+		lv_obj_t* testright = lv_label_create(screenobj.right);
+		
+		lv_label_set_text(elements.testtop, "FAULT TEXT TEST");
+		lv_label_set_text(elements.testmid, "SECTION ONE TEST");
+		lv_label_set_text(elements.testleft, "RTD AND SPEEDOMETER TEST");
+		lv_label_set_text(elements.testright, "TEMPS TEST");
+
 
 		// // Status elements
 		// elements.rtd_label = lv_label_create(screen);
@@ -129,8 +159,8 @@ namespace ScreenDrive {
 		// lv_obj_align(elements.brake_temp_bar, LV_ALIGN_TOP_LEFT, 20, 20);
 		// elements.brake_temp_label = lv_label_create(screen);
 		// lv_obj_add_style(elements.brake_temp_bar, &styles->barstyle, 0);
-		// lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
-		// lv_obj_add_style(elements.brake_temp_bar, &container_style, 0);
+			// lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+			// lv_obj_add_style(elements.brake_temp_bar, &container_style, 0);
 		// lv_label_set_text(elements.brake_temp_label, "-- C");
 		// lv_obj_align_to(elements.brake_temp_label, elements.brake_temp_bar, LV_ALIGN_CENTER, 0, 0);
 
@@ -217,7 +247,7 @@ namespace ScreenDrive {
 		// lv_obj_add_style(elements.faults_area, &styles->faultstyle, LV_PART_MAIN);
 		// lv_textarea_set_text(elements.faults_area, "");
 
-		// Serial.printf("Initialized Drive Screen\n");
+		Serial.printf("Initialized Drive Screen\n");
 		return screen;
 	}
 
