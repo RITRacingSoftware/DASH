@@ -51,25 +51,31 @@ namespace DisplayManager {
 		lv_style_set_text_color(&styles.style, lv_color_white());
 		lv_style_set_radius(&styles.style, 2);
 		lv_style_set_text_font(&styles.style, &font_montserrat_40_compressed);
-		lv_style_set_border_width(&styles.style, 0);
+		lv_style_set_border_width(&styles.style, 2);
+		lv_style_set_border_color(&styles.style, lv_palette_main(LV_PALETTE_BLUE));
 
 		// Progress bar style
-		lv_style_init(&styles.barstyle);
-		lv_style_set_border_color(&styles.barstyle, lv_color_white());
-		// lv_style_set_border_width(&styles.barstyle, 2);
-		lv_style_set_radius(&styles.barstyle, 2);
-		lv_style_set_pad_all(&styles.barstyle, 4);
+		lv_style_init(&styles.bar_style);
+		lv_style_set_border_color(&styles.bar_style, lv_color_white());
+		// lv_style_set_border_width(&styles.bar_style, 2);
+		lv_style_set_radius(&styles.bar_style, 2);
+		lv_style_set_pad_all(&styles.bar_style, 4);
 
-		lv_style_init(&styles.barindstyle);
-		lv_style_set_radius(&styles.barindstyle, 2);
-		lv_style_set_pad_all(&styles.barindstyle, 4);
+		lv_style_init(&styles.barind_style);
+		lv_style_set_radius(&styles.barind_style, 2);
+		lv_style_set_pad_all(&styles.barind_style, 4);
 
 		// Fault font style
-		lv_style_init(&styles.faultstyle);
-		lv_style_set_bg_color(&styles.faultstyle, lv_color_black());
-		lv_style_set_text_color(&styles.faultstyle, lv_color_white());
-		lv_style_set_text_font(&styles.faultstyle, &font_montserrat_16_compressed);
-		lv_style_set_radius(&styles.faultstyle, 2);
+		lv_style_init(&styles.fault_style);
+		lv_style_set_bg_color(&styles.fault_style, lv_color_black());
+		lv_style_set_text_color(&styles.fault_style, lv_color_white());
+		lv_style_set_text_font(&styles.fault_style, &font_montserrat_16_compressed);
+		lv_style_set_radius(&styles.fault_style, 2);
+
+		// Container style
+		lv_style_init(&styles.container_style);
+		lv_style_set_border_width(&styles.container_style, 2);
+		lv_style_set_border_color(&styles.container_style, lv_palette_main(LV_PALETTE_BLUE));
 	}
 
 	void init() {
@@ -82,10 +88,10 @@ namespace DisplayManager {
 		screen_debug = ScreenDebug::init(&styles);
 		screen_drive = ScreenDrive::init(&styles);
 		if (active_screen == 0) {
-			lv_scr_load(screen_debug);
+			lv_scr_load_anim(screen_debug, LV_SCR_LOAD_ANIM_FADE_IN, 1, 0, true);
 		}
 		else {
-			lv_scr_load(screen_drive);
+			lv_scr_load_anim(screen_drive, LV_SCR_LOAD_ANIM_FADE_IN, 1, 0, true);
 		}
 
 		Serial.printf("Initialized Screens\n");

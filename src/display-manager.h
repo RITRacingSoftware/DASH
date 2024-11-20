@@ -6,9 +6,10 @@
 namespace DisplayManager {
 	typedef struct styles_s {
 		lv_style_t style;
-		lv_style_t barstyle;
-		lv_style_t barindstyle;
-		lv_style_t faultstyle;
+		lv_style_t bar_style;
+		lv_style_t barind_style;
+		lv_style_t fault_style;
+		lv_style_t container_style;
 	} styles_t;
 
 	void init();

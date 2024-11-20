@@ -121,8 +121,8 @@ namespace ScreenDebug {
 		lv_bar_set_range(elements.rpmbar, 0, 5000);
 		lv_obj_set_size(elements.rpmbar, 90, 320);
 		lv_obj_align(elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
-		lv_obj_add_style(elements.rpmbar, &styles->barstyle, 0);
-		lv_obj_add_style(elements.rpmbar, &styles->barindstyle, LV_PART_INDICATOR);
+		lv_obj_add_style(elements.rpmbar, &styles->bar_style, 0);
+		lv_obj_add_style(elements.rpmbar, &styles->barind_style, LV_PART_INDICATOR);
 		// RPM Bar Label
 		elements.rpmlabel = lv_label_create(screen);
 		lv_label_set_text(elements.rpmlabel, "????\nRPM");
@@ -207,7 +207,7 @@ namespace ScreenDebug {
 		elements.faults_textarea = lv_textarea_create(screen);
 		lv_obj_set_size(elements.faults_textarea, 680, 130);
 		lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
-		lv_obj_add_style(elements.faults_textarea, &styles->faultstyle, LV_PART_MAIN);
+		lv_obj_add_style(elements.faults_textarea, &styles->fault_style, LV_PART_MAIN);
 
 		
 

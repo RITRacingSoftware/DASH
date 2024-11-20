@@ -37,6 +37,8 @@ namespace ScreenDrive {
 	DataManager::car_data_t lastdata;
 
 	struct screen_elements_s{
+		lv_obj_t* header;
+		lv_obj_t* content;
 		lv_obj_t* top;
 		lv_obj_t* left;
 		lv_obj_t* mid;
@@ -75,51 +77,60 @@ namespace ScreenDrive {
 		lv_obj_t* lv_voltage_label;
 	} elements;
 
-	lv_style_t temp_cold_style;
-	lv_style_t temp_optimal_style;
-	lv_style_t temp_hot_style;
-
-	lv_style_t container_style;
+	struct local_styles_s {
+		lv_style_t* temp_cold_style;
+		lv_style_t* temp_optimal_style;
+		lv_style_t* temp_hot_style;
+	} local_styles;
 
 	lv_obj_t* init(DisplayManager::styles_t* styles) {
 		Serial.printf("Initializing Drive Screen\n");
 
-		//Styles
-		lv_style_init(&temp_cold_style);
-		lv_style_set_bg_color(&temp_cold_style, lv_palette_main(LV_PALETTE_BLUE));
-		lv_style_init(&temp_optimal_style);
-		lv_style_set_bg_color(&temp_optimal_style, lv_palette_main(LV_PALETTE_GREEN));
-		lv_style_init(&temp_hot_style);
-		lv_style_set_bg_color(&temp_hot_style, lv_palette_main(LV_PALETTE_RED));
-
-		lv_style_init(&container_style);
-		lv_style_set_border_width(&container_style, 2);
-		lv_style_set_border_color(&container_style, lv_palette_main(LV_PALETTE_BLUE));
+		// Local Styles
+		lv_style_init(local_styles.temp_cold_style);
+		lv_style_set_bg_color(local_styles.temp_cold_style, lv_palette_main(LV_PALETTE_BLUE));
+		lv_style_init(local_styles.temp_optimal_style);
+		lv_style_set_bg_color(local_styles.temp_optimal_style, lv_palette_main(LV_PALETTE_GREEN));
+		lv_style_init(local_styles.temp_hot_style);
+		lv_style_set_bg_color(local_styles.temp_hot_style, lv_palette_main(LV_PALETTE_RED));
 
 		screen = lv_obj_create(NULL);
-		screenobj.top = lv_obj_create(screen);
-		screenobj.left = lv_obj_create(screen);
-		screenobj.mid = lv_obj_create(screen);
-		screenobj.right = lv_obj_create(screen);
+		lv_obj_set_layout(screen, LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(screen, LV_FLEX_FLOW_COLUMN);
+		screenobj.header = lv_obj_create(screen);
+		screenobj.content = lv_obj_create(screen);
+		lv_obj_set_layout(screenobj.content, LV_LAYOUT_FLEX);
+		lv_obj_set_flex_flow(screenobj.content, LV_FLEX_FLOW_ROW);
+		elements.hv_cells_label = lv_label_create(screen);
+
+		screenobj.top = lv_obj_create(screenobj.header);
+		screenobj.left = lv_obj_create(screenobj.content);
+		screenobj.mid = lv_obj_create(screenobj.content);
+		screenobj.right = lv_obj_create(screenobj.content);
 
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 		
 		lv_obj_set_layout(screenobj.top, LV_LAYOUT_FLEX);
+		// lv_obj_set_flex_flow(screenobj.top, LV_LAYOUT_FLEX);
+		lv_obj_add_style(screenobj.top, &styles->container_style, 0);
 		lv_obj_set_content_width(screenobj.top, lv_pct(100));
 		lv_obj_set_content_height(screenobj.top, lv_pct(10));
 
 
 		lv_obj_set_layout(screenobj.left, LV_LAYOUT_FLEX);
+		lv_obj_add_style(screenobj.left, &styles->container_style, 0);
 		lv_obj_set_content_width(screenobj.left, lv_pct(33));
 		lv_obj_set_content_height(screenobj.left, lv_pct(90));
 
 
 		lv_obj_set_layout(screenobj.mid, LV_LAYOUT_FLEX);
+		lv_obj_add_style(screenobj.mid, &styles->container_style, 0);
 		lv_obj_set_content_width(screenobj.mid, lv_pct(33));
 		lv_obj_set_content_height(screenobj.mid, lv_pct(90));
 
 
 		lv_obj_set_layout(screenobj.right, LV_LAYOUT_FLEX);
+		lv_obj_add_style(screenobj.right, &styles->container_style, 0);
 		lv_obj_set_content_width(screenobj.right, lv_pct(33));
 		lv_obj_set_content_height(screenobj.right, lv_pct(90));
 
@@ -128,10 +139,10 @@ namespace ScreenDrive {
 		lv_obj_t* testmid = lv_label_create(screenobj.mid);
 		lv_obj_t* testright = lv_label_create(screenobj.right);
 		
-		lv_label_set_text(elements.testtop, "FAULT TEXT TEST");
-		lv_label_set_text(elements.testmid, "SECTION ONE TEST");
-		lv_label_set_text(elements.testleft, "RTD AND SPEEDOMETER TEST");
-		lv_label_set_text(elements.testright, "TEMPS TEST");
+		// lv_label_set_text(elements.testtop, "FAULT TEXT TEST");
+		// lv_label_set_text(elements.testmid, "SECTION ONE TEST");
+		// lv_label_set_text(elements.testleft, "RTD AND SPEEDOMETER TEST");
+		// lv_label_set_text(elements.testright, "TEMPS TEST");
 
 
 		// // Status elements
@@ -158,8 +169,8 @@ namespace ScreenDrive {
 		// lv_obj_set_size(elements.brake_temp_bar, 360, 110);
 		// lv_obj_align(elements.brake_temp_bar, LV_ALIGN_TOP_LEFT, 20, 20);
 		// elements.brake_temp_label = lv_label_create(screen);
-		// lv_obj_add_style(elements.brake_temp_bar, &styles->barstyle, 0);
-			// lv_obj_add_style(elements.brake_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// lv_obj_add_style(elements.brake_temp_bar, &styles->bar_style, 0);
+			// lv_obj_add_style(elements.brake_temp_bar, &styles->barind_style, LV_PART_INDICATOR);
 			// lv_obj_add_style(elements.brake_temp_bar, &container_style, 0);
 		// lv_label_set_text(elements.brake_temp_label, "-- C");
 		// lv_obj_align_to(elements.brake_temp_label, elements.brake_temp_bar, LV_ALIGN_CENTER, 0, 0);
@@ -190,8 +201,8 @@ namespace ScreenDrive {
 		// lv_bar_set_range(elements.fr_temp_bar, 0, 100);
 		// lv_obj_set_size(elements.fr_temp_bar, 175, 110);
 		// // lv_obj_align(elements.fr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 140);
-		// lv_obj_add_style(elements.fr_temp_bar, &styles->barstyle, 0);
-		// lv_obj_add_style(elements.fr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// lv_obj_add_style(elements.fr_temp_bar, &styles->bar_style, 0);
+		// lv_obj_add_style(elements.fr_temp_bar, &styles->barind_style, LV_PART_INDICATOR);
 		// elements.fr_temp_label = lv_label_create(elements.fr_temp_bar);
 		// lv_label_set_text(elements.fr_temp_label, "-- C");
 		// // lv_obj_align_to(elements.fr_temp_label, elements.fr_temp_bar, LV_ALIGN_CENTER, 0, 0);
@@ -201,8 +212,8 @@ namespace ScreenDrive {
 		// lv_bar_set_range(elements.rl_temp_bar, 0, 100);
 		// lv_obj_set_size(elements.rl_temp_bar, 175, 110);
 		// // lv_obj_align(elements.rl_temp_bar, LV_ALIGN_TOP_LEFT, 20, 260);
-		// lv_obj_add_style(elements.rl_temp_bar, &styles->barstyle, 0);
-		// lv_obj_add_style(elements.rl_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// lv_obj_add_style(elements.rl_temp_bar, &styles->bar_style, 0);
+		// lv_obj_add_style(elements.rl_temp_bar, &styles->barind_style, LV_PART_INDICATOR);
 		// elements.rl_temp_label = lv_label_create(elements.rl_temp_bar);
 		// lv_label_set_text(elements.rl_temp_label, "-- C");
 		// // lv_obj_align_to(elements.rl_temp_label, elements.rl_temp_bar, LV_ALIGN_CENTER, 0, 0);
@@ -212,8 +223,8 @@ namespace ScreenDrive {
 		// lv_bar_set_range(elements.rr_temp_bar, 0, 100);
 		// lv_obj_set_size(elements.rr_temp_bar, 175, 110);
 		// // lv_obj_align(elements.rr_temp_bar, LV_ALIGN_TOP_LEFT, 205, 260);
-		// lv_obj_add_style(elements.rr_temp_bar, &styles->barstyle, 0);
-		// lv_obj_add_style(elements.rr_temp_bar, &styles->barindstyle, LV_PART_INDICATOR);
+		// lv_obj_add_style(elements.rr_temp_bar, &styles->bar_style, 0);
+		// lv_obj_add_style(elements.rr_temp_bar, &styles->barind_style, LV_PART_INDICATOR);
 		// elements.rr_temp_label = lv_label_create(elements.rr_temp_bar);
 		// lv_label_set_text(elements.rr_temp_label, "-- C");
 		// // lv_obj_align_to(elements.rr_temp_label, elements.rr_temp_bar, LV_ALIGN_CENTER, 0, 0);
@@ -244,7 +255,7 @@ namespace ScreenDrive {
 		// elements.faults_area = lv_textarea_create(screen);
 		// lv_obj_set_size(elements.faults_area, 390, 160);
 		// lv_obj_align(elements.faults_area, LV_ALIGN_RIGHT_MID, -20, 50);
-		// lv_obj_add_style(elements.faults_area, &styles->faultstyle, LV_PART_MAIN);
+		// lv_obj_add_style(elements.faults_area, &styles->fault_style, LV_PART_MAIN);
 		// lv_textarea_set_text(elements.faults_area, "");
 
 		Serial.printf("Initialized Drive Screen\n");
