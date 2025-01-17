@@ -44,7 +44,7 @@ namespace DisplayManager {
 		lv_style_set_bg_color(&styles.style, lv_color_black());
 		lv_style_set_text_color(&styles.style, lv_color_white());
 		lv_style_set_radius(&styles.style, 2);
-		lv_style_set_text_font(&styles.style, &font_montserrat_40_compressed);
+		lv_style_set_text_font(&styles.style, &lv_font_montserrat_40);
 		lv_style_set_border_width(&styles.style, 2);
 		lv_style_set_border_color(&styles.style, lv_palette_main(LV_PALETTE_BLUE));
 
@@ -63,7 +63,7 @@ namespace DisplayManager {
 		lv_style_init(&styles.fault_style);
 		lv_style_set_bg_color(&styles.fault_style, lv_color_black());
 		lv_style_set_text_color(&styles.fault_style, lv_color_white());
-		lv_style_set_text_font(&styles.fault_style, &font_montserrat_16_compressed);
+		lv_style_set_text_font(&styles.fault_style, &lv_font_montserrat_16);
 		lv_style_set_radius(&styles.fault_style, 2);
 
 		// Container style

@@ -142,22 +142,23 @@ namespace ScreenDebug {
 
 		elements.status_overall = lv_label_create(status_area);
 		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -45);
-		lv_label_set_recolor(elements.status_overall, true);
+
+		
 		lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
 
 		elements.status_vcstatus = lv_label_create(status_area);
 		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -15);
-		lv_label_set_recolor(elements.status_vcstatus, true);
+
 		lv_label_set_text(elements.status_vcstatus, "VC: ???");
 
 		elements.status_mcustatus = lv_label_create(status_area);
 		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, 15);
-		lv_label_set_recolor(elements.status_mcustatus, true);
+
 		lv_label_set_text(elements.status_mcustatus, "MC: ???");
 
 		elements.status_bmsstatus = lv_label_create(status_area);
 		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 45);
-		lv_label_set_recolor(elements.status_bmsstatus, true);
+
 		lv_label_set_text(elements.status_bmsstatus, "BMS: ???");
 
 		// VSM state label

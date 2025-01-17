@@ -1,6 +1,0 @@
-C:/Users/Lucas West/Documents/Programming/C++/FormulaE/F33/DASH/build/CMakeFiles/lvgl.dir
-C:/Users/Lucas West/Documents/Programming/C++/FormulaE/F33/DASH/build/CMakeFiles/lvgl_examples.dir
-C:/Users/Lucas West/Documents/Programming/C++/FormulaE/F33/DASH/build/CMakeFiles/lvgl_demos.dir
-C:/Users/Lucas West/Documents/Programming/C++/FormulaE/F33/DASH/build/CMakeFiles/INSTALL.dir
-C:/Users/Lucas West/Documents/Programming/C++/FormulaE/F33/DASH/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Lucas West/Documents/Programming/C++/FormulaE/F33/DASH/build/CMakeFiles/ZERO_CHECK.dir
