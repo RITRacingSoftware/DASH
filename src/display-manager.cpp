@@ -20,13 +20,13 @@ namespace DisplayManager {
 	lv_obj_t* screen_debug;
 	lv_obj_t* screen_drive;
 
-	lv_disp_draw_buf_t drawbuf;
+	lv_draw_buf_t drawbuf;
 	lv_color_t drawbuf1[DRAW_BUFFER_SIZE];
-	lv_disp_drv_t disp_drv;
+	lv_display_t* disp  = lv_display_create(TFT_SCREEN_WIDTH,TFT_SCREEN_HEIGHT);
 
 	styles_t styles;
 
-	void disp_flush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p) {
+	void disp_flush(lv_display_t * disp, const lv_area_t* area, lv_color_t* color_p) {
 		TFTManager::drawTexturedRect(area->x1, area->x2, area->y1, area->y2, (uint16_t*) color_p);
 		lv_disp_flush_ready(disp);
 	}
@@ -34,14 +34,8 @@ namespace DisplayManager {
 	void initLVGL() {
 		lv_init();
 
-		lv_disp_draw_buf_init(&drawbuf, drawbuf1, NULL, DRAW_BUFFER_SIZE);
+		lv_display_set_buffers(disp, drawbuf1, NULL, DRAW_BUFFER_SIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
-		lv_disp_drv_init(&disp_drv);
-		disp_drv.flush_cb = disp_flush;
-		disp_drv.draw_buf = &drawbuf;
-		disp_drv.hor_res = TFT_SCREEN_WIDTH;
-		disp_drv.ver_res = TFT_SCREEN_HEIGHT;
-		lv_disp_drv_register(&disp_drv);
 	}
 
 	void initStyles() {
