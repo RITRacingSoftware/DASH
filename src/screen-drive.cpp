@@ -1,3 +1,4 @@
+#include "lvgl.h"
 #include "screen-drive.h"
 #include "tft-manager.h"
 
@@ -6,7 +7,6 @@
 #include "data-manager.h"
 #include "display-manager.h"
 
-#include "lvgl.h"
 
 namespace ScreenDrive {
 	// The dbc seems to be outdated/not match what the VC is sending, I know this
