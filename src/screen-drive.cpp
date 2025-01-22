@@ -134,10 +134,6 @@ namespace ScreenDrive {
 		lv_obj_set_content_width(screenobj.right, lv_pct(33));
 		lv_obj_set_content_height(screenobj.right, lv_pct(90));
 
-		lv_obj_t* testtop = lv_label_create(screenobj.top);
-		lv_obj_t* testleft = lv_label_create(screenobj.left);
-		lv_obj_t* testmid = lv_label_create(screenobj.mid);
-		lv_obj_t* testright = lv_label_create(screenobj.right);
 		
 		// lv_label_set_text(elements.testtop, "FAULT TEXT TEST");
 		// lv_label_set_text(elements.testmid, "SECTION ONE TEST");
