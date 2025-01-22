@@ -1,8 +1,8 @@
+#include "lvgl.h"
 #pragma once
 
 #include "data-manager.h"
 #include "display-manager.h"
-#include "lvgl.h"
 #include "tft-manager.h"
 
 namespace ScreenDrive {

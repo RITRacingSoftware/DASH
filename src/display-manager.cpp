@@ -1,3 +1,4 @@
+#include "lvgl.h"
 #include "display-manager.h"
 
 #include <Arduino.h>
@@ -8,7 +9,6 @@
 #include "screen-drive.h"
 #include "io-manager.h"
 
-#include "lvgl.h"
 
 #define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 16) //default /10 for 480x800
 
