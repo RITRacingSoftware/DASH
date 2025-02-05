@@ -14,6 +14,6 @@ void setup()
 void loop()
 {
 	DataManager::update();
-
+	lv_timer_handler();
 	delay(100);
 }
