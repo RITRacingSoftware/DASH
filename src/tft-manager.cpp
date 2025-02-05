@@ -1,4 +1,5 @@
 #include "tft-manager.h"
+#include <cstdlib>
 #include <Arduino.h>
 
 #define PIN_RA8875_CS 10
