@@ -26,14 +26,18 @@ namespace DisplayManager {
         lv_disp_flush_ready(disp); // Notify LVGL that flushing is done
     }
 
+    void disp_flush_cb(lv_display_t* disp, const lv_area_t* area, unsigned char* px_map) {
+        disp_flush(disp, area, (lv_color_t*)px_map);
+    }
+
     void initLVGL() {
         lv_init();
 
-        // Initialize the display buffer
+        lv_display_set_flush_cb(disp, disp_flush_cb);
         lv_display_set_buffers(disp, drawbuf1, NULL, DRAW_BUFFER_SIZE, LV_DISPLAY_RENDER_MODE_PARTIAL);
 
         // Set the flush callback
-        lv_display_set_flush_cb(disp, disp_flush);
+        // lv_display_set_flush_cb(disp, disp_flush);
     }
 
     void initStyles() {
