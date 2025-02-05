@@ -1,4 +1,6 @@
 #include <Arduino.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_RA8875.h>
 
 // #include "data-manager.h"
 // #include "display-manager.h"
