@@ -112,7 +112,8 @@ namespace ScreenDrive {
 		
 		lv_obj_set_layout(screenobj.top, LV_LAYOUT_FLEX);
 		// lv_obj_set_flex_flow(screenobj.top, LV_LAYOUT_FLEX);
-		lv_obj_add_style(screenobj.top, &styles->container_style, 0);
+		// lv_obj_add_style(screenobj.top, &styles->container_style, 0);
+		lv_obj_add_style(screenobj.top, local_styles.temp_cold_style, 0);
 		lv_obj_set_content_width(screenobj.top, lv_pct(100));
 		lv_obj_set_content_height(screenobj.top, lv_pct(10));
 
