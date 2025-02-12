@@ -1,4 +1,0 @@
-[wokwi]
-version = 1
-firmware = '.pio\build\teensy40\firmware.hex'
-elf = '.pio\build\teensy40\firmware.elf'
