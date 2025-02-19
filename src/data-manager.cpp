@@ -64,7 +64,6 @@ namespace DataManager {
 	}
 
 	void update() {
-		Serial.printf("DATAMANAGER UPDATE :3\n");
 		CANManager::can_message_t message;
 		while(CANManager::hasMessage()) {
 			message = CANManager::getMessage();

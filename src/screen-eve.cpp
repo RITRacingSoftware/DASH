@@ -63,16 +63,16 @@ namespace ScreenEve {
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 
 		// Background image
-		elements.background = lv_img_create(screen);
-		lv_img_set_src(elements.background, &drive_screen_eva_version_v3_immovable);
-		lv_obj_align(elements.background, LV_ALIGN_CENTER, 0, 0);
+		lv_obj_t * imgtest = lv_img_create(screen);
+		lv_img_set_src(imgtest, &drive_screen_eva_version_v3_immovable);
+		lv_obj_align(imgtest, LV_ALIGN_CENTER,0, 0);
+		lv_obj_set_size(imgtest, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
 
 		Serial.printf("Initialized Eve Screen\n");
 		return screen;
 	}
 
 	void update(DataManager::car_data_t data) {
-		Serial.printf("HHEEHEH\n");
 		// Status elements
 	}
 }
