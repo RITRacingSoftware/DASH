@@ -16,6 +16,7 @@ LV_FONT_DECLARE(font_montserrat_40_compressed);
 
 namespace DisplayManager {
 
+	//TODO: Double check all references for screen_drive vs screen_eve cause we changed some for debugging
 	bool active_screen = 2; // 0 = debug, 1 = drive 2 = eve test
 	lv_obj_t* screen_debug;
 	lv_obj_t* screen_drive;
@@ -80,7 +81,7 @@ namespace DisplayManager {
 		Serial.printf("Initializing Screens\n");
 		initStyles();
 		screen_debug = ScreenDebug::init(&styles);
-		screen_drive = ScreenDrive::init(&styles);
+		screen_drive = ScreenEve::init(&styles);
 		screen_eve = ScreenEve::init(&styles);
 		if (active_screen == 0) {
 			lv_scr_load(screen_debug);
@@ -88,7 +89,7 @@ namespace DisplayManager {
 		else if (active_screen == 1) {
 			lv_scr_load(screen_drive);
 		}
-		else{
+		else if (active_screen == 2){
 			lv_scr_load(screen_eve);
 		}
 
@@ -102,9 +103,9 @@ namespace DisplayManager {
 			ScreenDebug::update(data);
 		}
 		else if(active_screen == 1) {
-			ScreenDrive::update(data);
+			ScreenEve::update(data);
 		}
-		else {
+		else if (active_screen == 2) {
 			ScreenEve::update(data);
 		}
 
