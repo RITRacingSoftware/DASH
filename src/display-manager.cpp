@@ -104,7 +104,7 @@ namespace DisplayManager {
 		else if(active_screen == 1) {
 			ScreenDrive::update(data);
 		}
-		else if(active_screen == 2){
+		else {
 			ScreenEve::update(data);
 		}
 
