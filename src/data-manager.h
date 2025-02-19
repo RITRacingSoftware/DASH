@@ -6,13 +6,18 @@
 
 namespace DataManager {
 	typedef struct car_data_s {
-		int16_t mcu_motorrpm;
-		float mcu_wheelspeed;
+		// float vel_n;
+		// float vel_e;
+		float vel;
+		// float mcu_wheelspeed; //TODO: Old placeholder, switch to mcu_carspeed
+		float mcu_motorrpm; //TODO: Old placeholder, split into one for each motor
+		float mcu_carspeed;
 
 		uint8_t vc_status;
 		uint8_t vc_faultvector;
-		uint8_t mcu_status;
-		uint8_t mcu_vsm_state;
+		// Add new stauses for each motor
+		uint8_t mcu_status; //TODO: Split in 4 or remove
+		uint8_t mcu_vsm_state; //TODO: Split in 4 or remove
 		
 		uint16_t bms_faultvector;
 		uint8_t bms_soc;

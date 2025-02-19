@@ -189,8 +189,8 @@ namespace ScreenDrive {
 				lv_label_set_text(elements.rtd_label, "#ff0000 NOT READY#");
 			}
 		}
-		if (data.mcu_wheelspeed != lastdata.mcu_wheelspeed) {
-			lv_label_set_text_fmt(elements.mph_label, "MPH: %2.0f", data.mcu_wheelspeed);
+		if (data.mcu_carspeed != lastdata.mcu_carspeed) {
+			lv_label_set_text_fmt(elements.mph_label, "MPH: %2.0f", data.mcu_carspeed);
 		}
 		if (data.lv_voltage != lastdata.lv_voltage) {
 			lv_label_set_text_fmt(elements.lv_voltage_label, "LV: %2.1f V", data.lv_voltage);
