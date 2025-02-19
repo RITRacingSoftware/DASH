@@ -72,6 +72,7 @@ namespace ScreenEve {
 	}
 
 	void update(DataManager::car_data_t data) {
+		Serial.printf("HHEEHEH\n");
 		// Status elements
 	}
 }

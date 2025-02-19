@@ -180,6 +180,7 @@ namespace ScreenDrive {
 	}
 
 	void update(DataManager::car_data_t data) {
+		Serial.printf("DRIVSCREN UPDATE >:3\n");
 		// Status elements
 		if(data.vc_status != lastdata.vc_status) {
 			if(data.vc_status == 2) {
