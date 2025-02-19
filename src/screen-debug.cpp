@@ -207,7 +207,7 @@ namespace ScreenDebug {
 			lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[data.bms_limplevel]);
 			lv_bar_set_value(elements.rpmbar, data.mcu_motorrpm, LV_ANIM_OFF);
 			lv_label_set_text_fmt(elements.rpmlabel, "%04d\nRPM", data.mcu_motorrpm);
-			lv_label_set_text_fmt(elements.mphlabel, "%04.1f\nMPH", data.mcu_wheelspeed);
+			lv_label_set_text_fmt(elements.mphlabel, "%04.1f\nMPH", data.mcu_carspeed);
 		}
 
 		// Status Elements
