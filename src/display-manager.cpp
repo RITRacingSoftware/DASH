@@ -17,7 +17,7 @@ LV_FONT_DECLARE(font_montserrat_40_compressed);
 namespace DisplayManager {
 
 	//TODO: Double check all references for screen_drive vs screen_eve cause we changed some for debugging
-	bool active_screen = 2; // 0 = debug, 1 = drive 2 = eve test
+	int active_screen = 0; // 0 = debug, 1 = drive 2 = eve test
 	lv_obj_t* screen_debug;
 	lv_obj_t* screen_drive;
 	lv_obj_t* screen_eve;

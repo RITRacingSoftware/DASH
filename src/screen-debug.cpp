@@ -6,7 +6,7 @@
 #include "display-manager.h"
 
 #include "lvgl.h"
-
+LV_IMG_DECLARE(DebugScreen);
 namespace ScreenDebug {
 	lv_obj_t* screen;
 	DataManager::car_data_t lastdata;

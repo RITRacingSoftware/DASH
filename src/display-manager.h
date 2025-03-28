@@ -12,6 +12,8 @@ namespace DisplayManager {
 	} styles_t;
 
 
+
+
 	void init();
 	void update(DataManager::car_data_t data);
 	void switchScreens(int new_screen);
