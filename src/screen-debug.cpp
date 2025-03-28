@@ -38,14 +38,6 @@ namespace ScreenDebug {
 	};
 
 	const char* VC_FAULT_MESSAGES[] = {
-		"VC brake sensor irrational",
-		"VC accelerator irrational",
-		"VC APPS sensor disagreement",
-		"VC APPS double pedal",
-		"VC hardfault",
-	};
-
-	const char* VC_FAULT_MESSAGES[] = {
 		"VC BRAKE SENSOR IRRATIONAL",
 		// "VC ACCELERATOR IRRATIONAL",
 		"VC APPS SENSOR DISAGREEMENT",
