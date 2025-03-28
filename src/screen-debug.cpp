@@ -13,26 +13,7 @@ namespace ScreenDebug {
 
 	// Display elements to keep
 	struct elements_s {
-		lv_obj_t* rpmbar;
-		lv_obj_t* rpmlabel;
-		lv_obj_t* mphlabel;
 
-		lv_obj_t* bms_soc_label;
-		lv_obj_t* bms_cellvoltage_label;
-		lv_obj_t* bms_packvoltage_label;
-		lv_obj_t* bms_current_label;
-		lv_obj_t* bms_maxcurrent_label;
-		lv_obj_t* bms_maxtemp_label;
-
-		lv_obj_t* status_overall;
-		lv_obj_t* status_vcstatus;
-		lv_obj_t* status_mcustatus;
-		lv_obj_t* status_bmsstatus;
-		lv_obj_t* vsm_state_label;
-
-		lv_obj_t* faults_textarea;
-
-		lv_style_t limp_style;
 	} elements;
 
 	const char* VC_STATUS_MESSAGES[] = {
@@ -42,16 +23,14 @@ namespace ScreenDebug {
 		"FAULTED",
 	};
 
-	// const char* VC_FAULT_MESSAGES[] = {
-	// 	"VC brake sensor irrational",
-	// 	"VC accelerator irrational",
-	// 	"VC APPS sensor disagreement",
-	// 	"VC APPS double pedal",
-	// 	"VC hardfault",
-	// };
+	const char* VC_FAULT_MESSAGES[] = {
+		"VC brake sensor irrational",
+		"VC accelerator irrational",
+		"VC APPS sensor disagreement",
+		"VC APPS double pedal",
+		"VC hardfault",
+	};
 
-	// The dbc seems to be outdated/not match what the VC is sending, I know this
-	// isn't the correct way to fix it but I'm doing it for now to make it match the VC
 	const char* VC_FAULT_MESSAGES[] = {
 		"VC BRAKE SENSOR IRRATIONAL",
 		// "VC ACCELERATOR IRRATIONAL",
