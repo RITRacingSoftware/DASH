@@ -80,6 +80,13 @@ namespace ScreenDrive {
 		screen = lv_obj_create(NULL);
 		lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 
+		
+		// Background image
+		lv_obj_t * imgtest = lv_img_create(screen);
+		lv_img_set_src(imgtest, &DriveScreen);
+		lv_obj_align(imgtest, LV_ALIGN_CENTER,0, 0);
+		lv_obj_set_size(imgtest, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
 		// Status elements
 		elements.rtd_label = lv_label_create(screen);
 		lv_obj_align(elements.rtd_label, LV_ALIGN_BOTTOM_LEFT, 20, -30);

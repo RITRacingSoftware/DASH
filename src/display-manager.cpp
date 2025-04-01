@@ -80,16 +80,18 @@ namespace DisplayManager {
 		initLVGL();
 		Serial.printf("Initializing Screens\n");
 		initStyles();
-		screen_debug = ScreenDebug::init(&styles);
-		screen_drive = ScreenEve::init(&styles);
-		screen_eve = ScreenEve::init(&styles);
+		
+	
 		if (active_screen == 0) {
+			screen_debug = ScreenDebug::init(&styles);
 			lv_scr_load(screen_debug);
 		}
 		else if (active_screen == 1) {
+			screen_drive = ScreenDrive::init(&styles);
 			lv_scr_load(screen_drive);
 		}
 		else if (active_screen == 2){
+			screen_eve = ScreenEve::init(&styles);
 			lv_scr_load(screen_eve);
 		}
 
