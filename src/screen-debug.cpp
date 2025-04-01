@@ -81,12 +81,18 @@ namespace ScreenDebug {
 
 		screen = lv_obj_create(NULL);
 		// lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
-
+		
 		// Custom styles
 		lv_style_init(&elements.limp_style);
 		lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[0]);
 		lv_style_set_text_color(&elements.limp_style, lv_color_white());
 		lv_obj_add_style(screen, &elements.limp_style, LV_PART_MAIN);
+
+		// Background image
+		lv_obj_t * imgtest = lv_img_create(screen);
+		lv_img_set_src(imgtest, &DebugScreen);
+		lv_obj_align(imgtest, LV_ALIGN_CENTER,0, 0);
+		lv_obj_set_size(imgtest, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
 
 		// RPM Bar
 		elements.rpmbar = lv_bar_create(screen);
