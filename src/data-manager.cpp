@@ -179,6 +179,7 @@ namespace DataManager {
 					data.lv_voltage = main_dbc_pbx_status_pbx_lv_voltage_decode(status.pbx_lv_voltage);
 					break;
 				}
+				
 			}
 		}
 
