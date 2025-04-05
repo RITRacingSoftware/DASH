@@ -10,7 +10,7 @@
 #include "c_files\sensor_dbc.h"
 
 #define CAN_BAUD_RATE 1000000
-#define READY_TO_DRIVE_ID 0x0AA
+#define READY_TO_DRIVE_ID 0x0AA //ask solomon on thursday if this has changed ....
 
 namespace CANManager {
 	static FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can;
