@@ -17,11 +17,11 @@
 #define LV_ATTRIBUTE_MEM_ALIGN
 #endif
 
-#ifndef LV_ATTRIBUTE_IMG_WHEELERRROR
-#define LV_ATTRIBUTE_IMG_WHEELERRROR
+#ifndef LV_ATTRIBUTE_IMG_WHEELSTATUSERROR
+#define LV_ATTRIBUTE_IMG_WHEELSTATUSERROR
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_WHEELERRROR uint8_t wheelErrror_map[] = {
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_WHEELSTATUSERROR uint8_t wheelStatusError_map[] = {
   0x06, 0x06, 0x19, 0x05, 	/*Color of index 0*/
   0x2b, 0x2b, 0xc5, 0xe0, 	/*Color of index 1*/
 
@@ -56,12 +56,12 @@ const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_WHEELERRR
   0x01, 0xff, 0xff, 0xff, 0xff, 0xfc, 0x00, 
 };
 
-const lv_img_dsc_t wheelErrror = {
+const lv_img_dsc_t wheelStatusError = {
   .header.cf = LV_IMG_CF_INDEXED_1BIT,
   .header.always_zero = 0,
   .header.reserved = 0,
   .header.w = 53,
   .header.h = 29,
   .data_size = 211,
-  .data = wheelErrror_map,
+  .data = wheelStatusError_map,
 };
