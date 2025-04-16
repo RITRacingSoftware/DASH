@@ -5,6 +5,8 @@
 #include "lvgl.h"
 #include "tft-manager.h"
 
+LV_IMG_DECLARE(DriveScreen);
+
 namespace ScreenDrive {
 	lv_obj_t* init(DisplayManager::styles_t* styles);
 	void update(DataManager::car_data_t data);

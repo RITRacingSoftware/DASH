@@ -6,7 +6,7 @@
 #include "display-manager.h"
 
 #include "lvgl.h"
-LV_IMG_DECLARE(DebugScreen);
+
 namespace ScreenDebug {
 	lv_obj_t* screen;
 	DataManager::car_data_t lastdata;
@@ -29,6 +29,25 @@ namespace ScreenDebug {
 		lv_obj_t* vsm_state_label;
 		lv_obj_t* faults_textarea;
 		lv_style_t limp_style;
+
+		lv_obj_t* faultlog[10][2]; // 10 lines, 2 columns (time, fault)
+		lv_obj_t* v_min;
+		lv_obj_t* v_max;
+		lv_obj_t* v_avg;
+
+		lv_obj_t* temp_min;
+		lv_obj_t* temp_max;
+
+		lv_obj_t* latch_max_current;
+
+		lv_obj_t* brake_pressure_f;
+		lv_obj_t* brake_pressure_r;
+
+		lv_obj_t* tire_temps[4];
+		lv_obj_t* rotor_temps[4];
+		lv_obj_t* motor_temps[4];
+		lv_obj_t* motor_torque[4];
+
 	} elements;
 	const char* VC_STATUS_MESSAGES[] = {
 		"NOT READY",
@@ -88,11 +107,114 @@ namespace ScreenDebug {
 		lv_style_set_text_color(&elements.limp_style, lv_color_white());
 		lv_obj_add_style(screen, &elements.limp_style, LV_PART_MAIN);
 
+
+		//Image Section
 		// Background image
-		lv_obj_t * imgtest = lv_img_create(screen);
-		lv_img_set_src(imgtest, &DebugScreen);
-		lv_obj_align(imgtest, LV_ALIGN_CENTER,0, 0);
-		lv_obj_set_size(imgtest, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+		lv_obj_t * bg = lv_img_create(screen);
+		lv_img_set_src(bg, &DebugScreen);
+		lv_obj_align(bg, LV_ALIGN_CENTER,0, 0);
+		lv_obj_set_size(bg, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		//Wheel Status FL
+		lv_obj_t * nomFL = lv_img_create(screen);
+		lv_img_set_src(nomFL, &wheelStatusNominal);
+		lv_obj_align(nomFL, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(nomFL, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * errFL = lv_img_create(screen);
+		lv_img_set_src(errFL, &wheelStatusError);
+		lv_obj_align(errFL, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(errFL, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		//Wheel Status FR
+		lv_obj_t * nomFR = lv_img_create(screen);
+		lv_img_set_src(nomFR, &wheelStatusNominal);
+		lv_obj_align(nomFR, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(nomFR, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * errFR = lv_img_create(screen);
+		lv_img_set_src(errFR, &wheelStatusError);
+		lv_obj_align(errFR, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(errFR, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		//Wheel Status RL
+		lv_obj_t * nomRL = lv_img_create(screen);
+		lv_img_set_src(nomRL, &wheelStatusNominal);
+		lv_obj_align(nomRL, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(nomRL, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * errRL = lv_img_create(screen);
+		lv_img_set_src(errRL, &wheelStatusError);
+		lv_obj_align(errRL, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(errRL, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		//Wheel Status RR
+		lv_obj_t * nomRR = lv_img_create(screen);
+		lv_img_set_src(nomRR, &wheelStatusNominal);
+		lv_obj_align(nomRR, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(nomRR, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * errRR = lv_img_create(screen);
+		lv_img_set_src(errRR, &wheelStatusError);
+		lv_obj_align(errRR, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(errRR, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		//Car Status
+		lv_obj_t * carStatusNom = lv_img_create(screen);
+		lv_img_set_src(carStatusNom, &carStatusNominal);
+		lv_obj_align(carStatusNom, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(carStatusNom, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * carStatusBoot = lv_img_create(screen);
+		lv_img_set_src(carStatusBoot, &carStatusBooting);
+		lv_obj_align(carStatusBoot, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(carStatusBoot, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * carStatusFault = lv_img_create(screen);
+		lv_img_set_src(carStatusFault, &carStatusFaulted);
+		lv_obj_align(carStatusFault, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(carStatusFault, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		//Ready To Drive Path
+		lv_obj_t * stepSPrecharge = lv_img_create(screen);
+		lv_img_set_src(stepSPrecharge, &rtdStartPrecharge);
+		lv_obj_align(stepSPrecharge, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepSPrecharge, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * stepHV = lv_img_create(screen);
+		lv_img_set_src(stepHV, &rtdHVEnabled);
+		lv_obj_align(stepHV, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepHV, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * stepEPrecharge = lv_img_create(screen);
+		lv_img_set_src(stepEPrecharge, &rtdEndPrecharge);
+		lv_obj_align(stepEPrecharge, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepEPrecharge, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * stepRTD = lv_img_create(screen);
+		lv_img_set_src(stepRTD, &rtdReadyToDrive);
+		lv_obj_align(stepRTD, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepRTD, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		// RPM Bar
 		elements.rpmbar = lv_bar_create(screen);
