@@ -83,6 +83,7 @@ namespace DisplayManager {
 		
 	
 		if (active_screen == 0) {
+			 
 			screen_debug = ScreenDebug::init(&styles);
 			lv_scr_load(screen_debug);
 		}
@@ -90,11 +91,6 @@ namespace DisplayManager {
 			screen_drive = ScreenDrive::init(&styles);
 			lv_scr_load(screen_drive);
 		}
-		else if (active_screen == 2){
-			screen_eve = ScreenEve::init(&styles);
-			lv_scr_load(screen_eve);
-		}
-
 
 		Serial.printf("Initialized Screens\n");
 		Serial.printf("Initialized DisplayManager\n");
@@ -102,12 +98,10 @@ namespace DisplayManager {
 
 	void update(DataManager::car_data_t data) {
 		if(active_screen == 0) {
+			
 			ScreenDebug::update(data);
 		}
 		else if(active_screen == 1) {
-			ScreenEve::update(data);
-		}
-		else if (active_screen == 2) {
 			ScreenEve::update(data);
 		}
 
@@ -118,13 +112,12 @@ namespace DisplayManager {
 	void switchScreens(int new_screen) {
 		if(new_screen != active_screen) {
 			if(new_screen == 0) {
+				lv_obj_clean(lv_scr_act());
 				lv_scr_load(screen_debug);
 			}
 			else if (new_screen == 1){
+				lv_obj_clean(lv_scr_act());
 				lv_scr_load(screen_drive);
-			}
-			else{
-				lv_scr_load(screen_eve);	
 			}
 
 			active_screen = new_screen;

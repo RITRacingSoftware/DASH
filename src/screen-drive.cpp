@@ -7,7 +7,7 @@
 #include "display-manager.h"
 
 #include "lvgl.h"
-LV_IMG_DECLARE(DriveScreen);
+
 namespace ScreenDrive {
 	// The dbc seems to be outdated/not match what the VC is sending, I know this
 	// isn't the correct way to fix it but I'm doing it for now to make it match the VC
