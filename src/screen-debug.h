@@ -15,6 +15,8 @@ LV_IMG_DECLARE(rtdHVEnabled);
 LV_IMG_DECLARE(rtdEndPrecharge);
 LV_IMG_DECLARE(rtdReadyToDrive);
 
+lv_obj_t** createImgObjArray(lv_obj_t** imgArray, lv_img_dsc_t* src);
+
 namespace ScreenDebug {
 	lv_obj_t* init(DisplayManager::styles_t* styles);
 	void update(DataManager::car_data_t data);

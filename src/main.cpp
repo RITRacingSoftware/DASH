@@ -15,5 +15,5 @@ void loop()
 {
 	DataManager::update();
 
-	delay(100);
+	delay(10);
 }
