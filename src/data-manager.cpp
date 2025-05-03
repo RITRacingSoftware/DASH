@@ -55,7 +55,6 @@ namespace DataManager {
 		Serial.printf("Initializing DataManager\n");
 		DisplayManager::init();
 		CANManager::init();
-
 		data.bms_maxcurrent = -100000;
 		//Assume we have a fault until we certianly don't
 		data.bms_faultvector = 0x8000;
