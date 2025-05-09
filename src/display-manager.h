@@ -4,13 +4,19 @@
 #include "data-manager.h"
 
 namespace DisplayManager {
-	typedef struct styles_s {
-		lv_style_t style;
-		lv_style_t barstyle;
-		lv_style_t barindstyle;
-		lv_style_t faultstyle;
-	} styles_t;
+	typedef struct debug_styles {
+		lv_style_t mainTextSmall;
+		lv_style_t mainTextLarge;
+		lv_style_t faultTimecode;
+		lv_style_t faultText;
+	} debug_styles_t;
 
+	typedef struct drive_styles {
+		lv_style_t tempText;
+		lv_style_t middleText;
+		lv_style_t bmsText;
+
+	} drive_styles_t;
 
 
 
