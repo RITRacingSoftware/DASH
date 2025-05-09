@@ -114,10 +114,12 @@ namespace ScreenDebug {
 		// lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 		
 		// Custom styles
+
 		lv_style_init(&elements.limp_style);
 		lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[0]);
 		lv_style_set_text_color(&elements.limp_style, lv_color_white());
 		lv_obj_add_style(screen, &elements.limp_style, LV_PART_MAIN);
+		
 
 
 		//Image Section
@@ -129,23 +131,26 @@ namespace ScreenDebug {
 
 		//Wheels Status Images go from Front Left to Rear Right
 
+		lv_obj_t* wheelInvStatus[4];
+		createImgObjArray(wheelInvStatus, &wheelInverterStatus, screen);
 		lv_obj_t* wheelErrIndicator[4];
-		createImgObjArray(wheelErrIndicator, (&wheelStatusError),screen);
+		createImgObjArray(wheelErrIndicator, &wheelStatusError,screen);
 		lv_obj_t* wheelNomIndicator[4];
-		createImgObjArray(wheelNomIndicator, (&wheelStatusNominal), screen);
-
-		//Car Status
-		lv_obj_t * carStatus = lv_img_create(screen);
-		lv_img_set_src(carStatus, &carStatusNominal);
-		lv_obj_align(carStatus, LV_ALIGN_TOP_LEFT, 10, 10);
-		lv_obj_set_size(carStatus, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
-
+		createImgObjArray(wheelNomIndicator, &wheelStatusNominal, screen);
 
 		//Ready To Drive Path
 		lv_obj_t * stepSPrecharge = lv_img_create(screen);
 		lv_img_set_src(stepSPrecharge, &rtdStartPrecharge);
 		lv_obj_align(stepSPrecharge, LV_ALIGN_TOP_LEFT, 10, 10);
 		lv_obj_set_size(stepSPrecharge, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+		
+		lv_style_t teststyle;
+		lv_style_init(&teststyle);
+
+		lv_obj_add_style(stepSPrecharge, &teststyle, LV_PART_MAIN);
+		lv_obj_set_style_img_recolor_opa(stepSPrecharge, LV_OPA_COVER, 0);
+		lv_obj_set_style_img_recolor(stepSPrecharge, lv_palette_main(LV_PALETTE_BLUE), 0);
+
 
 		lv_obj_t * stepHV = lv_img_create(screen);
 		lv_img_set_src(stepHV, &rtdHVEnabled);

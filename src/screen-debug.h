@@ -7,6 +7,7 @@
 LV_IMG_DECLARE(DebugScreen);
 LV_IMG_DECLARE(wheelStatusNominal);
 LV_IMG_DECLARE(wheelStatusError);
+LV_IMG_DECLARE(wheelInverterStatus);
 LV_IMG_DECLARE(carStatusBooting);
 LV_IMG_DECLARE(carStatusNominal);
 LV_IMG_DECLARE(carStatusFaulted);
