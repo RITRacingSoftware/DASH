@@ -4,18 +4,16 @@
 #include "data-manager.h"
 
 namespace DisplayManager {
-	typedef struct debug_styles {
+	typedef struct debug_styles_s {
 		lv_style_t mainTextSmall;
 		lv_style_t mainTextLarge;
 		lv_style_t faultTimecode;
-		lv_style_t faultText;
 	} debug_styles_t;
 
-	typedef struct drive_styles {
+	typedef struct drive_styles_s {
 		lv_style_t tempText;
 		lv_style_t middleText;
 		lv_style_t bmsText;
-
 	} drive_styles_t;
 
 

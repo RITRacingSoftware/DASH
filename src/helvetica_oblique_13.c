@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Size: 13 px
  * Bpp: 1
- * Opts: --bpp 1 --size 13 --no-compress --font Helvetica-Oblique.ttf --symbols AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz --format lvgl -o helvetica-oblique-13.c
+ * Opts: --bpp 1 --size 13 --no-compress --font Helvetica_Oblique.ttf --symbols AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz --format lvgl -o helvetica_oblique_13.c
  ******************************************************************************/
 
 #ifdef LV_LVGL_H_INCLUDE_SIMPLE
@@ -10,11 +10,11 @@
 #include "lvgl/lvgl.h"
 #endif
 
-#ifndef HELVETICA-OBLIQUE-13
-#define HELVETICA-OBLIQUE-13 1
+#ifndef HELVETICA_OBLIQUE_13
+#define HELVETICA_OBLIQUE_13 1
 #endif
 
-#if HELVETICA-OBLIQUE-13
+#if HELVETICA_OBLIQUE_13
 
 /*-----------------
  *    BITMAPS
@@ -411,9 +411,9 @@ static lv_font_fmt_txt_dsc_t font_dsc = {
 
 /*Initialize a public general font descriptor*/
 #if LVGL_VERSION_MAJOR >= 8
-const lv_font_t helvetica-oblique-13 = {
+const lv_font_t helvetica_oblique_13 = {
 #else
-lv_font_t helvetica-oblique-13 = {
+lv_font_t helvetica_oblique_13 = {
 #endif
     .get_glyph_dsc = lv_font_get_glyph_dsc_fmt_txt,    /*Function pointer to get glyph's data*/
     .get_glyph_bitmap = lv_font_get_bitmap_fmt_txt,    /*Function pointer to get glyph's bitmap*/
@@ -435,5 +435,5 @@ lv_font_t helvetica-oblique-13 = {
 
 
 
-#endif /*#if HELVETICA-OBLIQUE-13*/
+#endif /*#if HELVETICA_OBLIQUE_13*/
 
