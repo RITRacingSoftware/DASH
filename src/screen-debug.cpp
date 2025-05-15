@@ -107,7 +107,7 @@ namespace ScreenDebug {
 		lv_palette_main(LV_PALETTE_RED),
 	};
 
-	lv_obj_t* init(DisplayManager::styles_t* styles) {
+	lv_obj_t* init(DisplayManager::debug_styles_t* de) {
 		Serial.printf("Initializing Debug Screen\n");
 
 		screen = lv_obj_create(NULL);
