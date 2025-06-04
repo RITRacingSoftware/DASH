@@ -7,6 +7,18 @@
 
 #include "lvgl.h"
 
+lv_obj_t** createImgObjArray(lv_obj_t** imgArray, const lv_img_dsc_t* src, lv_obj_t* parent) {
+	for (int i = 0; i < (int) sizeof(imgArray); i++) {
+		imgArray[i] = lv_img_create(parent);
+		lv_img_set_src(imgArray[i], src);
+		lv_obj_align(imgArray[i], LV_ALIGN_TOP_LEFT,0, 0);
+		lv_obj_set_size(imgArray[i], LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+	}
+	return imgArray;
+}
+
+
 namespace ScreenDebug {
 	lv_obj_t* screen;
 	DataManager::car_data_t lastdata;
@@ -16,25 +28,39 @@ namespace ScreenDebug {
 		lv_obj_t* rpmbar;
 		lv_obj_t* rpmlabel;
 		lv_obj_t* mphlabel;
-
 		lv_obj_t* bms_soc_label;
 		lv_obj_t* bms_cellvoltage_label;
 		lv_obj_t* bms_packvoltage_label;
 		lv_obj_t* bms_current_label;
 		lv_obj_t* bms_maxcurrent_label;
 		lv_obj_t* bms_maxtemp_label;
-
 		lv_obj_t* status_overall;
 		lv_obj_t* status_vcstatus;
 		lv_obj_t* status_mcustatus;
 		lv_obj_t* status_bmsstatus;
 		lv_obj_t* vsm_state_label;
-
 		lv_obj_t* faults_textarea;
-
 		lv_style_t limp_style;
-	} elements;
 
+		lv_obj_t* faultlog[10][2]; // 10 lines, 2 columns (time, fault)
+		lv_obj_t* v_min;
+		lv_obj_t* v_max;
+		lv_obj_t* v_avg;
+
+		lv_obj_t* temp_min;
+		lv_obj_t* temp_max;
+
+		lv_obj_t* latch_max_current;
+
+		lv_obj_t* brake_pressure_f;
+		lv_obj_t* brake_pressure_r;
+
+		lv_obj_t* tire_temps[4];
+		lv_obj_t* rotor_temps[4];
+		lv_obj_t* motor_temps[4];
+		lv_obj_t* motor_torque[4];
+
+	} elements;
 	const char* VC_STATUS_MESSAGES[] = {
 		"NOT READY",
 		"STARTUP",
@@ -42,16 +68,6 @@ namespace ScreenDebug {
 		"FAULTED",
 	};
 
-	// const char* VC_FAULT_MESSAGES[] = {
-	// 	"VC brake sensor irrational",
-	// 	"VC accelerator irrational",
-	// 	"VC APPS sensor disagreement",
-	// 	"VC APPS double pedal",
-	// 	"VC hardfault",
-	// };
-
-	// The dbc seems to be outdated/not match what the VC is sending, I know this
-	// isn't the correct way to fix it but I'm doing it for now to make it match the VC
 	const char* VC_FAULT_MESSAGES[] = {
 		"VC BRAKE SENSOR IRRATIONAL",
 		// "VC ACCELERATOR IRRATIONAL",
@@ -91,110 +107,178 @@ namespace ScreenDebug {
 		lv_palette_main(LV_PALETTE_RED),
 	};
 
-	lv_obj_t* init(DisplayManager::styles_t* styles) {
+	lv_obj_t* init(DisplayManager::debug_styles_t* de) {
 		Serial.printf("Initializing Debug Screen\n");
 
 		screen = lv_obj_create(NULL);
 		// lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
-
+		
 		// Custom styles
+
 		lv_style_init(&elements.limp_style);
 		lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[0]);
 		lv_style_set_text_color(&elements.limp_style, lv_color_white());
 		lv_obj_add_style(screen, &elements.limp_style, LV_PART_MAIN);
+		
+
+
+		//Image Section
+		// Background image
+		lv_obj_t * bg = lv_img_create(screen);
+		lv_img_set_src(bg, &DebugScreen);
+		lv_obj_align(bg, LV_ALIGN_CENTER,0, 0);
+		lv_obj_set_size(bg, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		//Wheels Status Images go from Front Left to Rear Right
+
+		lv_obj_t* wheelInvStatus[4];
+		createImgObjArray(wheelInvStatus, &wheelInverterStatus, screen);
+		lv_obj_t* wheelErrIndicator[4];
+		createImgObjArray(wheelErrIndicator, &wheelStatusError,screen);
+		lv_obj_t* wheelNomIndicator[4];
+		createImgObjArray(wheelNomIndicator, &wheelStatusNominal, screen);
+
+		//Ready To Drive Path
+		lv_obj_t * stepSPrecharge = lv_img_create(screen);
+		lv_img_set_src(stepSPrecharge, &rtdStartPrecharge);
+		lv_obj_align(stepSPrecharge, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepSPrecharge, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+		
+		lv_style_t teststyle;
+		lv_style_init(&teststyle);
+
+		lv_obj_add_style(stepSPrecharge, &teststyle, LV_PART_MAIN);
+		lv_obj_set_style_img_recolor_opa(stepSPrecharge, LV_OPA_COVER, 0);
+		lv_obj_set_style_img_recolor(stepSPrecharge, lv_palette_main(LV_PALETTE_BLUE), 0);
+
+
+		lv_obj_t * stepHV = lv_img_create(screen);
+		lv_img_set_src(stepHV, &rtdHVEnabled);
+		lv_obj_align(stepHV, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepHV, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+		lv_obj_t * stepEPrecharge = lv_img_create(screen);
+		lv_img_set_src(stepEPrecharge, &rtdEndPrecharge);
+		lv_obj_align(stepEPrecharge, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepEPrecharge, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+		
+		lv_obj_t * stepRTD = lv_img_create(screen);
+		lv_img_set_src(stepRTD, &rtdReadyToDrive);
+		lv_obj_align(stepRTD, LV_ALIGN_TOP_LEFT, 10, 10);
+		lv_obj_set_size(stepRTD, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 		// RPM Bar
-		elements.rpmbar = lv_bar_create(screen);
-		lv_bar_set_range(elements.rpmbar, 0, 5000);
-		lv_obj_set_size(elements.rpmbar, 90, 320);
-		lv_obj_align(elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
-		lv_obj_add_style(elements.rpmbar, &styles->barstyle, 0);
-		lv_obj_add_style(elements.rpmbar, &styles->barindstyle, LV_PART_INDICATOR);
-		// RPM Bar Label
-		elements.rpmlabel = lv_label_create(screen);
-		lv_label_set_text(elements.rpmlabel, "????\nRPM");
-		lv_obj_align_to(elements.rpmlabel, elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
-		// MPH Label
-		elements.mphlabel = lv_label_create(screen);
-		lv_label_set_text(elements.mphlabel, "??.?\nMPH");
-		lv_obj_align_to(elements.mphlabel, elements.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+		// elements.rpmbar = lv_bar_create(screen);
+		// lv_bar_set_range(elements.rpmbar, 0, 5000);
+		// lv_obj_set_size(elements.rpmbar, 90, 320);
+		// lv_obj_align(elements.rpmbar, LV_ALIGN_TOP_LEFT, 10, 10);
+		// lv_obj_add_style(elements.rpmbar, &styles->barstyle, 0);
+		// lv_obj_add_style(elements.rpmbar, &styles->barindstyle, LV_PART_INDICATOR);
+		// // RPM Bar Label
+		// elements.rpmlabel = lv_label_create(screen);
+		// lv_label_set_text(elements.rpmlabel, "????\nRPM");
+		// lv_obj_align_to(elements.rpmlabel, elements.rpmbar, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
+		// // MPH Label
+		// elements.mphlabel = lv_label_create(screen);
+		// lv_label_set_text(elements.mphlabel, "??.?\nMPH");
+		// lv_obj_align_to(elements.mphlabel, elements.rpmlabel, LV_ALIGN_OUT_BOTTOM_MID, 0, 5);
 
-		// Status display elements
-		lv_obj_t* status_area = lv_obj_create(screen);
-		lv_obj_set_size(status_area, 350, 320);
-		lv_obj_align(status_area, LV_ALIGN_TOP_MID, -115, 10);
-		lv_obj_add_style(status_area, &styles->style, LV_PART_MAIN);
-		// Disable scroll bars
-		lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
+		// // Status display elements
+		// lv_obj_t* status_area = lv_obj_create(screen);
+		// lv_obj_set_size(status_area, 350, 320);
+		// lv_obj_align(status_area, LV_ALIGN_TOP_MID, -115, 10);
+		// lv_obj_add_style(status_area, &styles->style, LV_PART_MAIN);
+		// // Disable scroll bars
+		// lv_obj_set_scrollbar_mode(status_area, LV_SCROLLBAR_MODE_OFF);
 
-		elements.status_overall = lv_label_create(status_area);
-		lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -45);
-		lv_label_set_recolor(elements.status_overall, true);
-		lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
+		// elements.status_overall = lv_label_create(status_area);
+		// lv_obj_align(elements.status_overall, LV_ALIGN_CENTER, 0, -45);
+		// lv_label_set_recolor(elements.status_overall, true);
+		// lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
 
-		elements.status_vcstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -15);
-		lv_label_set_recolor(elements.status_vcstatus, true);
-		lv_label_set_text(elements.status_vcstatus, "VC: ???");
+		// elements.status_vcstatus = lv_label_create(status_area);
+		// lv_obj_align(elements.status_vcstatus, LV_ALIGN_CENTER, 0, -15);
+		// lv_label_set_recolor(elements.status_vcstatus, true);
+		// lv_label_set_text(elements.status_vcstatus, "VC: ???");
 
-		elements.status_mcustatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, 15);
-		lv_label_set_recolor(elements.status_mcustatus, true);
-		lv_label_set_text(elements.status_mcustatus, "MC: ???");
+		// elements.status_mcustatus = lv_label_create(status_area);
+		// lv_obj_align(elements.status_mcustatus, LV_ALIGN_CENTER, 0, 15);
+		// lv_label_set_recolor(elements.status_mcustatus, true);
+		// lv_label_set_text(elements.status_mcustatus, "MC: ???");
 
-		elements.status_bmsstatus = lv_label_create(status_area);
-		lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 45);
-		lv_label_set_recolor(elements.status_bmsstatus, true);
-		lv_label_set_text(elements.status_bmsstatus, "BMS: ???");
+		// elements.status_bmsstatus = lv_label_create(status_area);
+		// lv_obj_align(elements.status_bmsstatus, LV_ALIGN_CENTER, 0, 45);
+		// lv_label_set_recolor(elements.status_bmsstatus, true);
+		// lv_label_set_text(elements.status_bmsstatus, "BMS: ???");
 
-		// VSM state label
-		elements.vsm_state_label = lv_label_create(status_area);
-		lv_obj_align(elements.vsm_state_label, LV_ALIGN_CENTER, 0, 75);
-		lv_label_set_text(elements.vsm_state_label, "VSM = ?");
+		// // VSM state label
+		// elements.vsm_state_label = lv_label_create(status_area);
+		// lv_obj_align(elements.vsm_state_label, LV_ALIGN_CENTER, 0, 75);
+		// lv_label_set_text(elements.vsm_state_label, "VSM = ?");
 
-		// BMS-related display elements
-		lv_obj_t* bms_area = lv_obj_create(screen);
-		lv_obj_set_size(bms_area, 320, 320);
-		lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
-		lv_obj_add_style(bms_area, &styles->style, LV_PART_MAIN);
-		// Disable scroll bars
-		lv_obj_set_scrollbar_mode(bms_area, LV_SCROLLBAR_MODE_OFF);
+		// // BMS-related display elements
+		// lv_obj_t* bms_area = lv_obj_create(screen);
+		// lv_obj_set_size(bms_area, 320, 320);
+		// lv_obj_align(bms_area, LV_ALIGN_TOP_RIGHT, -10, 10);
+		// lv_obj_add_style(bms_area, &styles->style, LV_PART_MAIN);
+		// // Disable scroll bars
+		// lv_obj_set_scrollbar_mode(bms_area, LV_SCROLLBAR_MODE_OFF);
 
-		// SOC Label
-		elements.bms_soc_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -75);
-		lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
+		// // SOC Label
+		// elements.bms_soc_label = lv_label_create(bms_area);
+		// lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -75);
+		// lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
 
-		// Cell Voltages Label
-		elements.bms_cellvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -45);
-		lv_label_set_text(elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
+		// // Cell Voltages Label
+		// elements.bms_cellvoltage_label = lv_label_create(bms_area);
+		// lv_obj_align(elements.bms_cellvoltage_label, LV_ALIGN_CENTER, 0, -45);
+		// lv_label_set_text(elements.bms_cellvoltage_label, "V = ?.?? - ?.?? V");
 
-		// Cell Voltages Label
-		elements.bms_packvoltage_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, -15);
-		lv_label_set_text(elements.bms_packvoltage_label, "PACK = ???.? V");
+		// // Cell Voltages Label
+		// elements.bms_packvoltage_label = lv_label_create(bms_area);
+		// lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_CENTER, 0, -15);
+		// lv_label_set_text(elements.bms_packvoltage_label, "PACK = ???.? V");
 
-		// Current Label
-		elements.bms_current_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 15);
-		lv_label_set_text(elements.bms_current_label, "I = ?.?? A");
+		// // Current Label
+		// elements.bms_current_label = lv_label_create(bms_area);
+		// lv_obj_align(elements.bms_current_label, LV_ALIGN_CENTER, 0, 15);
+		// lv_label_set_text(elements.bms_current_label, "I = ?.?? A");
 
-		// Peak current Label
-		elements.bms_maxcurrent_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 45);
-		lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
+		// // Peak current Label
+		// elements.bms_maxcurrent_label = lv_label_create(bms_area);
+		// lv_obj_align(elements.bms_maxcurrent_label, LV_ALIGN_CENTER, 0, 45);
+		// lv_label_set_text(elements.bms_maxcurrent_label, "MAX I = ?.?? A");
 
-		// Max temp
-		elements.bms_maxtemp_label = lv_label_create(bms_area);
-		lv_obj_align(elements.bms_maxtemp_label, LV_ALIGN_CENTER, 0, 75);
-		lv_label_set_text(elements.bms_maxtemp_label, "TEMP = ??? C");
+		// // Max temp
+		// elements.bms_maxtemp_label = lv_label_create(bms_area);
+		// lv_obj_align(elements.bms_maxtemp_label, LV_ALIGN_CENTER, 0, 75);
+		// lv_label_set_text(elements.bms_maxtemp_label, "TEMP = ??? C");
 
-		// Fault text area
-		elements.faults_textarea = lv_textarea_create(screen);
-		lv_obj_set_size(elements.faults_textarea, 680, 130);
-		lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
-		lv_obj_add_style(elements.faults_textarea, &styles->faultstyle, LV_PART_MAIN);
+		// // Fault text area
+		// elements.faults_textarea = lv_textarea_create(screen);
+		// lv_obj_set_size(elements.faults_textarea, 680, 130);
+		// lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
+		// lv_obj_add_style(elements.faults_textarea, &styles->faultstyle, LV_PART_MAIN);
 
 		Serial.printf("Initialized Debug Screen\n");
 
@@ -202,135 +286,135 @@ namespace ScreenDebug {
 	}
 
 	void update(DataManager::car_data_t data) {
-		if(data.mcu_motorrpm != lastdata.mcu_motorrpm
-			|| data.bms_limplevel != lastdata.bms_limplevel) {
-			lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[data.bms_limplevel]);
-			lv_bar_set_value(elements.rpmbar, data.mcu_motorrpm, LV_ANIM_OFF);
-			lv_label_set_text_fmt(elements.rpmlabel, "%04d\nRPM", data.mcu_motorrpm);
-			lv_label_set_text_fmt(elements.mphlabel, "%04.1f\nMPH", data.mcu_wheelspeed);
-		}
+		// if(data.mcu_motorrpm != lastdata.mcu_motorrpm
+		// 	|| data.bms_limplevel != lastdata.bms_limplevel) {
+		// 	lv_style_set_bg_color(&elements.limp_style, LIMP_COLORS[data.bms_limplevel]);
+		// 	lv_bar_set_value(elements.rpmbar, data.mcu_motorrpm, LV_ANIM_OFF);
+		// 	lv_label_set_text_fmt(elements.rpmlabel, "%04d\nRPM", data.mcu_motorrpm);
+		// 	lv_label_set_text_fmt(elements.mphlabel, "%04.1f\nMPH", data.mcu_carspeed);
+		// }
 
-		// Status Elements
-		// TODO: Re-evaluate readiness detection
-		/*if(data.vc_status != lastdata.vc_status ||
-			data.mcu_status != lastdata.mcu_status ||
-			data.bms_faultvector != lastdata.bms_faultvector) {
+		// // Status Elements
+		// // TODO: Re-evaluate readiness detection
+		// /*if(data.vc_status != lastdata.vc_status ||
+		// 	data.mcu_status != lastdata.mcu_status ||
+		// 	data.bms_faultvector != lastdata.bms_faultvector) {
 
-			if(data.vc_status == 2 && data.mcu_status == 3 &&
-				data.bms_faultvector == 0) {
-				lv_label_set_text(elements.status_overall, "#00ff00 READY TO DRIVE#");
-			}
-			else {
-				lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
-			}
+		// 	if(data.vc_status == 2 && data.mcu_status == 3 &&
+		// 		data.bms_faultvector == 0) {
+		// 		lv_label_set_text(elements.status_overall, "#00ff00 READY TO DRIVE#");
+		// 	}
+		// 	else {
+		// 		lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
+		// 	}
 
-		}*/
-		if(data.vc_status != lastdata.vc_status) {
-			if(data.vc_status == 2) {
-				lv_label_set_text(elements.status_overall, "#00ff00 READY TO DRIVE#");
-			}
-			else {
-				lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
-			}
-		}
+		// }*/
+		// if(data.vc_status != lastdata.vc_status) {
+		// 	if(data.vc_status == 2) {
+		// 		lv_label_set_text(elements.status_overall, "#00ff00 READY TO DRIVE#");
+		// 	}
+		// 	else {
+		// 		lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
+		// 	}
+		// }
 
-		if(data.vc_status != lastdata.vc_status) {
-			if(data.vc_status >= 0 && data.vc_status <= 2) {
-				lv_label_set_text_fmt(elements.status_vcstatus, "VC: %s",
-					VC_STATUS_MESSAGES[data.vc_status]);
-			}
-			else {
-				lv_label_set_text_fmt(elements.status_vcstatus, "VC: %s",
-					VC_STATUS_MESSAGES[3]);
-			}
-		}
+		// if(data.vc_status != lastdata.vc_status) {
+		// 	if(data.vc_status >= 0 && data.vc_status <= 2) {
+		// 		lv_label_set_text_fmt(elements.status_vcstatus, "VC: %s",
+		// 			VC_STATUS_MESSAGES[data.vc_status]);
+		// 	}
+		// 	else {
+		// 		lv_label_set_text_fmt(elements.status_vcstatus, "VC: %s",
+		// 			VC_STATUS_MESSAGES[3]);
+		// 	}
+		// }
 
-		if(data.mcu_status != lastdata.mcu_status) {
-			if(data.mcu_status >= 1 && data.mcu_status <= 4) {
-				lv_label_set_text_fmt(elements.status_mcustatus, "MC: %s",
-					MCU_STATUS_MESSAGES[data.mcu_status]);
-			}
-			else {
-				lv_label_set_text_fmt(elements.status_mcustatus, "MC: %s",
-					MCU_STATUS_MESSAGES[0]);
-			}
-		}
+		// if(data.mcu_status != lastdata.mcu_status) {
+		// 	if(data.mcu_status >= 1 && data.mcu_status <= 4) {
+		// 		lv_label_set_text_fmt(elements.status_mcustatus, "MC: %s",
+		// 			MCU_STATUS_MESSAGES[data.mcu_status]);
+		// 	}
+		// 	else {
+		// 		lv_label_set_text_fmt(elements.status_mcustatus, "MC: %s",
+		// 			MCU_STATUS_MESSAGES[0]);
+		// 	}
+		// }
 
-		if(data.mcu_vsm_state != lastdata.mcu_vsm_state) {
-			lv_label_set_text_fmt(elements.vsm_state_label, "VSM = %d", data.mcu_vsm_state);
-		}
+		// if(data.mcu_vsm_state != lastdata.mcu_vsm_state) {
+		// 	lv_label_set_text_fmt(elements.vsm_state_label, "VSM = %d", data.mcu_vsm_state);
+		// }
 
-		if(data.vc_faultvector != lastdata.vc_faultvector ||
-			data.bms_faultvector != lastdata.bms_faultvector) {
-			// If any fault message changes, we must update them all...
+		// if(data.vc_faultvector != lastdata.vc_faultvector ||
+		// 	data.bms_faultvector != lastdata.bms_faultvector) {
+		// 	// If any fault message changes, we must update them all...
 
-			bool firstfault = true; // Used for pretty-printing
-			uint8_t vc_faultnum = 0;
-			uint8_t bms_faultnum = 0;
+		// 	bool firstfault = true; // Used for pretty-printing
+		// 	uint8_t vc_faultnum = 0;
+		// 	uint8_t bms_faultnum = 0;
 
-			lv_textarea_set_text(elements.faults_textarea, "Faults: ");
+		// 	lv_textarea_set_text(elements.faults_textarea, "Faults: ");
 
-			// Loop over possible VC faults
-			for(int i = 0; i < 5; i++) {
-				bool faulted = (data.vc_faultvector >> i) & 1;
-				if(faulted) {
-					if(!firstfault) {
-						// Pretty printing
-						lv_textarea_add_text(elements.faults_textarea, ", ");
-					}
-					firstfault = false;
-					lv_textarea_add_text(elements.faults_textarea, VC_FAULT_MESSAGES[i]);
-					vc_faultnum++;
-				}
-			}
+		// 	// Loop over possible VC faults
+		// 	for(int i = 0; i < 5; i++) {
+		// 		bool faulted = (data.vc_faultvector >> i) & 1;
+		// 		if(faulted) {
+		// 			if(!firstfault) {
+		// 				// Pretty printing
+		// 				lv_textarea_add_text(elements.faults_textarea, ", ");
+		// 			}
+		// 			firstfault = false;
+		// 			lv_textarea_add_text(elements.faults_textarea, VC_FAULT_MESSAGES[i]);
+		// 			vc_faultnum++;
+		// 		}
+		// 	}
 
-			// Loop over possible BMS faults
-			for(int i = 0; i < 11; i++) {
-				bool faulted = (data.bms_faultvector >> i) & 1;
-				if(faulted) {
-					if(!firstfault) {
-						// Pretty printing
-						lv_textarea_add_text(elements.faults_textarea, ", ");
-					}
-					firstfault = false;
-					lv_textarea_add_text(elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
-					bms_faultnum++;
-				}
-			}
+		// 	// Loop over possible BMS faults
+		// 	for(int i = 0; i < 11; i++) {
+		// 		bool faulted = (data.bms_faultvector >> i) & 1;
+		// 		if(faulted) {
+		// 			if(!firstfault) {
+		// 				// Pretty printing
+		// 				lv_textarea_add_text(elements.faults_textarea, ", ");
+		// 			}
+		// 			firstfault = false;
+		// 			lv_textarea_add_text(elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
+		// 			bms_faultnum++;
+		// 		}
+		// 	}
 
-			if(data.bms_faultvector == 0) {
-				lv_label_set_text(elements.status_bmsstatus, "BMS: READY");
-			}
-			else {
-				lv_label_set_text_fmt(elements.status_bmsstatus, "BMS: %d FAULTS", bms_faultnum);
-			}
+		// 	if(data.bms_faultvector == 0) {
+		// 		lv_label_set_text(elements.status_bmsstatus, "BMS: READY");
+		// 	}
+		// 	else {
+		// 		lv_label_set_text_fmt(elements.status_bmsstatus, "BMS: %d FAULTS", bms_faultnum);
+		// 	}
 
-			if(vc_faultnum == 0 && bms_faultnum == 0) {
-				lv_textarea_set_text(elements.faults_textarea, "");
-			}
-		}
+		// 	if(vc_faultnum == 0 && bms_faultnum == 0) {
+		// 		lv_textarea_set_text(elements.faults_textarea, "");
+		// 	}
+		// }
 
-		// BMS Elements
-		if(data.bms_soc != lastdata.bms_soc) {
-			lv_label_set_text_fmt(elements.bms_soc_label, "SOC = %d%%", data.bms_soc);
-		}
-		if(data.bms_cellvoltages_min != lastdata.bms_cellvoltages_min ||
-				data.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
-			lv_label_set_text_fmt(elements.bms_cellvoltage_label, "V = %1.2f - %1.2f V",
-				data.bms_cellvoltages_min, data.bms_cellvoltages_max);
-		}
-		if(data.bms_packvoltage != lastdata.bms_packvoltage) {
-			lv_label_set_text_fmt(elements.bms_packvoltage_label, "PACK = %3.1f V", data.bms_packvoltage);
-		}
-		if(data.bms_buscurrent != lastdata.bms_buscurrent) {
-			lv_label_set_text_fmt(elements.bms_current_label, "I = %1.2f A", data.bms_buscurrent);
-			if(data.bms_maxcurrent != lastdata.bms_maxcurrent) {
-				lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent);
-			}
-		}
-		if(data.bms_maxtemp != lastdata.bms_maxtemp) {
-			lv_label_set_text_fmt(elements.bms_maxtemp_label, "TEMP = %3.0f C", data.bms_maxtemp);
-		}
+		// // BMS Elements
+		// if(data.bms_soc != lastdata.bms_soc) {
+		// 	lv_label_set_text_fmt(elements.bms_soc_label, "SOC = %d%%", data.bms_soc);
+		// }
+		// if(data.bms_cellvoltages_min != lastdata.bms_cellvoltages_min ||
+		// 		data.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
+		// 	lv_label_set_text_fmt(elements.bms_cellvoltage_label, "V = %1.2f - %1.2f V",
+		// 		data.bms_cellvoltages_min, data.bms_cellvoltages_max);
+		// }
+		// if(data.bms_packvoltage != lastdata.bms_packvoltage) {
+		// 	lv_label_set_text_fmt(elements.bms_packvoltage_label, "PACK = %3.1f V", data.bms_packvoltage);
+		// }
+		// if(data.bms_buscurrent != lastdata.bms_buscurrent) {
+		// 	lv_label_set_text_fmt(elements.bms_current_label, "I = %1.2f A", data.bms_buscurrent);
+		// 	if(data.bms_maxcurrent != lastdata.bms_maxcurrent) {
+		// 		lv_label_set_text_fmt(elements.bms_maxcurrent_label, "MAX I = %1.2f A", data.bms_maxcurrent);
+		// 	}
+		// }
+		// if(data.bms_maxtemp != lastdata.bms_maxtemp) {
+		// 	lv_label_set_text_fmt(elements.bms_maxtemp_label, "TEMP = %3.0f C", data.bms_maxtemp);
+		// }
 
 		lastdata = data;
 	}
