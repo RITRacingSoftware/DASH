@@ -127,7 +127,7 @@ namespace ScreenDebug {
 
 
 		//Image Section
-		// Background image
+		// Background image (five vertical lines creating four columns)
 		lv_obj_t * bg = lv_img_create(screen);
 		lv_img_set_src(bg, &DebugScreen);
 		lv_obj_align(bg, LV_ALIGN_CENTER,0, 0);

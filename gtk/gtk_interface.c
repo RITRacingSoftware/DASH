@@ -39,7 +39,7 @@ void update_screen_data() {
     printf("Updating screen %d\n", max);
     if (max == 0) return;
     cairo_surface_flush(fd.surface);
-    for (int i=0; i < TFT_SCREEN_HEIGHT; i++) memcpy(surface_data + i*surface_stride, screen_data, surface_stride);
+    for (int i=0; i < TFT_SCREEN_HEIGHT; i++) memcpy(surface_data + i*surface_stride, screen_data + i*TFT_SCREEN_WIDTH, surface_stride);
     cairo_surface_mark_dirty(fd.surface);
     gtk_widget_queue_draw(fd.drawing_area);
 }

@@ -29,7 +29,7 @@ namespace TFTManager {
     void drawTexturedRect(int x1, int x2, int y1, int y2, uint16_t *pixels) {
         uint16_t width = x2-x1+1;
 		for(int y = y1; y <= y2; y++) {
-            memcpy(screen_data, pixels, width*sizeof(uint16_t));
+            memcpy(screen_data+x1+y*TFT_SCREEN_WIDTH, pixels, width*sizeof(uint16_t));
 			pixels += width;
 		}
         update_screen_data();
