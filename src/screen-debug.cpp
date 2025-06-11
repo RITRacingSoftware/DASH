@@ -1,6 +1,10 @@
 #include "screen-debug.h"
 
+#ifdef DASH_TESTING
+#include "testing_arduino.h"
+#else
 #include <Arduino.h>
+#endif
 
 #include "data-manager.h"
 #include "display-manager.h"
@@ -8,7 +12,7 @@
 #include "lvgl.h"
 
 lv_obj_t** createImgObjArray(lv_obj_t** imgArray, const lv_img_dsc_t* src, lv_obj_t* parent) {
-	for (int i = 0; i < (int) sizeof(imgArray); i++) {
+	for (int i = 0; i < 4; i++) {
 		imgArray[i] = lv_img_create(parent);
 		lv_img_set_src(imgArray[i], src);
 		lv_obj_align(imgArray[i], LV_ALIGN_TOP_LEFT,0, 0);

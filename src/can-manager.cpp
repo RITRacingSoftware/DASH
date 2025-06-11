@@ -2,19 +2,34 @@
 
 #include <cstdint>
 #include <queue>
-#include <Arduino.h>
 
+#ifdef DASH_TESTING
+#include "testing_arduino.h"
+#else
+#include <Arduino.h>
 #include "FlexCAN_T4.h"
-#include "c_files\main_dbc.h"
-#include "c_files\inverter_dbc.h"
-#include "c_files\sensor_dbc.h"
+#endif
+
+#include "c_files/main_dbc.h"
 
 #define CAN_BAUD_RATE 1000000
 #define READY_TO_DRIVE_ID 0x0AA //ask solomon on thursday if this has changed ....
 
 namespace CANManager {
-	static FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can;
+#ifdef DASH_TESTING
+    void initCAN() {
+
+    }
+    bool hasMessage() {
+        return false;
+    }
+    can_message_t getMessage() {
+        can_message_t message;
+        return message;
+    }
+#else
 	static std::queue<can_message_t> message_queue;
+	static FlexCAN_T4<CAN1, RX_SIZE_256, TX_SIZE_16> can;
 
 	void CAN_ISR(const CAN_message_t &msg) {
 		// This method MUST take less than 1ms to run, else it will be
@@ -61,7 +76,7 @@ namespace CANManager {
 		message_queue.pop();
 		return message;
 	}
-
+#endif
 	void init() {
 		Serial.printf("Initializing CANManager\n");
 		initCAN();

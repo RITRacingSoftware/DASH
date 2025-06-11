@@ -75,8 +75,13 @@
  *It removes the need to manually update the tick with `lv_tick_inc()`)*/
 #define LV_TICK_CUSTOM 1
 #if LV_TICK_CUSTOM
+#ifdef DASH_TESTING
+#define LV_TICK_CUSTOM_INCLUDE "gtk_interface.h"
+#define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())
+#else
     #define LV_TICK_CUSTOM_INCLUDE "Arduino.h"         /*Header for the system time function*/
     #define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())    /*Expression evaluating to current system time in ms*/
+#endif
 #endif   /*LV_TICK_CUSTOM*/
 
 /*Default Dot Per Inch. Used to initialize default sizes such as widgets sized, style paddings.

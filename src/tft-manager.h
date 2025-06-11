@@ -1,12 +1,12 @@
 #pragma once
 
+#include "config.h"
+
 #include <cstdint>
+#ifndef DASH_TESTING
 #include "Adafruit_RA8875.h"
+#endif
 
-#define TFT_SCREEN_WIDTH 800
-#define TFT_SCREEN_HEIGHT 480
-
-#define TFT_SCREEN_PIXELS (TFT_SCREEN_WIDTH * TFT_SCREEN_HEIGHT)
 
 namespace TFTManager {
 	void init();

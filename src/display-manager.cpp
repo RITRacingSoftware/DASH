@@ -1,6 +1,10 @@
 #include "display-manager.h"
 
+#ifdef DASH_TESTING
+#include "testing_arduino.h"
+#else
 #include <Arduino.h>
+#endif
 
 
 #include "tft-manager.h"
@@ -9,6 +13,7 @@
 
 
 #include "lvgl.h"
+#include "config.h"
 
 #define DRAW_BUFFER_SIZE (TFT_SCREEN_PIXELS / 16) //default /10 for 480x800
 

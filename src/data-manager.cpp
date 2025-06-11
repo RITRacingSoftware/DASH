@@ -2,14 +2,17 @@
 
 #include <cstdint>
 #include <cmath>
+
+#ifdef DASH_TESTING
+#include "testing_arduino.h"
+#else
 #include <Arduino.h>
+#endif
 
 
 #include "can-manager.h"
 #include "display-manager.h"
-#include "c_files\main_dbc.h"
-#include "c_files\inverter_dbc.h"
-#include "c_files\sensor_dbc.h"
+#include "c_files/main_dbc.h"
 
 
 
@@ -40,6 +43,7 @@ all temps and stuff
 
 */
 
+#define DATA_MANAGER_VC_FAULT_MASK  0x007fffff
 
 
 namespace DataManager {
@@ -69,15 +73,12 @@ namespace DataManager {
 			Serial.printf("Got CAN message, ID=0x%04x\n", message.id);
 			switch(message.id) {
 				// vector_nav_vel_ned_e and vector_nav_vel_ned_n
-				case SENSOR_DBC_VECTOR_NAV_FRAME_ID: { //Replace this for vector
-					sensor_dbc_vector_nav_t sensor;
-					sensor_dbc_vector_nav_unpack(&sensor, message.data, message.len);
-					
-
-
-					double vel_n = sensor_dbc_vector_nav_vector_nav_vel_ned_n_decode(sensor.vector_nav_vel_ned_n);
-					double vel_e = sensor_dbc_vector_nav_vector_nav_vel_ned_e_decode(sensor.vector_nav_vel_ned_e);
-					data.vel = sqrt(vel_n * vel_n + vel_e * vel_e);
+				case MAIN_DBC_SSDB_VECTOR_NAV6_FRAME_ID: { //Replace this for vector
+					main_dbc_ssdb_vector_nav6_t sensor;
+					main_dbc_ssdb_vector_nav6_unpack(&sensor, message.data, message.len);
+					float vel_x = sensor.vector_nav_vel_body_x;
+					float vel_y = sensor.vector_nav_vel_body_y;
+					data.vel = sqrt(vel_x * vel_x + vel_y * vel_y);
 					data.mcu_carspeed = data.vel * MS_TO_MPH;
 					break; }
 				case MAIN_DBC_BMS_STATUS_FRAME_ID: {
@@ -109,12 +110,11 @@ namespace DataManager {
 					// data.mcu_status = vcstatus.vc_status_mc_state;
 					break; }
 				case  MAIN_DBC_VC_FAULT_VECTOR_FRAME_ID: {
-					uint8_t mask = 0xf;
-					data.vc_faultvector = (data.vc_faultvector & ~mask) |
-												(message.data[0] & mask);
 					// Masked to keep other bits
+					data.vc_faultvector = (data.vc_faultvector & ~DATA_MANAGER_VC_FAULT_MASK) | 
+                                          ((message.data[0] | (message.data[1] << 8) | (message.data[2] << 16) | (message.data[3] << 24)) & DATA_MANAGER_VC_FAULT_MASK);
 					break; }
-				case MAIN_DBC_VC_HARD_FAULT_INDICATOR_FRAME_ID: {
+				/*case MAIN_DBC_VC_HARD_FAULT_INDICATOR_FRAME_ID: {
 					main_dbc_vc_hard_fault_indicator_t fault;
 					main_dbc_vc_hard_fault_indicator_unpack(&fault, message.data, message.len);
 					uint8_t faulted = fault.vc_hard_fault_indicator_task != 0;
@@ -124,7 +124,7 @@ namespace DataManager {
 					Serial.printf("VC hardfault = %d\n", fault.vc_hard_fault_indicator_task);
 					Serial.printf("VC fault vec = 0x%02x\n", data.vc_faultvector);
 					// Masked to keep other bits
-					break; }
+					break; }*/
 				case MAIN_DBC_BMS_FAULT_VECTOR_FRAME_ID: {
 					// This is not as DBC-agnostic as I would like,
 					//		but it's the best way I see to do it.
@@ -145,14 +145,7 @@ namespace DataManager {
 					}
 					break;
 				}
-				// Commented because there is no MCU anymore lol :/
-				// case MAIN_DBC_MCU_INTERNAL_STATES_FRAME_ID: {
-				// 	main_dbc_mcu_internal_states_t states;
-				// 	main_dbc_mcu_internal_states_unpack(&states, message.data, message.len);
-				// 	data.mcu_vsm_state = states.d1_vsm_state;
-				// 	break;
-				// }
-				case MAIN_DBC_C70_TIRE_TEMPS_FRAME_ID: {
+				/*case MAIN_DBC_C70_TIRE_TEMPS_FRAME_ID: {
 					main_dbc_c70_tire_temps_t temps;
 					main_dbc_c70_tire_temps_unpack(&temps, message.data, message.len);
 					data.tiretemp_fl = main_dbc_c70_tire_temps_tire_temp_fl_max_decode(temps.tire_temp_fl_max);
@@ -171,7 +164,7 @@ namespace DataManager {
 					float rotortemp_max = fmax(fmax(rotortemp_fl, rotortemp_fr), fmax(rotortemp_rl, rotortemp_rr));
 					data.rotortemp = rotortemp_max;
 					break;
-				}
+				}*/
 				case MAIN_DBC_PBX_STATUS_FRAME_ID: {
 					main_dbc_pbx_status_t status;
 					main_dbc_pbx_status_unpack(&status, message.data, message.len);

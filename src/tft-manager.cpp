@@ -1,11 +1,42 @@
 #include "tft-manager.h"
+#include "config.h"
 
 #include <cstdlib>
-#include <Arduino.h>
 
 #define PIN_RA8875_CS 10
 #define PIN_RA8875_RESET 9
 
+#ifdef DASH_TESTING
+extern "C" {
+#include "gtk_interface.h"
+}
+#include <cstdio>
+#include <cstring>
+namespace TFTManager {
+    void initScreen() {
+
+    }
+
+    void init() {
+        printf("Initializing TFTManager\n");
+    }
+
+    void fillScreen(uint16_t color) {
+        for (int i=0; i < TFT_SCREEN_PIXELS; i++) screen_data[i] = color;
+        update_screen_data();
+    }
+
+    void drawTexturedRect(int x1, int x2, int y1, int y2, uint16_t *pixels) {
+        uint16_t width = x2-x1+1;
+		for(int y = y1; y <= y2; y++) {
+            memcpy(screen_data, pixels, width*sizeof(uint16_t));
+			pixels += width;
+		}
+        update_screen_data();
+    }
+}
+#else
+#include <Arduino.h>
 namespace TFTManager {
 	Adafruit_RA8875* driver;
 
@@ -41,3 +72,4 @@ namespace TFTManager {
 		}
 	}
 }
+#endif

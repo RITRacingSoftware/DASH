@@ -1,7 +1,11 @@
 #include "screen-drive.h"
 #include "tft-manager.h"
 
+#ifdef DASH_TESTING
+#include "testing_arduino.h"
+#else
 #include <Arduino.h>
+#endif
 
 #include "data-manager.h"
 #include "display-manager.h"

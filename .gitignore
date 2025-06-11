@@ -2,3 +2,4 @@
 *.kate-swp
 .DS_Store
 .vscode
+build/
