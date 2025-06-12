@@ -32,22 +32,23 @@ unsigned int millis() {
 }
 
 void update_screen_data() {
-    uint16_t max = 0;
-    for (int i=0; i < TFT_SCREEN_PIXELS; i++) {
-        if (screen_data[i] > max) max = screen_data[i];
-    }
-    printf("Updating screen %d\n", max);
-    if (max == 0) return;
-    cairo_surface_flush(fd.surface);
-    for (int i=0; i < TFT_SCREEN_HEIGHT; i++) memcpy(surface_data + i*surface_stride, screen_data + i*TFT_SCREEN_WIDTH, surface_stride);
-    cairo_surface_mark_dirty(fd.surface);
     gtk_widget_queue_draw(fd.drawing_area);
 }
 
 gboolean redraw_callback(GtkWidget *widget, cairo_t *cr, gpointer data_pointer) {
-    printf("redrawing\n");
+    uint16_t max = 0;
+    for (int i=0; i < TFT_SCREEN_PIXELS; i++) {
+        if (screen_data[i] > max) max = screen_data[i];
+    }
+    //printf("Updating screen %d\n", max);
+    cairo_surface_flush(fd.surface);
+    for (int i=0; i < TFT_SCREEN_HEIGHT; i++) memcpy(surface_data + i*surface_stride, screen_data + i*TFT_SCREEN_WIDTH, 2*TFT_SCREEN_WIDTH);
+    cairo_surface_mark_dirty(fd.surface);
+    //cairo_surface_write_to_png(fd.surface, "/tmp/debug.png");
+    //printf("redrawing\n");
     gtk_globals *fd = (gtk_globals*)(data_pointer);
     cairo_set_source_surface(cr, fd->surface, 0, 0);
+    cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_NEAREST);
     cairo_paint(cr);
     return FALSE;
 }
@@ -67,6 +68,7 @@ static gboolean configure_callback(GtkWidget *widget, GdkEventConfigure *event, 
 }
 
 static gboolean timeout_callback(gpointer data_pointer) {
+    //printf("loop\n");
     loop();
     return TRUE;
 }

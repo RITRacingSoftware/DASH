@@ -5,6 +5,7 @@
 
 #ifdef DASH_TESTING
 #include "testing_arduino.h"
+#include "read_cf.h"
 #else
 #include <Arduino.h>
 #include "FlexCAN_T4.h"
@@ -17,14 +18,20 @@
 
 namespace CANManager {
 #ifdef DASH_TESTING
+    static cf_file file;
     void initCAN() {
-
+        cf_open(&file, "../20250611a.cf");
     }
     bool hasMessage() {
-        return false;
+        return cf_available(&file);
     }
     can_message_t getMessage() {
+        uint8_t buffer[16];
         can_message_t message;
+        cf_read_message(&file, buffer, 16);
+        message.id = *((uint32_t*)(buffer+4));
+        message.len = buffer[1]&0x7f;
+        for (int i=0; i < 8; i++) message.data[i] = buffer[i+8];
         return message;
     }
 #else
