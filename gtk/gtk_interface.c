@@ -16,6 +16,7 @@
 
 #define FAIL(...) do {fprintf(stderr, __VA_ARGS__); done(1);} while (0)
 
+#define TESTING_VIDEO_ENABLE
 #define TESTING_VIDEO_BITRATE 10000000
 
 typedef struct gtk_globals_s {
@@ -23,11 +24,13 @@ typedef struct gtk_globals_s {
     cairo_surface_t *surface;
     int surface_stride;
     unsigned char *surface_data;
+#ifdef TESTING_VIDEO_ENABLE
     AVCodecContext *avctx;
     AVPacket *packet;
     AVFrame *frame;
     FILE *vid_fptr;
     const AVCodec *codec;
+#endif
 } gtk_globals;
 
 static gtk_globals fd;
@@ -53,6 +56,7 @@ void update_screen_data() {
 
 void done(int sig) {
     printf("Closing\n");
+#ifdef TESTING_VIDEO_ENABLE
     if (fd.avctx && fd.packet && fd.vid_fptr) {
         encode_frame(fd.avctx, NULL, fd.packet, fd.vid_fptr);
         if (fd.codec->id == AV_CODEC_ID_MPEG1VIDEO || fd.codec->id == AV_CODEC_ID_MPEG2VIDEO) {
@@ -64,12 +68,14 @@ void done(int sig) {
     if (fd.avctx) avcodec_free_context(&(fd.avctx));
     if (fd.frame) av_frame_free(&(fd.frame));
     if (fd.packet) av_packet_free(&(fd.packet));
+#endif
     exit(sig);
 }
 
 int frame_divider = 0;
 int nframes = 0;
 
+#ifdef TESTING_VIDEO_ENABLE
 void encode_frame(AVCodecContext *avctx, AVFrame *frame, AVPacket *packet, FILE *vid_fptr) {
     int ret;
     ret = avcodec_send_frame(avctx, frame);
@@ -83,6 +89,7 @@ void encode_frame(AVCodecContext *avctx, AVFrame *frame, AVPacket *packet, FILE 
         av_packet_unref(packet);
     }
 }
+#endif
 
 gboolean redraw_callback(GtkWidget *widget, cairo_t *cr, gpointer data_pointer) {
     gtk_globals *fd = (gtk_globals*)(data_pointer);
@@ -91,6 +98,7 @@ gboolean redraw_callback(GtkWidget *widget, cairo_t *cr, gpointer data_pointer) 
     AVFrame *frame = fd->frame;
     AVPacket *packet = fd->packet;
 
+#ifdef TESTING_VIDEO_ENABLE
     if (frame_divider == 0) {
         // Save a frame to the video
         ret = av_frame_make_writable(frame);
@@ -100,6 +108,7 @@ gboolean redraw_callback(GtkWidget *widget, cairo_t *cr, gpointer data_pointer) 
         encode_frame(fd->avctx, frame, packet, fd->vid_fptr);
     }
     frame_divider = (frame_divider + 1) % 2;
+#endif
 
     cairo_surface_flush(fd->surface);
     for (int i=0; i < TFT_SCREEN_HEIGHT; i++) memcpy(fd->surface_data + i*fd->surface_stride, screen_data + i*TFT_SCREEN_WIDTH, 2*TFT_SCREEN_WIDTH);
@@ -162,14 +171,15 @@ int main(int argc, char **argv) {
     GtkApplication *app;
     int status;
     int ret;
-    AVCodecContext *avctx;
-    AVPacket *packet;
-    AVFrame *frame;
 
     signal(SIGINT, done);
 
+#ifdef TESTING_VIDEO_ENABLE
+    AVCodecContext *avctx;
+    AVPacket *packet;
+    AVFrame *frame;
     // Initialize video output
-    const AVCodec *codec = avcodec_find_encoder_by_name("mjpeg");
+    const AVCodec *codec = avcodec_find_encoder_by_name("libx264");
     if (!codec) FAIL("Codec not found\n");
     avctx = avcodec_alloc_context3(codec);
     if (!(avctx)) FAIL("Unable to allocate context for encoder\n");
@@ -191,7 +201,11 @@ int main(int argc, char **argv) {
     frame->format = avctx->pix_fmt;
     frame->width  = avctx->width;
     frame->height = avctx->height;
-    
+
+    if (codec->id == AV_CODEC_ID_H264) {
+        av_opt_set(avctx->priv_data, "preset", "slow", 0); 
+    }
+
     ret = avcodec_open2(avctx, codec, NULL);
     if (ret < 0) FAIL("Could not open codec: %s\n", av_err2str(ret));
     
@@ -203,7 +217,8 @@ int main(int argc, char **argv) {
     fd.packet = packet;
     fd.avctx = avctx;
     fd.codec = codec;
-    fd.vid_fptr = fopen("/tmp/output.mpeg", "wb");
+    fd.vid_fptr = fopen("/tmp/output.mp4", "wb");
+#endif
 
     setup();
 
