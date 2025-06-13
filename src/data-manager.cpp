@@ -95,6 +95,7 @@ namespace DataManager {
                     data.bms_cellvoltages_max = main_dbc_bms_cell_overview_bms_overview_volt_max_decode(cells.bms_overview_volt_max);
                     data.bms_cellvoltages_avg = main_dbc_bms_cell_overview_bms_overview_volt_avg_decode(cells.bms_overview_volt_avg);
                     data.bms_maxtemp = main_dbc_bms_cell_overview_bms_overview_temp_max_decode(cells.bms_overview_temp_max);
+                    data.bms_avgtemp = main_dbc_bms_cell_overview_bms_overview_temp_avg_decode(cells.bms_overview_temp_avg);
                     break; }
                 case MAIN_DBC_BMS_CURRENT_FRAME_ID: {
                     main_dbc_bms_current_t current;
@@ -109,11 +110,10 @@ namespace DataManager {
                     main_dbc_vc_status_unpack(&vcstatus, message.data, message.len);
                     data.vc_status = vcstatus.vc_status_vehicle_state;
                     break; }
-                case  MAIN_DBC_VC_FAULT_VECTOR_FRAME_ID: {
+                case  MAIN_DBC_VC_FAULT_VECTOR_FRAME_ID:
                     // Masked to keep other bits
-                    data.vc_faultvector = (data.vc_faultvector & ~DATA_MANAGER_VC_FAULT_MASK) | 
-                                          ((message.data[0] | (message.data[1] << 8) | (message.data[2] << 16) | (message.data[3] << 24)) & DATA_MANAGER_VC_FAULT_MASK);
-                    break; }
+                    data.vc_faultvector = *((uint32_t*)(message.data));
+                    break;
                 case MAIN_DBC_VC_INVERTER_STATUS_FRAME_ID: {
                     main_dbc_vc_inverter_status_t invstatus;
                     main_dbc_vc_inverter_status_unpack(&invstatus, message.data, message.len);
@@ -121,6 +121,12 @@ namespace DataManager {
                     data.inv_state[INV_RL] = invstatus.vc_rl_status;
                     data.inv_state[INV_FR] = invstatus.vc_fr_status;
                     data.inv_state[INV_FL] = invstatus.vc_fl_status;
+                    break; }
+                case MAIN_DBC_VC_PROCESSED_INPUTS_FRAME_ID: {
+                    main_dbc_vc_processed_inputs_t inputs;
+                    main_dbc_vc_processed_inputs_unpack(&inputs, message.data, message.len);
+                    data.fbps = main_dbc_vc_processed_inputs_vc_p_inputs_brakes_front_psi_decode(inputs.vc_p_inputs_brakes_front_psi);
+                    data.rbps = main_dbc_vc_processed_inputs_vc_p_inputs_brakes_rear_psi_decode(inputs.vc_p_inputs_brakes_rear_psi);
                     break; }
                 /*case MAIN_DBC_VC_HARD_FAULT_INDICATOR_FRAME_ID: {
                     main_dbc_vc_hard_fault_indicator_t fault;
@@ -183,22 +189,65 @@ namespace DataManager {
                     main_dbc_vc_fl_amk_actual_1_unpack(&val_fl, message.data, message.len);
                     data.torque[INV_FL] = main_dbc_vc_fl_amk_actual_1_vc_fl_feedback_torque_decode(val_fl.vc_fl_feedback_torque);
                     break; }
+                case MAIN_DBC_VC_FL_INFO_2_FRAME_ID: {
+                    main_dbc_vc_fl_info_2_t val2_fl;
+                    main_dbc_vc_fl_info_2_unpack(&val2_fl, message.data, message.len);
+                    data.inv_temp[INV_FL] = main_dbc_vc_fl_info_2_vc_fl_temp_inverter_decode(val2_fl.vc_fl_temp_inverter);
+                    break; }
+                case MAIN_DBC_VC_FL_INFO_3_FRAME_ID: {
+                    main_dbc_vc_fl_info_3_t val3_fl;
+                    main_dbc_vc_fl_info_3_unpack(&val3_fl, message.data, message.len);
+                    data.motor_temp[INV_FL] = main_dbc_vc_fl_info_3_vc_fl_temp_motor_decode(val3_fl.vc_fl_temp_motor);
+                    break; }
+
                 case MAIN_DBC_VC_FR_AMK_ACTUAL_1_FRAME_ID: {
                     main_dbc_vc_fr_amk_actual_1_t val_fr;
                     main_dbc_vc_fr_amk_actual_1_unpack(&val_fr, message.data, message.len);
                     data.torque[INV_FR] = main_dbc_vc_fr_amk_actual_1_vc_fr_feedback_torque_decode(val_fr.vc_fr_feedback_torque);
                     break; }
+                case MAIN_DBC_VC_FR_INFO_2_FRAME_ID: {
+                    main_dbc_vc_fr_info_2_t val2_fr;
+                    main_dbc_vc_fr_info_2_unpack(&val2_fr, message.data, message.len);
+                    data.inv_temp[INV_FR] = main_dbc_vc_fr_info_2_vc_fr_temp_inverter_decode(val2_fr.vc_fr_temp_inverter);
+                    break; }
+                case MAIN_DBC_VC_FR_INFO_3_FRAME_ID: {
+                    main_dbc_vc_fr_info_3_t val3_fr;
+                    main_dbc_vc_fr_info_3_unpack(&val3_fr, message.data, message.len);
+                    data.motor_temp[INV_FR] = main_dbc_vc_fr_info_3_vc_fr_temp_motor_decode(val3_fr.vc_fr_temp_motor);
+                    break; }
+
                 case MAIN_DBC_VC_RL_AMK_ACTUAL_1_FRAME_ID: {
                     main_dbc_vc_rl_amk_actual_1_t val_rl;
                     main_dbc_vc_rl_amk_actual_1_unpack(&val_rl, message.data, message.len);
                     data.torque[INV_RL] = main_dbc_vc_rl_amk_actual_1_vc_rl_feedback_torque_decode(val_rl.vc_rl_feedback_torque);
                     break; }
-                case MAIN_DBC_VC_RR_AMK_ACTUAL_1_FRAME_ID: 
-                    {
+                case MAIN_DBC_VC_RL_INFO_2_FRAME_ID: {
+                    main_dbc_vc_rl_info_2_t val2_rl;
+                    main_dbc_vc_rl_info_2_unpack(&val2_rl, message.data, message.len);
+                    data.inv_temp[INV_RL] = main_dbc_vc_rl_info_2_vc_rl_temp_inverter_decode(val2_rl.vc_rl_temp_inverter);
+                    break; }
+                case MAIN_DBC_VC_RL_INFO_3_FRAME_ID: {
+                    main_dbc_vc_rl_info_3_t val3_rl;
+                    main_dbc_vc_rl_info_3_unpack(&val3_rl, message.data, message.len);
+                    data.motor_temp[INV_RL] = main_dbc_vc_rl_info_3_vc_rl_temp_motor_decode(val3_rl.vc_rl_temp_motor);
+                    break; }
+
+                case MAIN_DBC_VC_RR_AMK_ACTUAL_1_FRAME_ID: {
                     main_dbc_vc_rr_amk_actual_1_t val_rr;
                     main_dbc_vc_rr_amk_actual_1_unpack(&val_rr, message.data, message.len);
                     data.torque[INV_RR] = main_dbc_vc_rr_amk_actual_1_vc_rr_feedback_torque_decode(val_rr.vc_rr_feedback_torque);
                     break; }
+                case MAIN_DBC_VC_RR_INFO_2_FRAME_ID: {
+                    main_dbc_vc_rr_info_2_t val2_rr;
+                    main_dbc_vc_rr_info_2_unpack(&val2_rr, message.data, message.len);
+                    data.inv_temp[INV_RR] = main_dbc_vc_rr_info_2_vc_rr_temp_inverter_decode(val2_rr.vc_rr_temp_inverter);
+                    break; }
+                case MAIN_DBC_VC_RR_INFO_3_FRAME_ID: {
+                    main_dbc_vc_rr_info_3_t val3_rr;
+                    main_dbc_vc_rr_info_3_unpack(&val3_rr, message.data, message.len);
+                    data.motor_temp[INV_RR] = main_dbc_vc_rr_info_3_vc_rr_temp_motor_decode(val3_rr.vc_rr_temp_motor);
+                    break; }
+
                 case MAIN_DBC_VC_TV_OUT_FRAME_ID:
                     data.tv_msg = *((uint64_t*)(message.data));
                     break;

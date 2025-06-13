@@ -69,12 +69,18 @@ namespace DisplayManager {
             
 
             // Main Large text style
-            lv_style_init(&de.mainTextLarge);
+            /*lv_style_init(&de.mainTextLarge);
             lv_style_set_bg_color(&de.mainTextLarge, lv_color_black());
             lv_style_set_text_color(&de.mainTextLarge, lv_color_white());
             lv_style_set_radius(&de.mainTextLarge, 2);
             lv_style_set_text_font(&de.mainTextLarge, &helvetica_bold_13);
-            lv_style_set_text_letter_space(&de.mainTextLarge, -6);
+            lv_style_set_text_letter_space(&de.mainTextLarge, -6);*/
+            lv_style_init(&de.faultText);
+            lv_style_set_bg_color(&de.faultText, lv_color_black());
+            lv_style_set_text_color(&de.faultText, lv_color_white());
+            lv_style_set_radius(&de.faultText, 2);
+            lv_style_set_text_align(&(de.faultText), LV_TEXT_ALIGN_LEFT);
+            lv_style_set_text_font(&de.faultText, &lv_font_montserrat_12);
 
             // Fault timecode style
             lv_style_init(&de.faultTimecode);
@@ -98,6 +104,7 @@ namespace DisplayManager {
             
             // Warning/soft fault style
             lv_style_init(&(de.warn));
+            lv_style_set_bg_color(&(de.warn), lv_color_black());
             lv_style_set_text_color(&(de.warn), lv_palette_main(LV_PALETTE_YELLOW));
             lv_style_set_border_color(&(de.warn), lv_palette_main(LV_PALETTE_YELLOW));
             

@@ -4,6 +4,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <string.h>
+#include <sys/random.h>
 
 #include "read_cf.h"
 #include "gtk_interface.h"
@@ -57,7 +58,19 @@ void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
     fread(buf+8, 1, len, ptr->fptr);
     cf_load_buffer(ptr);
     // Modify data for testing
-    if ((buf[4] | (buf[5] << 8)) == 312) {
-        buf[8] = (((time_usecs() - ptr->usec_offset) / 1000000) % 6)<<4;
+    switch ((buf[4] | (buf[5] << 8))) {
+        case 312:
+            buf[8] = (((time_usecs() - ptr->usec_offset) / 1000000) % 6)<<4;
+            break;
+        case 301:
+            buf[8] = (((time_usecs() - ptr->usec_offset) / 1000000) % 7);
+            break;
+        case 311:
+            *((uint32_t*)(buf+8)) = 1<<(((time_usecs() - ptr->usec_offset) / 1000000) % 32);
+            break;
+        case 700:
+            *((uint32_t*)(buf+8)) = 1<<(((time_usecs() - ptr->usec_offset) / 1000000) % 11);
+        default:
+            break;
     }
 }

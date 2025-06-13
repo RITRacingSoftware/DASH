@@ -17,11 +17,16 @@ namespace DataManager {
 
         float torque[4];
         uint8_t inv_state[4];
+        float inv_temp[4];
+        float motor_temp[4];
         uint64_t tc_msg;
         uint64_t tv_msg;
 
+        float fbps;
+        float rbps;
+
         uint8_t vc_status;
-        uint8_t vc_faultvector;
+        uint32_t vc_faultvector;
         // Add new stauses for each motor
         uint8_t mcu_status; //TODO: Split in 4 or remove
         uint8_t mcu_vsm_state; //TODO: Split in 4 or remove
@@ -31,6 +36,7 @@ namespace DataManager {
         float bms_buscurrent;
         float bms_maxcurrent;
         float bms_maxtemp;
+        float bms_avgtemp;
 
         float lv_voltage;
         float goPedal_A;
