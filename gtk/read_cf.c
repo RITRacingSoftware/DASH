@@ -6,12 +6,7 @@
 #include <string.h>
 
 #include "read_cf.h"
-
-static uint64_t time_usecs() {
-    struct timespec t;
-    clock_gettime(CLOCK_MONOTONIC, &t);
-    return t.tv_sec*1000000ULL + t.tv_nsec/1000;
-}
+#include "gtk_interface.h"
 
 void cf_load_buffer(cf_file *ptr) {
     while (1) {

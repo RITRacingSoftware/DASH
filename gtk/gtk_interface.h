@@ -5,7 +5,7 @@
 
 extern uint16_t screen_data[TFT_SCREEN_PIXELS];
 
-unsigned int millis();
+uint64_t time_usecs();
 void update_screen_data();
 
 #endif

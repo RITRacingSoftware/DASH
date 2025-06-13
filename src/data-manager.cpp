@@ -63,6 +63,7 @@ namespace DataManager {
         //Assume we have a fault until we certianly don't
         data.bms_faultvector = 0x8000;
         data.lv_voltage = 0.0;
+        memset(&data, 0xff, sizeof(data));
         Serial.printf("Initialized DataManager\n");
     }
 

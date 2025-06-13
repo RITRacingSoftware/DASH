@@ -3,50 +3,107 @@
 #include <stdio.h>
 #include <sys/time.h>
 #include <stdlib.h>
+#include <signal.h>
+
+#include <libavcodec/avcodec.h>
+#include <libavutil/opt.h>
+#include <libavutil/imgutils.h>
+
+#include <libyuv.h>
 
 #include "gtk_interface.h"
 #include "config.h"
 
+#define FAIL(...) do {fprintf(stderr, __VA_ARGS__); done(1);} while (0)
+
+#define TESTING_VIDEO_BITRATE 10000000
+
 typedef struct gtk_globals_s {
     GtkWidget *drawing_area;
     cairo_surface_t *surface;
+    int surface_stride;
+    unsigned char *surface_data;
+    AVCodecContext *avctx;
+    AVPacket *packet;
+    AVFrame *frame;
+    FILE *vid_fptr;
+    const AVCodec *codec;
 } gtk_globals;
 
-uint64_t millis_offset = 0;
 static gtk_globals fd;
 
 uint16_t screen_data[TFT_SCREEN_PIXELS];
-static int surface_stride;
-static unsigned char *surface_data;
 
 
 // Arduino functions from the user code
 void setup();
 void loop();
 
-unsigned int millis() {
-    struct timespec tv;
-    clock_gettime(CLOCK_MONOTONIC, &tv);
-    uint64_t ms = (tv.tv_sec * 1000ULL + tv.tv_nsec / 1000000);
-    return ms - millis_offset;
+void encode_frame(AVCodecContext *avctx, AVFrame *frame, AVPacket *packet, FILE *vid_fptr);
+
+uint64_t time_usecs() {
+    struct timespec t;
+    clock_gettime(CLOCK_MONOTONIC, &t);
+    return t.tv_sec*1000000ULL + t.tv_nsec/1000;
 }
 
 void update_screen_data() {
     gtk_widget_queue_draw(fd.drawing_area);
 }
 
-gboolean redraw_callback(GtkWidget *widget, cairo_t *cr, gpointer data_pointer) {
-    uint16_t max = 0;
-    for (int i=0; i < TFT_SCREEN_PIXELS; i++) {
-        if (screen_data[i] > max) max = screen_data[i];
+void done(int sig) {
+    printf("Closing\n");
+    if (fd.avctx && fd.packet && fd.vid_fptr) {
+        encode_frame(fd.avctx, NULL, fd.packet, fd.vid_fptr);
+        if (fd.codec->id == AV_CODEC_ID_MPEG1VIDEO || fd.codec->id == AV_CODEC_ID_MPEG2VIDEO) {
+            fwrite((const uint8_t[]){ 0, 0, 1, 0xb7 }, 1, 4, fd.vid_fptr);
+        }
     }
-    //printf("Updating screen %d\n", max);
-    cairo_surface_flush(fd.surface);
-    for (int i=0; i < TFT_SCREEN_HEIGHT; i++) memcpy(surface_data + i*surface_stride, screen_data + i*TFT_SCREEN_WIDTH, 2*TFT_SCREEN_WIDTH);
-    cairo_surface_mark_dirty(fd.surface);
-    //cairo_surface_write_to_png(fd.surface, "/tmp/debug.png");
-    //printf("redrawing\n");
+
+    if (fd.vid_fptr) fclose(fd.vid_fptr);
+    if (fd.avctx) avcodec_free_context(&(fd.avctx));
+    if (fd.frame) av_frame_free(&(fd.frame));
+    if (fd.packet) av_packet_free(&(fd.packet));
+    exit(sig);
+}
+
+int frame_divider = 0;
+int nframes = 0;
+
+void encode_frame(AVCodecContext *avctx, AVFrame *frame, AVPacket *packet, FILE *vid_fptr) {
+    int ret;
+    ret = avcodec_send_frame(avctx, frame);
+    if (ret < 0) FAIL("Error sending packet: %s\n", av_err2str(ret));
+
+    while (1) {
+        ret = avcodec_receive_packet(avctx, packet);
+        if ((ret == AVERROR(EAGAIN)) || (ret == AVERROR_EOF)) break;
+        if (ret < 0) FAIL("Error receiving packet: %s\n", av_err2str(ret));
+        fwrite(packet->data, 1, packet->size, vid_fptr);
+        av_packet_unref(packet);
+    }
+}
+
+gboolean redraw_callback(GtkWidget *widget, cairo_t *cr, gpointer data_pointer) {
     gtk_globals *fd = (gtk_globals*)(data_pointer);
+    uint16_t max = 0;
+    int ret;
+    AVFrame *frame = fd->frame;
+    AVPacket *packet = fd->packet;
+
+    if (frame_divider == 0) {
+        // Save a frame to the video
+        ret = av_frame_make_writable(frame);
+        if (ret < 0) FAIL("Unable to make frame writable: %s\n", av_err2str(ret));
+        RGB565ToI420(screen_data, 2*TFT_SCREEN_WIDTH, frame->data[0], frame->linesize[0], frame->data[1], frame->linesize[1], frame->data[2], frame->linesize[2], TFT_SCREEN_WIDTH, TFT_SCREEN_HEIGHT);
+        frame->pts = nframes++;
+        encode_frame(fd->avctx, frame, packet, fd->vid_fptr);
+    }
+    frame_divider = (frame_divider + 1) % 2;
+
+    cairo_surface_flush(fd->surface);
+    for (int i=0; i < TFT_SCREEN_HEIGHT; i++) memcpy(fd->surface_data + i*fd->surface_stride, screen_data + i*TFT_SCREEN_WIDTH, 2*TFT_SCREEN_WIDTH);
+    cairo_surface_mark_dirty(fd->surface);
     cairo_set_source_surface(cr, fd->surface, 0, 0);
     cairo_pattern_set_filter(cairo_get_source(cr), CAIRO_FILTER_NEAREST);
     cairo_paint(cr);
@@ -61,9 +118,9 @@ static gboolean configure_callback(GtkWidget *widget, GdkEventConfigure *event, 
     if (fd->surface) cairo_surface_destroy(fd->surface);
     //fd->surface = gdk_window_create_similar_surface(gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR, da_width, da_height);
     //fd->surface = cairo_image_surface_create(CAIRO_FORMAT_RGB16_565, da_width, da_height);
-    surface_stride = cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, da_width);
-    surface_data = malloc(surface_stride * da_height);
-    fd->surface = cairo_image_surface_create_for_data(surface_data, CAIRO_FORMAT_RGB16_565, da_width, da_height, surface_stride);
+    fd->surface_stride = cairo_format_stride_for_width(CAIRO_FORMAT_RGB16_565, da_width);
+    fd->surface_data = malloc(fd->surface_stride * da_height);
+    fd->surface = cairo_image_surface_create_for_data(fd->surface_data, CAIRO_FORMAT_RGB16_565, da_width, da_height, fd->surface_stride);
     return TRUE;
 }
 
@@ -104,10 +161,49 @@ static void activate (GtkApplication *app, gpointer user_data) {
 int main(int argc, char **argv) {
     GtkApplication *app;
     int status;
+    int ret;
+    AVCodecContext *avctx;
+    AVPacket *packet;
+    AVFrame *frame;
 
-    struct timespec tv;
-    clock_gettime(CLOCK_MONOTONIC, &tv);
-    uint64_t millis_offset = (tv.tv_sec * 1000ULL + tv.tv_nsec / 1000000);
+    signal(SIGINT, done);
+
+    // Initialize video output
+    const AVCodec *codec = avcodec_find_encoder_by_name("mjpeg");
+    if (!codec) FAIL("Codec not found\n");
+    avctx = avcodec_alloc_context3(codec);
+    if (!(avctx)) FAIL("Unable to allocate context for encoder\n");
+    packet = av_packet_alloc();
+    if (!(packet)) FAIL("Unable to allocate packet buffer\n");
+    frame = av_frame_alloc();
+    if (!(frame)) FAIL("Unable to allocate frame buffer\n");
+    // Configure codec
+    avctx->bit_rate = TESTING_VIDEO_BITRATE;
+    avctx->width = TFT_SCREEN_WIDTH;
+    avctx->height = TFT_SCREEN_HEIGHT;
+    avctx->time_base = (AVRational){1, 30};
+    avctx->framerate = (AVRational){30, 1};
+    avctx->gop_size = 10;
+    avctx->max_b_frames = 0;
+    avctx->pix_fmt = AV_PIX_FMT_YUVJ420P;
+
+    // Configure frame
+    frame->format = avctx->pix_fmt;
+    frame->width  = avctx->width;
+    frame->height = avctx->height;
+    
+    ret = avcodec_open2(avctx, codec, NULL);
+    if (ret < 0) FAIL("Could not open codec: %s\n", av_err2str(ret));
+    
+    // Allocate video buffer
+    ret = av_frame_get_buffer(frame, 0);
+    if (ret < 0) FAIL("Unable to allocate video buffer: %s\n", av_err2str(ret));
+
+    fd.frame = frame;
+    fd.packet = packet;
+    fd.avctx = avctx;
+    fd.codec = codec;
+    fd.vid_fptr = fopen("/tmp/output.mpeg", "wb");
 
     setup();
 
@@ -115,4 +211,6 @@ int main(int argc, char **argv) {
     g_signal_connect(app, "activate", G_CALLBACK (activate), &fd);
     status = g_application_run(G_APPLICATION (app), argc, argv);
     g_object_unref (app);
+
+    done(0);
 }

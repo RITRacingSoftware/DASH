@@ -2,7 +2,7 @@ BUILD_DIR = ./build
 
 COMMON_FLAGS := -D DASH_TESTING
 CC_FLAGS := $(COMMON_FLAGS) `pkg-config --cflags gtk+-3.0` -g
-LD_FLAGS := $(COMMON_FLAGS) `pkg-config --libs gtk+-3.0` -lm -g
+LD_FLAGS := $(COMMON_FLAGS) `pkg-config --libs gtk+-3.0` -lm -g -lavcodec -lavutil -lyuv
 
 TESTING_SRCS := $(wildcard gtk/*.cpp) $(wildcard gtk/*.c)
 TESTING_INCLUDES := -I ./gtk
@@ -31,19 +31,19 @@ $(BUILD_DIR)/dash: $(OBJS)
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	gcc $(OBJS) -o $@ $(LD_FLAGS)
 
-$(BUILD_DIR)/src/%.cpp.o: src/%.cpp
+$(BUILD_DIR)/src/%.cpp.o: src/%.cpp src/config.h
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	g++ $(CC_FLAGS) $(INCLUDES) -c $< -o $@
 
-$(BUILD_DIR)/src/%.c.o: src/%.c
+$(BUILD_DIR)/src/%.c.o: src/%.c src/config.h
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	gcc $(CC_FLAGS) $(INCLUDES) -I ./.pio/libdeps/teensy40/ -c $< -o $@
 
-$(BUILD_DIR)/gtk/%.cpp.o: gtk/%.cpp
+$(BUILD_DIR)/gtk/%.cpp.o: gtk/%.cpp src/config.h
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	g++ $(CC_FLAGS) $(INCLUDES) -c $< -o $@
 
-$(BUILD_DIR)/gtk/%.c.o: gtk/%.c
+$(BUILD_DIR)/gtk/%.c.o: gtk/%.c src/config.h
 	@[ -d $(@D) ] || mkdir -p $(@D)
 	gcc $(CC_FLAGS) $(INCLUDES) -c $< -o $@
 

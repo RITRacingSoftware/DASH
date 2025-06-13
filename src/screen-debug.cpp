@@ -82,6 +82,7 @@ namespace ScreenDebug {
         lv_obj_t* motor_state[4];
 
         lv_obj_t* tc_status;
+        lv_obj_t *vc_status;
         
         lv_obj_t* wheelNomIndicator[4];
         lv_obj_t* wheelErrIndicator[4];
@@ -90,9 +91,12 @@ namespace ScreenDebug {
 
     const char* VC_STATUS_MESSAGES[] = {
         "NOT READY",
-        "STARTUP",
-        "READY",
-        "FAULTED",
+        "INV POWER",
+        "PRECHARGING",
+        "WAIT",
+        "STANDBY",
+        "RTD",
+        "SHUTDOWN"
     };
 
     const char* VC_FAULT_MESSAGES[] = {
@@ -165,10 +169,10 @@ namespace ScreenDebug {
 
 
         //Ready To Drive Path
-        lv_obj_t * stepSPrecharge = lv_img_create(screen);
+        /*lv_obj_t * stepSPrecharge = lv_img_create(screen);
         lv_img_set_src(stepSPrecharge, &rtdStartPrecharge);
         lv_obj_align(stepSPrecharge, LV_ALIGN_TOP_LEFT, 600, 115);
-        lv_obj_set_size(stepSPrecharge, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+        lv_obj_set_size(stepSPrecharge, LV_SIZE_CONTENT,LV_SIZE_CONTENT);*/
         
         /*lv_style_t teststyle;
         lv_style_init(&teststyle);
@@ -178,7 +182,7 @@ namespace ScreenDebug {
         lv_obj_set_style_img_recolor(stepSPrecharge, lv_palette_main(LV_PALETTE_BLUE), 0);*/
 
 
-        lv_obj_t * stepHV = lv_img_create(screen);
+        /*lv_obj_t * stepHV = lv_img_create(screen);
         lv_img_set_src(stepHV, &rtdHVEnabled);
         lv_obj_align(stepHV, LV_ALIGN_TOP_LEFT, 600, 135);
         lv_obj_set_size(stepHV, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
@@ -191,11 +195,20 @@ namespace ScreenDebug {
         lv_obj_t * stepRTD = lv_img_create(screen);
         lv_img_set_src(stepRTD, &rtdReadyToDrive);
         lv_obj_align(stepRTD, LV_ALIGN_TOP_LEFT, 600, 175);
-        lv_obj_set_size(stepRTD, LV_SIZE_CONTENT,LV_SIZE_CONTENT);
+        lv_obj_set_size(stepRTD, LV_SIZE_CONTENT,LV_SIZE_CONTENT);*/
+        
+        // Vehicle state
+        elements.vc_status = lv_label_create(screen);
+        lv_obj_set_size(elements.vc_status, 170, LV_SIZE_CONTENT);
+        lv_obj_align(elements.vc_status, LV_ALIGN_TOP_LEFT, 600, 115);
+        lv_obj_add_style(elements.vc_status, &(de->rect), LV_PART_MAIN);
+        lv_label_set_text(elements.vc_status, "???");
 
         // TC status
         elements.tc_status = lv_label_create(screen);
-        lv_obj_align(elements.tc_status, LV_ALIGN_TOP_LEFT, 600, 200);
+        lv_obj_set_size(elements.tc_status, 170, LV_SIZE_CONTENT);
+        lv_obj_align(elements.tc_status, LV_ALIGN_TOP_LEFT, 600, 138);
+        lv_obj_add_style(elements.tc_status, &(de->rect), LV_PART_MAIN);
         lv_label_set_text(elements.tc_status, "TC: ?");
         
         // Inverter states
@@ -264,6 +277,11 @@ namespace ScreenDebug {
         // lv_obj_align(elements.bms_soc_label, LV_ALIGN_CENTER, 0, -75);
         // lv_label_set_text(elements.bms_soc_label, "SOC = ???%");
 
+        // Pack voltage
+        elements.bms_packvoltage_label = lv_label_create(screen);
+        lv_obj_align(elements.bms_packvoltage_label, LV_ALIGN_TOP_LEFT, 240, 92);
+        lv_label_set_text(elements.bms_packvoltage_label, "???.? V");
+        
         // Minimum cell voltage
         elements.bms_cellvoltage_min_label = lv_label_create(screen);
         lv_obj_align(elements.bms_cellvoltage_min_label, LV_ALIGN_TOP_LEFT, 330, 92);
@@ -299,6 +317,9 @@ namespace ScreenDebug {
         // lv_obj_set_size(elements.faults_textarea, 680, 130);
         // lv_obj_align(elements.faults_textarea, LV_ALIGN_BOTTOM_RIGHT, -10, -10);
         // lv_obj_add_style(elements.faults_textarea, styles->faultstyle, LV_PART_MAIN);
+
+        // Put garbage data in lastdata so initial values are loaded
+        memset(&lastdata, 0xff, sizeof(lastdata));
 
         Serial.printf("Initialized Debug Screen\n");
 
@@ -349,25 +370,9 @@ namespace ScreenDebug {
         //     }
 
         // }*/
-        // if(data.vc_status != lastdata.vc_status) {
-        //     if(data.vc_status == 2) {
-        //         lv_label_set_text(elements.status_overall, "#00ff00 READY TO DRIVE#");
-        //     }
-        //     else {
-        //         lv_label_set_text(elements.status_overall, "#ff0000 NOT READY#");
-        //     }
-        // }
-
-        // if(data.vc_status != lastdata.vc_status) {
-        //     if(data.vc_status >= 0 && data.vc_status <= 2) {
-        //         lv_label_set_text_fmt(elements.status_vcstatus, "VC: %s",
-        //             VC_STATUS_MESSAGES[data.vc_status]);
-        //     }
-        //     else {
-        //         lv_label_set_text_fmt(elements.status_vcstatus, "VC: %s",
-        //             VC_STATUS_MESSAGES[3]);
-        //     }
-        // }
+        if(data.vc_status != lastdata.vc_status) {
+            lv_label_set_text_static(elements.vc_status, VC_STATUS_MESSAGES[data.vc_status]);
+        }
 
         // if(data.mcu_status != lastdata.mcu_status) {
         //     if(data.mcu_status >= 1 && data.mcu_status <= 4) {
@@ -444,9 +449,9 @@ namespace ScreenDebug {
         if (data.bms_cellvoltages_max != lastdata.bms_cellvoltages_max) {
             lv_label_set_text_fmt(elements.bms_cellvoltage_max_label, "%1.2f V", data.bms_cellvoltages_max);
         }
-        // if(data.bms_packvoltage != lastdata.bms_packvoltage) {
-        //     lv_label_set_text_fmt(elements.bms_packvoltage_label, "PACK = %3.1f V", data.bms_packvoltage);
-        // }
+        if(data.bms_packvoltage != lastdata.bms_packvoltage) {
+            lv_label_set_text_fmt(elements.bms_packvoltage_label, "%3.1f V", data.bms_packvoltage);
+        }
         // if(data.bms_buscurrent != lastdata.bms_buscurrent) {
         //     lv_label_set_text_fmt(elements.bms_current_label, "I = %1.2f A", data.bms_buscurrent);
         //     if(data.bms_maxcurrent != lastdata.bms_maxcurrent) {

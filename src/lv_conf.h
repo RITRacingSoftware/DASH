@@ -77,7 +77,7 @@
 #if LV_TICK_CUSTOM
 #ifdef DASH_TESTING
 #define LV_TICK_CUSTOM_INCLUDE "gtk_interface.h"
-#define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())
+#define LV_TICK_CUSTOM_SYS_TIME_EXPR (time_usecs() / 1000)
 #else
     #define LV_TICK_CUSTOM_INCLUDE "Arduino.h"         /*Header for the system time function*/
     #define LV_TICK_CUSTOM_SYS_TIME_EXPR (millis())    /*Expression evaluating to current system time in ms*/
