@@ -21,7 +21,13 @@
 #define LV_ATTRIBUTE_IMG_DRIVESCREEN
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_DRIVESCREEN uint8_t DriveScreen_map[] = {
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_DRIVESCREEN uint8_t DriveScreen_map[] PROGMEM = {
   0x00, 0x00, 0x00, 0xff, 	/*Color of index 0*/
   0x04, 0x06, 0x0b, 0xff, 	/*Color of index 1*/
   0x0e, 0x90, 0xf5, 0xff, 	/*Color of index 2*/

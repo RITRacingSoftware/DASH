@@ -21,7 +21,13 @@
 #define LV_ATTRIBUTE_IMG_DEBUGSCREEN
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_DEBUGSCREEN uint8_t DebugScreen_map[] = {
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_DEBUGSCREEN uint8_t DebugScreen_map[] PROGMEM = {
     0x00, 0x00, 0x00, 0xff, 	/*Color of index 0*/
     0xff, 0xff, 0xff, 0xff, 	/*Color of index 1*/
     0x40, 0x40, 0x40, 0xff, 	/*Color of index 2*/

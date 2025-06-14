@@ -1,5 +1,5 @@
 #include "screen-drive.h"
-#include "tft-manager.h"
+// #include "tft-manager.h"
 
 #ifdef DASH_TESTING
 #include "testing_arduino.h"
@@ -82,10 +82,10 @@ namespace ScreenDrive {
         lv_style_set_bg_color(&temp_hot_style, lv_palette_main(LV_PALETTE_RED));
 
         screen = lv_obj_create(NULL);
-        //lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
+        // lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
 
 		
-        // Background image
+        // // Background image
         lv_obj_t * imgtest = lv_img_create(screen);
         lv_img_set_src(imgtest, &DriveScreen);
         lv_obj_align(imgtest, LV_ALIGN_CENTER,0, 0);
@@ -191,7 +191,7 @@ namespace ScreenDrive {
 	}
 
 	void update(DataManager::car_data_t data) {
-		Serial.printf("DRIVSCREN UPDATE >:3\n");
+		// Serial.printf("DRIVSCREN UPDATE >:3\n");
         /*
         Status elements
         if(data.vc_status != lastdata.vc_status) {

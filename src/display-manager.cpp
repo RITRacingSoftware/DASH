@@ -26,7 +26,7 @@ LV_FONT_DECLARE(eurostileextended_bold_40);
 namespace DisplayManager {
 
 
-    int active_screen = 0; // 0 = debug, 1 = drive
+    int active_screen = 1; // 0 = debug, 1 = drive
     lv_obj_t* screen_debug;
     lv_obj_t* screen_drive;
 
@@ -154,11 +154,12 @@ namespace DisplayManager {
         
     
         if (active_screen == 0) {
-             
+            lv_obj_clean(lv_scr_act());
             screen_debug = ScreenDebug::init(&de);
             lv_scr_load(screen_debug);
         }
         else if (active_screen == 1) {
+            lv_obj_clean(lv_scr_act());
             screen_drive = ScreenDrive::init(&dr);
             lv_scr_load(screen_drive);
         }
