@@ -23,7 +23,7 @@ namespace DisplayManager {
         lv_style_t rect;
         lv_style_t warn;
         lv_style_t error;
-    
+        lv_style_t nominal;
 
     } drive_styles_t;
     // F8920F

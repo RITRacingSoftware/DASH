@@ -128,8 +128,8 @@ namespace DisplayManager {
             //DRIVE STYLES 
             // Temperature text style
             lv_style_init(&dr.tempText);
-            // lv_style_set_bg_color(&dr.tempText, lv_color_black());
-            lv_style_set_text_color(&dr.tempText, lv_color_black());
+            lv_style_set_bg_color(&dr.tempText, lv_color_black());
+            lv_style_set_text_color(&dr.tempText, lv_color_white());//white for now
             lv_style_set_radius(&dr.tempText, 2);
             lv_style_set_text_font(&dr.tempText, &helvetica_bold_48);
             // lv_style_set_text_letter_space(&dr.tempText, -5);
@@ -158,7 +158,7 @@ namespace DisplayManager {
             lv_style_init(&dr.faultText);
             lv_style_set_bg_color(&dr.faultText, lv_color_black());
             lv_style_set_text_color(&dr.faultText, lv_color_white());
-            lv_style_set_radius(&dr.faultText, 2);
+            lv_style_set_radius(&dr.faultText, 0);
             lv_style_set_text_align(&(dr.faultText), LV_TEXT_ALIGN_LEFT);
             lv_style_set_text_font(&dr.faultText, &eurostileextended_bold_40);
 
@@ -168,13 +168,13 @@ namespace DisplayManager {
             lv_style_set_bg_color(&(dr.rect), lv_color_black());
             lv_style_set_text_color(&(dr.rect), lv_color_white());
             //lv_style_set_border_color(&(dr.rect), LV_COLOR_MAKE(248, 146, 15));
-            lv_style_set_border_color(&(dr.rect), EVA_ORANGE);
-            lv_style_set_border_width(&(dr.rect), 1);
+            lv_style_set_border_color(&(dr.rect), lv_color_white());
+            lv_style_set_border_width(&(dr.rect), 3);
             lv_style_set_pad_top(&(dr.rect), 3);
             lv_style_set_pad_bottom(&(dr.rect), 0);
             lv_style_set_radius(&(dr.rect), 20);
             lv_style_set_text_align(&(dr.rect), LV_TEXT_ALIGN_CENTER);
-            lv_style_set_text_font(&(dr.rect), &font_montserrat_16_compressed);
+            lv_style_set_text_font(&(dr.rect), &eurostileextended_bold_40);
 
             // Warning/soft fault style
             lv_style_init(&(dr.warn));
@@ -186,7 +186,10 @@ namespace DisplayManager {
             lv_style_init(&(dr.error));
             lv_style_set_text_color(&(dr.error), EVA_RED);
             lv_style_set_border_color(&(dr.error), EVA_RED);
-
+            // NOMINAL style
+            lv_style_init(&(dr.nominal));
+            lv_style_set_text_color(&(dr.nominal), EVA_GREEN);
+            lv_style_set_border_color(&(dr.nominal), EVA_GREEN);
         }
 
     }
