@@ -6,6 +6,24 @@
 #include "tft-manager.h"
 
 LV_IMG_DECLARE(DriveScreen);
+LV_IMG_DECLARE(statusBarFault);
+LV_IMG_DECLARE(statusBarOff);
+LV_IMG_DECLARE(statusBarReady);
+LV_IMG_DECLARE(errCellVoltDiff);
+LV_IMG_DECLARE(errCellVoltIrrat);
+LV_IMG_DECLARE(errCurrentSensorComm);
+LV_IMG_DECLARE(errDrainFail);
+LV_IMG_DECLARE(errOutOfJuice);
+LV_IMG_DECLARE(errOverCurrent);
+LV_IMG_DECLARE(errOverTemp);
+LV_IMG_DECLARE(errSlaveCommCells);
+LV_IMG_DECLARE(errSlaveCommDrainRequest);
+LV_IMG_DECLARE(errSlaveCommTemps);
+LV_IMG_DECLARE(errTempIrrat);
+
+
+
+
 
 namespace ScreenDrive {
 	lv_obj_t* init(DisplayManager::drive_styles_t* dr);

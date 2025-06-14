@@ -21,7 +21,15 @@
 #define LV_ATTRIBUTE_IMG_STATUSBAROFF
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_STATUSBAROFF uint8_t statusBarOff_map[] = {
+
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_STATUSBAROFF uint8_t statusBarOff_map[] PROGMEM= {
   0x03, 0x03, 0x0b, 0x80, 	/*Color of index 0*/
   0x03, 0x04, 0x0d, 0xff, 	/*Color of index 1*/
 

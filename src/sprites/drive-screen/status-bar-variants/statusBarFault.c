@@ -21,7 +21,14 @@
 #define LV_ATTRIBUTE_IMG_STATUSBARFAULT
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_STATUSBARFAULT uint8_t statusBarFault_map[] = {
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_STATUSBARFAULT uint8_t statusBarFault_map[] PROGMEM = {
   0x2a, 0x2a, 0xc5, 0xfd, 	/*Color of index 0*/
   0x01, 0x01, 0x07, 0xfb, 	/*Color of index 1*/
 

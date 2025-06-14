@@ -21,7 +21,15 @@
 #define LV_ATTRIBUTE_IMG_ERROVERTEMP
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_ERROVERTEMP uint8_t errOverTemp_map[] = {
+
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_ERROVERTEMP uint8_t errOverTemp_map[] PROGMEM = {
   0x00, 0x00, 0x02, 0x0b, 	/*Color of index 0*/
   0x03, 0x04, 0x0d, 0xde, 	/*Color of index 1*/
 

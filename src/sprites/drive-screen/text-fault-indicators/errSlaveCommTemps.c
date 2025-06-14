@@ -21,7 +21,14 @@
 #define LV_ATTRIBUTE_IMG_ERRSLAVECOMMTEMPS
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_ERRSLAVECOMMTEMPS uint8_t errSlaveCommTemps_map[] = {
+
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_ERRSLAVECOMMTEMPS uint8_t errSlaveCommTemps_map[] PROGMEM = {
   0x00, 0x00, 0x01, 0x09, 	/*Color of index 0*/
   0x03, 0x04, 0x0d, 0xdd, 	/*Color of index 1*/
 

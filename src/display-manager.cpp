@@ -22,7 +22,7 @@ LV_FONT_DECLARE(helvetica_bold_18);
 LV_FONT_DECLARE(helvetica_bold_48);
 LV_FONT_DECLARE(helvetica_oblique_13);
 LV_FONT_DECLARE(eurostileextended_bold_40);
-
+LV_FONT_DECLARE(font_montserrat_40_compressed);
 namespace DisplayManager {
 
 
@@ -36,6 +36,15 @@ namespace DisplayManager {
 
     debug_styles_t de;
     drive_styles_t dr;
+
+    const lv_color_t EVA_ORANGE = lv_color_hex(0xF8920F);
+    const lv_color_t EVA_GREEN = lv_color_hex(0x5AFEA3);
+    const lv_color_t EVA_MEDIUM_GREEN = lv_color_hex(0x4A956B);
+    const lv_color_t EVA_BLUE = lv_color_hex(0x5CB4EB);
+    const lv_color_t EVA_RED = lv_color_hex(0xC62B2B);
+    const lv_color_t EVA_MEDIUM_RED = lv_color_hex(0x912020);
+
+
 
     void disp_flush(lv_disp_drv_t* disp, const lv_area_t* area, lv_color_t* color_p) {
         TFTManager::drawTexturedRect(area->x1, area->x2, area->y1, area->y2, (uint16_t*) color_p);
@@ -119,27 +128,29 @@ namespace DisplayManager {
             //DRIVE STYLES 
             // Temperature text style
             lv_style_init(&dr.tempText);
-            lv_style_set_bg_color(&dr.tempText, lv_color_black());
-            lv_style_set_text_color(&dr.tempText, lv_color_white());
+            // lv_style_set_bg_color(&dr.tempText, lv_color_black());
+            lv_style_set_text_color(&dr.tempText, lv_color_black());
             lv_style_set_radius(&dr.tempText, 2);
             lv_style_set_text_font(&dr.tempText, &helvetica_bold_48);
-            lv_style_set_text_letter_space(&dr.tempText, -5);
-
+            // lv_style_set_text_letter_space(&dr.tempText, -5);
+            
             // Middle text style
             lv_style_init(&dr.middleText);
             lv_style_set_bg_color(&dr.middleText, lv_color_black());
-            lv_style_set_text_color(&dr.middleText, lv_color_white());
+            lv_style_set_text_color(&dr.middleText, lv_color_black());
             lv_style_set_radius(&dr.middleText, 2);
+            lv_style_set_text_letter_space(&dr.middleText, -5);
             lv_style_set_text_font(&dr.middleText, &eurostileextended_bold_40);
 
 
             // BMS text style
+        
             lv_style_init(&dr.bmsText);
             lv_style_set_bg_color(&dr.bmsText, lv_color_black());
-            lv_style_set_text_color(&dr.bmsText, lv_color_white());
+            lv_style_set_text_color(&dr.bmsText, EVA_ORANGE);
             lv_style_set_radius(&dr.bmsText, 2);
             lv_style_set_text_font(&dr.bmsText, &helvetica_bold_48);
-            lv_style_set_text_letter_space(&dr.bmsText, -5);
+            lv_style_set_text_letter_space(&dr.bmsText, -3);
         }
 
     }

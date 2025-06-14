@@ -21,7 +21,15 @@
 #define LV_ATTRIBUTE_IMG_STATUSBARREADY
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_STATUSBARREADY uint8_t statusBarReady_map[] = {
+
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_STATUSBARREADY uint8_t statusBarReady_map[] PROGMEM= {
   0xea, 0xb3, 0x5b, 0xfd, 	/*Color of index 0*/
   0x07, 0x05, 0x03, 0xfa, 	/*Color of index 1*/
 

@@ -19,6 +19,7 @@ namespace DisplayManager {
         lv_style_t middleText;
         lv_style_t bmsText;
     } drive_styles_t;
+    // F8920F
 
 
 
