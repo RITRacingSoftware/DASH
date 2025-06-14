@@ -18,6 +18,13 @@ namespace DisplayManager {
         lv_style_t tempText;
         lv_style_t middleText;
         lv_style_t bmsText;
+        // Temporary until we have a proper fault implementation
+        lv_style_t faultText;
+        lv_style_t rect;
+        lv_style_t warn;
+        lv_style_t error;
+    
+
     } drive_styles_t;
     // F8920F
 

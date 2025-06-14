@@ -3,4 +3,4 @@
 .DS_Store
 .vscode
 build/
-.lib/Formula-DBC
+lib/Formula-DBC

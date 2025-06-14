@@ -52,6 +52,8 @@ namespace ScreenDrive {
 		lv_obj_t* charge_label;
 		lv_obj_t* mph_label;
 
+		lv_obj_t* faults_textarea; //temporary until we have a proper fault implementation
+
 	} elements;
 
 	lv_style_t temp_cold_style;
@@ -139,6 +141,13 @@ namespace ScreenDrive {
 		lv_obj_set_width(elements.avg_batt_temp_label, width_temp);
 		lv_obj_set_style_text_align(elements.avg_batt_temp_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
 
+		elements.faults_textarea = lv_textarea_create(screen);
+        lv_obj_set_size(elements.faults_textarea, 100, 780);
+        lv_obj_align(elements.faults_textarea, LV_ALIGN_TOP_LEFT, 10, 10);
+        lv_obj_add_style(elements.faults_textarea, &(dr->faultText), LV_PART_MAIN);
+        lv_obj_add_style(lv_textarea_get_label(elements.faults_textarea), &(dr->warn), LV_PART_SELECTED);
+
+
 		memset(&lastdata, 0xff, sizeof(lastdata));
 
 		Serial.printf("Initialized Drive Screen\n");
@@ -195,6 +204,51 @@ namespace ScreenDrive {
 				// lv_obj_add_style(elements.avg_batt_temp_label, &temp_hot_style, LV_PART_MAIN);
 			}
 		}
+
+		if(data.vc_faultvector != lastdata.vc_faultvector ||
+            data.bms_faultvector != lastdata.bms_faultvector) {
+            // If any fault message changes, we must update them all...
+
+            bool firstfault = true; // Used for pretty-printing
+            uint8_t vc_faultnum = 0;
+            uint8_t bms_faultnum = 0;
+            lv_obj_t *ta_label = lv_textarea_get_label(elements.faults_textarea);
+
+            lv_textarea_set_text(elements.faults_textarea, "");
+
+            // Loop over possible VC faults
+            for(int i = 0; i < 17; i++) {
+                bool faulted = (data.vc_faultvector >> i) & 1;
+                if(faulted) {
+                    if(!firstfault) {
+                        // Pretty printing
+                        lv_textarea_add_text(elements.faults_textarea, ", ");
+                    }
+                    firstfault = false;
+                    lv_textarea_add_text(elements.faults_textarea, VC_FAULT_MESSAGES[i]);
+                    vc_faultnum++;
+                }
+            }
+            int startpos = strlen(lv_label_get_text(ta_label));
+
+            // Loop over possible BMS faults
+            for(int i = 0; i < 11; i++) {
+                bool faulted = (data.bms_faultvector >> i) & 1;
+                if(faulted) {
+                    if(!firstfault) {
+                        // Pretty printing
+                        lv_textarea_add_text(elements.faults_textarea, ", ");
+                    }
+                    firstfault = false;
+                    lv_textarea_add_text(elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
+                    bms_faultnum++;
+                }
+            }
+            int endpos = strlen(lv_label_get_text(ta_label));
+            lv_label_set_text_sel_start(ta_label, startpos);
+            lv_label_set_text_sel_end(ta_label, endpos);
+		}
+
 		
 		lastdata = data;
 	}
