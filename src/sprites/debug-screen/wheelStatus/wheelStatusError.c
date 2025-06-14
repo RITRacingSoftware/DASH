@@ -21,7 +21,16 @@
 #define LV_ATTRIBUTE_IMG_WHEELSTATUSERROR
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_WHEELSTATUSERROR uint8_t wheelStatusError_map[] = {
+
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_WHEELSTATUSERROR uint8_t wheelStatusError_map[] PROGMEM= {
   0x06, 0x06, 0x19, 0x05, 	/*Color of index 0*/
   0x2b, 0x2b, 0xc5, 0xe0, 	/*Color of index 1*/
 

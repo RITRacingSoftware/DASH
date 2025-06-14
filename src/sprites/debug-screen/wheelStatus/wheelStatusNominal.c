@@ -21,7 +21,16 @@
 #define LV_ATTRIBUTE_IMG_WHEELSTATUSNOMINAL
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_WHEELSTATUSNOMINAL uint8_t wheelStatusNominal_map[] = {
+
+
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_WHEELSTATUSNOMINAL uint8_t wheelStatusNominal_map[] PROGMEM = {
   0x00, 0x00, 0x00, 0x00, 	/*Color of index 0*/
   0xa2, 0xfd, 0x5a, 0xd0, 	/*Color of index 1*/
 

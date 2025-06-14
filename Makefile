@@ -13,7 +13,7 @@ APP_SRCS := $(shell find $(APP_DIR) -type f -name "*.c*")
 APP_INCLUDES := -I ./src -I ./src/sprites
 APP_OBJS := $(APP_SRCS:$(APP_DIR)/%=$(BUILD_DIR)/src/%.o)
 
-DBC_DIR := ../Formula-DBC
+DBC_DIR := ./lib/Formula-DBC
 DBC_SRCS := $(shell find -L $(DBC_DIR)/c_files -name "*.c")
 DBC_INCLUDES := -I $(DBC_DIR)
 DBC_OBJS := $(DBC_SRCS:$(DBC_DIR)/c_files/%=$(BUILD_DIR)/formula_dbc/%.o)
