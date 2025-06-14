@@ -14,6 +14,8 @@
 #include "display-manager.h"
 #include "c_files/main_dbc.h"
 
+#include <math.h>
+
 
 
 /*
@@ -100,8 +102,8 @@ namespace DataManager {
                 case MAIN_DBC_BMS_CURRENT_FRAME_ID: {
                     main_dbc_bms_current_t current;
                     main_dbc_bms_current_unpack(&current, message.data, message.len);
-                    data.bms_buscurrent = current.bms_inst_current_filt * 0.001;
-                    if(data.bms_buscurrent > data.bms_maxcurrent) {
+                    data.bms_buscurrent = main_dbc_bms_current_bms_inst_current_filt_decode(current.bms_inst_current_filt);
+                    if ((data.bms_buscurrent > data.bms_maxcurrent) || (isnan(data.bms_maxcurrent))) {
                         data.bms_maxcurrent = data.bms_buscurrent;
                     }
                     break; }
