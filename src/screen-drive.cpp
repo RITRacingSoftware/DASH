@@ -255,7 +255,7 @@ namespace ScreenDrive {
 		int max_pack_voltage = 591.6; // Maximum pack voltage
 		
 		if (data.bms_packvoltage != lastdata.bms_packvoltage) {
-			lv_label_set_text_fmt(elements.hv_capac_label, "%2.1f V", data.bms_packvoltage);
+			lv_label_set_text_fmt(elements.hv_capac_label, "%2.3f H", (data.bms_packvoltage * 11.58f) / 1000);
 			lv_label_set_text_fmt(elements.charge_label, "%2.0f%%", (data.bms_packvoltage - min_pack_voltage)/(max_pack_voltage - min_pack_voltage) * 100.0f);
 		}
 
@@ -332,19 +332,19 @@ namespace ScreenDrive {
         //
         // Faults
         //
-		if (data.vc_faultvector != lastdata.vc_faultvector) {
-            uint8_t vc_faultnum = 0;
+		// if (data.vc_faultvector != lastdata.vc_faultvector) {
+        //     uint8_t vc_faultnum = 0;
 
-            // Loop over possible VC faults
-            for(int i = 0; i < 17; i++) {
-                bool faulted = (data.vc_faultvector >> i) & 1;
-                if(faulted) {
-                    lv_label_set_text(elements.faults_text, VC_FAULT_MESSAGES[i]);
-                    vc_faultnum++;
+        //     // Loop over possible VC faults
+        //     for(int i = 0; i < 17; i++) {
+        //         bool faulted = (data.vc_faultvector >> i) & 1;
+        //         if(faulted) {
+        //             lv_label_set_text(elements.faults_text, VC_FAULT_MESSAGES[i]);
+        //             vc_faultnum++;
     
-                }
-            }
-        }
+        //         }
+        //     }
+        // }
         
         if (data.bms_faultvector != lastdata.bms_faultvector) {
             // If any fault message changes, we must update them all...
@@ -372,7 +372,7 @@ namespace ScreenDrive {
             lv_obj_remove_style(elements.faults_container, &(styles->redBlackFault), LV_PART_MAIN);
 			lv_obj_add_style(elements.faults_text, &(styles->blackRedFault), LV_PART_MAIN);
 			lv_obj_add_style(elements.faults_container, &(styles->blackRedFault), LV_PART_MAIN);
-            lv_obj_scroll_to_x(elements.faults_text, scrollx, LV_ANIM_OFF);
+            lv_obj_scroll_to_x(elements.faults_text, scrollx - 50, LV_ANIM_OFF);
             
             fault_color = true;
 		}
@@ -382,7 +382,7 @@ namespace ScreenDrive {
 			lv_obj_remove_style(elements.faults_container, &(styles->blackRedFault), LV_PART_MAIN);
 			lv_obj_add_style(elements.faults_text, &(styles->redBlackFault), LV_PART_MAIN);
 			lv_obj_add_style(elements.faults_container, &(styles->redBlackFault), LV_PART_MAIN);
-            lv_obj_scroll_to_x(elements.faults_text, scrollx, LV_ANIM_OFF);
+            lv_obj_scroll_to_x(elements.faults_text, scrollx - 50, LV_ANIM_OFF);
 
             fault_color = false;
 		}
