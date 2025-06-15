@@ -23,6 +23,7 @@ LV_FONT_DECLARE(helvetica_bold_48);
 LV_FONT_DECLARE(helvetica_oblique_13);
 LV_FONT_DECLARE(eurostileextended_bold_40);
 LV_FONT_DECLARE(font_montserrat_40_compressed);
+LV_FONT_DECLARE(big_fault_font);
 namespace DisplayManager {
 
 
@@ -36,13 +37,6 @@ namespace DisplayManager {
 
     debug_styles_t de;
     drive_styles_t dr;
-
-    const lv_color_t EVA_ORANGE = lv_color_hex(0xF8920F);
-    const lv_color_t EVA_GREEN = lv_color_hex(0x5AFEA3);
-    const lv_color_t EVA_MEDIUM_GREEN = lv_color_hex(0x4A956B);
-    const lv_color_t EVA_BLUE = lv_color_hex(0x5CB4EB);
-    const lv_color_t EVA_RED = lv_color_hex(0xC62B2B);
-    const lv_color_t EVA_MEDIUM_RED = lv_color_hex(0x912020);
 
 
 
@@ -126,13 +120,31 @@ namespace DisplayManager {
         else if(active_screen == 1) {
 
             //DRIVE STYLES 
-            // Temperature text style
+            //
+            //Temperature
+            //
+
+            // Temp text
             lv_style_init(&dr.tempText);
-            lv_style_set_bg_color(&dr.tempText, lv_color_black());
-            lv_style_set_text_color(&dr.tempText, lv_color_white());//white for now
-            lv_style_set_radius(&dr.tempText, 2);
+            lv_style_set_text_color(&dr.tempText, lv_color_black());//white for now
             lv_style_set_text_font(&dr.tempText, &helvetica_bold_48);
-            // lv_style_set_text_letter_space(&dr.tempText, -5);
+            lv_style_set_text_letter_space(&dr.tempText, -5); 
+
+            // Temprature init
+            lv_style_init(&dr.tempInit);
+            lv_style_set_radius(&(dr.tempInit), 0);
+            lv_style_set_bg_color(&dr.tempInit, lv_palette_main(LV_PALETTE_GREY));
+            // Hot
+            lv_style_init(&(dr.hot));
+            lv_style_set_bg_color(&dr.hot, EVA_RED);
+
+            // Nominal 
+            lv_style_init(&(dr.nominal));
+            lv_style_set_bg_color(&dr.nominal, EVA_GREEN);
+
+            // Cold
+            lv_style_init(&(dr.cold));
+            lv_style_set_bg_color(&dr.cold, EVA_BLUE);
             
             // Middle text style
             lv_style_init(&dr.middleText);
@@ -150,46 +162,39 @@ namespace DisplayManager {
             lv_style_set_text_color(&dr.bmsText, EVA_ORANGE);
             lv_style_set_radius(&dr.bmsText, 2);
             lv_style_set_text_font(&dr.bmsText, &helvetica_bold_48);
-            lv_style_set_text_letter_space(&dr.bmsText, -3);
 
 
-            //Temporary until we have a proper fault implementation
+            // BIG FLASHY FAULT STYLE
 
-            lv_style_init(&dr.faultText);
-            lv_style_set_bg_color(&dr.faultText, lv_color_black());
-            lv_style_set_text_color(&dr.faultText, lv_color_white());
-            lv_style_set_radius(&dr.faultText, 0);
-            lv_style_set_text_align(&(dr.faultText), LV_TEXT_ALIGN_LEFT);
-            lv_style_set_text_font(&dr.faultText, &eurostileextended_bold_40);
+            //RED BG
+            lv_style_init(&(dr.redBlackFault));
+            lv_style_set_bg_color(&(dr.redBlackFault), EVA_RED);
+            lv_style_set_bg_opa(&(dr.redBlackFault), LV_OPA_COVER);
+            lv_style_set_bg_opa(&(dr.redBlackFault), LV_OPA_COVER);
+            lv_style_set_text_color(&(dr.redBlackFault), lv_color_black());
+            lv_style_set_pad_all(&(dr.redBlackFault), 10);
+            lv_style_set_radius(&(dr.redBlackFault), 0);
+            lv_style_set_text_align(&(dr.redBlackFault), LV_TEXT_ALIGN_LEFT);
+            lv_style_set_text_font(&(dr.redBlackFault), &big_fault_font );
+            lv_style_set_text_letter_space(&(dr.redBlackFault), -5);
 
 
-            // Rectangle style
-            lv_style_init(&(dr.rect));
-            lv_style_set_bg_color(&(dr.rect), lv_color_black());
-            lv_style_set_text_color(&(dr.rect), lv_color_white());
-            //lv_style_set_border_color(&(dr.rect), LV_COLOR_MAKE(248, 146, 15));
-            lv_style_set_border_color(&(dr.rect), lv_color_white());
-            lv_style_set_border_width(&(dr.rect), 3);
-            lv_style_set_pad_top(&(dr.rect), 3);
-            lv_style_set_pad_bottom(&(dr.rect), 0);
-            lv_style_set_radius(&(dr.rect), 20);
-            lv_style_set_text_align(&(dr.rect), LV_TEXT_ALIGN_CENTER);
-            lv_style_set_text_font(&(dr.rect), &eurostileextended_bold_40);
+            //BLACK BG
+            lv_style_init(&(dr.blackRedFault));
+            lv_style_set_bg_color(&(dr.blackRedFault), lv_color_black());
+            lv_style_set_bg_opa(&(dr.blackRedFault), LV_OPA_100);
+            lv_style_set_text_color(&(dr.blackRedFault), EVA_RED);
+            lv_style_set_pad_all(&(dr.blackRedFault), 10);
+            lv_style_set_radius(&(dr.blackRedFault), 0);
+            lv_style_set_text_align(&(dr.blackRedFault), LV_TEXT_ALIGN_LEFT);
+            lv_style_set_text_font(&(dr.blackRedFault), &big_fault_font);
+            lv_style_set_text_letter_space(&(dr.blackRedFault), -5);
 
-            // Warning/soft fault style
-            lv_style_init(&(dr.warn));
-            lv_style_set_bg_color(&(dr.warn), lv_color_black());
-            lv_style_set_text_color(&(dr.warn), EVA_ORANGE);
-            lv_style_set_border_color(&(dr.warn), EVA_ORANGE);
+            //BLANK BACKGROUND
+            lv_style_init(&(dr.noOpacity));
+            lv_style_set_bg_opa(&(dr.noOpacity), LV_OPA_0);
 
-            // Error/hard fault style
-            lv_style_init(&(dr.error));
-            lv_style_set_text_color(&(dr.error), EVA_RED);
-            lv_style_set_border_color(&(dr.error), EVA_RED);
-            // NOMINAL style
-            lv_style_init(&(dr.nominal));
-            lv_style_set_text_color(&(dr.nominal), EVA_GREEN);
-            lv_style_set_border_color(&(dr.nominal), EVA_GREEN);
+
         }
 
     }

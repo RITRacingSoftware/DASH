@@ -22,5 +22,5 @@ EXTERNC void setup() {
 
 EXTERNC void loop() {
 	DataManager::update();
-	delay(10);
+	delay(1);
 }
