@@ -247,6 +247,9 @@ namespace ScreenDrive {
 		Serial.printf("Initialized Drive Screen\n");
 		return screen;
 	}
+
+    bool vc_fault = false;
+    bool bms_fault = false;
 	
 	void update(DataManager::car_data_t data) {
         //
@@ -335,7 +338,6 @@ namespace ScreenDrive {
         //
 		if (data.vc_faultvector != lastdata.vc_faultvector) {
             uint8_t vc_faultnum = 0;
-
             // Loop over possible VC faults
             for(int i = 0; i < 17; i++) {
                 bool faulted = (data.vc_faultvector >> i) & 1;
@@ -344,7 +346,7 @@ namespace ScreenDrive {
                     
                     lv_label_set_text(elements.faults_text, VC_FAULT_MESSAGES[i]);
                     vc_faultnum++;
-                    
+                    vc_fault = true;
                 }
             }
         }
@@ -363,10 +365,19 @@ namespace ScreenDrive {
                     lv_obj_clear_flag(elements.faults_container, LV_OBJ_FLAG_HIDDEN);
                     lv_label_set_text(elements.faults_text, BMS_FAULT_MESSAGES[i]);
                     bms_faultnum++;
+                    bms_fault = true;
                 }
             }
-
 		}
+
+        if (data.vc_faultvector != lastdata.vc_faultvector || data.bms_faultvector != lastdata.bms_faultvector) {
+            if (bms_fault || vc_fault) {
+                lv_obj_clear_flag(elements.status_bar, LV_OBJ_FLAG_HIDDEN);
+            }
+            else {
+                lv_obj_add_flag(elements.status_bar, LV_OBJ_FLAG_HIDDEN);
+            }
+        }
         
         unsigned int speed = 800;
         lv_coord_t scrollx;
