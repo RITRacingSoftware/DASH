@@ -170,12 +170,14 @@ namespace DisplayManager {
             lv_style_init(&(dr.redBlackFault));
             lv_style_set_bg_color(&(dr.redBlackFault), EVA_RED);
             lv_style_set_bg_opa(&(dr.redBlackFault), LV_OPA_COVER);
+            lv_style_set_bg_opa(&(dr.redBlackFault), LV_OPA_COVER);
             lv_style_set_text_color(&(dr.redBlackFault), lv_color_black());
             lv_style_set_pad_all(&(dr.redBlackFault), 10);
             lv_style_set_radius(&(dr.redBlackFault), 0);
             lv_style_set_text_align(&(dr.redBlackFault), LV_TEXT_ALIGN_LEFT);
             lv_style_set_text_font(&(dr.redBlackFault), &big_fault_font );
             lv_style_set_text_letter_space(&(dr.redBlackFault), -5);
+
 
             //BLACK BG
             lv_style_init(&(dr.blackRedFault));
@@ -187,6 +189,10 @@ namespace DisplayManager {
             lv_style_set_text_align(&(dr.blackRedFault), LV_TEXT_ALIGN_LEFT);
             lv_style_set_text_font(&(dr.blackRedFault), &big_fault_font);
             lv_style_set_text_letter_space(&(dr.blackRedFault), -5);
+
+            //BLANK BACKGROUND
+            lv_style_init(&(dr.noOpacity));
+            lv_style_set_bg_opa(&(dr.noOpacity), LV_OPA_0);
 
 
         }

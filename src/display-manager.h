@@ -34,6 +34,7 @@ namespace DisplayManager {
         lv_style_t hot;
         lv_style_t nominal;
         lv_style_t cold;
+        lv_style_t noOpacity;
 
     } drive_styles_t;
     // F8920F

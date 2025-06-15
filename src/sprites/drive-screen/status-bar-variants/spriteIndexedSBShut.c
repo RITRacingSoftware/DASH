@@ -21,7 +21,13 @@
 #define LV_ATTRIBUTE_IMG_SPRITEINDEXEDSBSHUT
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_SPRITEINDEXEDSBSHUT uint8_t spriteIndexedSBShut_map[] = {
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_SPRITEINDEXEDSBSHUT uint8_t spriteIndexedSBShut_map[] PROGMEM = {
   0x7f, 0x7f, 0x7f, 0xfc, 	/*Color of index 0*/
   0x07, 0x07, 0x07, 0xf6, 	/*Color of index 1*/
 

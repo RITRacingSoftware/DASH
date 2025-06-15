@@ -97,7 +97,8 @@ namespace ScreenDrive {
 		lv_obj_t* mph_label;
 		lv_obj_t* status_bar;
 
-		lv_obj_t* faults_textarea; //temporary until we have a proper fault implementation
+        lv_obj_t* faults_container;
+		lv_obj_t* faults_text; //temporary until we have a proper fault implementation
 		lv_obj_t* vc_status;
 
 	} elements;
@@ -106,6 +107,8 @@ namespace ScreenDrive {
 	lv_style_t temp_optimal_style;
 	lv_style_t temp_hot_style;
 	lv_style_t text_style;
+
+    bool fault_color = false; // Used to toggle the fault color on the status bar
 
 	lv_obj_t* init(DisplayManager::drive_styles_t* dr) {
 		Serial.printf("Initializing Drive Screen\n");
@@ -117,6 +120,7 @@ namespace ScreenDrive {
         lv_style_set_bg_color(&temp_optimal_style, lv_palette_main(LV_PALETTE_GREEN));
         lv_style_init(&temp_hot_style);
         lv_style_set_bg_color(&temp_hot_style, lv_palette_main(LV_PALETTE_RED));
+
 
         screen = lv_obj_create(NULL);
         // lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
@@ -192,14 +196,16 @@ namespace ScreenDrive {
 		
 		int width_temp = 151;
 		elements.max_batt_temp_label = lv_label_create(screen);
-		lv_obj_align(elements.max_batt_temp_label, LV_ALIGN_TOP_LEFT, 707 - (width_temp / 2), 256);
+		lv_obj_align(elements.max_batt_temp_label, LV_ALIGN_TOP_LEFT, 717 - (width_temp / 2), 256);
 		lv_label_set_text(elements.max_batt_temp_label, "??");
 		lv_obj_add_style(elements.max_batt_temp_label, &dr->tempText, LV_PART_MAIN);
 		lv_obj_set_width(elements.max_batt_temp_label, width_temp);
 		lv_obj_set_style_text_align(elements.max_batt_temp_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+        // lv_obj_set_style_border_color(elements.max_batt_temp_label, lv_color_black(), LV_PART_MAIN);
+        // lv_obj_set_style_border_width(elements.max_batt_temp_label, 2, LV_PART_MAIN);
         
 		elements.avg_batt_temp_label = lv_label_create(screen);
-		lv_obj_align(elements.avg_batt_temp_label, LV_ALIGN_TOP_LEFT, 707 - (width_temp / 2), 380);
+		lv_obj_align(elements.avg_batt_temp_label, LV_ALIGN_TOP_LEFT, 717 - (width_temp / 2), 380);
 		lv_label_set_text(elements.avg_batt_temp_label, "??");
 		lv_obj_add_style(elements.avg_batt_temp_label, &dr->tempText, LV_PART_MAIN);
 		lv_obj_set_width(elements.avg_batt_temp_label, width_temp);
@@ -209,13 +215,24 @@ namespace ScreenDrive {
 		//
 		// Faults
 		//
-		elements.faults_textarea = lv_label_create(screen);
-		lv_obj_remove_style_all(elements.faults_textarea);
-        lv_obj_add_style(elements.faults_textarea, &(dr->redBlackFault), LV_PART_MAIN);
-        lv_obj_set_size(elements.faults_textarea, 780, 150);
-        lv_obj_align(elements.faults_textarea, LV_ALIGN_TOP_LEFT, 10, 10);
-        lv_label_set_long_mode(elements.faults_textarea, LV_LABEL_LONG_SCROLL_CIRCULAR);
+        elements.faults_container = lv_obj_create(screen);
+        lv_obj_set_size(elements.faults_container, 780, 150);
+        lv_obj_align(elements.faults_container, LV_ALIGN_TOP_LEFT, 10, 10);
+        lv_obj_set_style_radius(elements.faults_container, 40, LV_PART_MAIN);
+        lv_obj_set_style_border_width(elements.faults_container, 0, LV_PART_MAIN);
 		
+		elements.faults_text = lv_label_create(elements.faults_container);
+		lv_obj_remove_style_all(elements.faults_text);
+        lv_obj_add_style(elements.faults_text, &(dr->redBlackFault), LV_PART_SELECTED);
+		lv_obj_add_style(elements.faults_text, &(dr->redBlackFault), LV_PART_MAIN);
+        lv_obj_set_size(elements.faults_text, 780, LV_SIZE_CONTENT);
+        lv_obj_align(elements.faults_text, LV_ALIGN_CENTER, 0, 10);
+        lv_label_set_long_mode(elements.faults_text, LV_LABEL_LONG_SCROLL_CIRCULAR);
+        lv_obj_set_style_radius(elements.faults_text, 60, LV_PART_MAIN);
+		lv_obj_set_scrollbar_mode(elements.faults_text,LV_SCROLLBAR_MODE_OFF);
+		lv_obj_set_scrollbar_mode(elements.faults_container,LV_SCROLLBAR_MODE_OFF);
+
+
 		
 		memset(&lastdata, 0xff, sizeof(lastdata));
         
@@ -284,9 +301,12 @@ namespace ScreenDrive {
 			if (data.bms_maxtemp > 90) {
 				lv_obj_add_style(elements.batt_temp_bg, &styles->hot, LV_PART_MAIN);
 			}
-			else {
+			else if (data.bms_maxtemp > 45) {
 				lv_obj_add_style(elements.batt_temp_bg, &styles->nominal, LV_PART_MAIN);
 			}
+            else {
+                lv_obj_add_style(elements.batt_temp_bg, &styles->cold, LV_PART_MAIN);
+            }
 		}
 
 		if (data.bms_avgtemp != lastdata.bms_avgtemp) {
@@ -305,47 +325,55 @@ namespace ScreenDrive {
         //
         // Faults
         //
-		if(data.vc_faultvector != lastdata.vc_faultvector ||
-            data.bms_faultvector != lastdata.bms_faultvector) {
-            // If any fault message changes, we must update them all...
-
+		if (data.vc_faultvector != lastdata.vc_faultvector) {
             uint8_t vc_faultnum = 0;
-            uint8_t bms_faultnum = 0;
-            lv_obj_t *ta_label = elements.faults_textarea;
-
-            lv_label_set_text(elements.faults_textarea, "");
 
             // Loop over possible VC faults
             for(int i = 0; i < 17; i++) {
                 bool faulted = (data.vc_faultvector >> i) & 1;
                 if(faulted) {
-                    lv_label_set_text(elements.faults_textarea, VC_FAULT_MESSAGES[i]);
+                    lv_label_set_text(elements.faults_text, VC_FAULT_MESSAGES[i]);
                     vc_faultnum++;
-
+    
                 }
             }
-            int startpos = strlen(lv_label_get_text(ta_label));
+        }
+        
+        if (data.bms_faultvector != lastdata.bms_faultvector) {
+            // If any fault message changes, we must update them all...
+            
+            uint8_t bms_faultnum = 0;
+            lv_label_set_text(elements.faults_text, "");
+
 
             // Loop over possible BMS faults
             for(int i = 0; i < 11; i++) {
                 bool faulted = (data.bms_faultvector >> i) & 1;
                 if(faulted) {
-                    lv_label_set_text(elements.faults_textarea, BMS_FAULT_MESSAGES[i]);
+                    lv_label_set_text(elements.faults_text, BMS_FAULT_MESSAGES[i]);
                     bms_faultnum++;
                 }
             }
-            int endpos = strlen(lv_label_get_text(ta_label));
-            lv_label_set_text_sel_start(ta_label, startpos);
-            lv_label_set_text_sel_end(ta_label, endpos);
+
 		}
-		
-		if(lv_tick_get() % 100 == 0){
-			lv_obj_remove_style(elements.faults_textarea, &(styles->redBlackFault), LV_PART_MAIN);
-			lv_obj_add_style(elements.faults_textarea, &(styles->blackRedFault), LV_PART_MAIN);
+        
+        unsigned int speed = 1000;
+		if(lv_tick_get() % speed >= 0 && lv_tick_get() % speed <= speed / 2 && fault_color == false) {
+			lv_obj_remove_style(elements.faults_text, &(styles->redBlackFault), LV_PART_MAIN);
+            lv_obj_remove_style(elements.faults_container, &(styles->redBlackFault), LV_PART_MAIN);
+			lv_obj_add_style(elements.faults_text, &(styles->blackRedFault), LV_PART_MAIN);
+			lv_obj_add_style(elements.faults_container, &(styles->blackRedFault), LV_PART_MAIN);
+
+            fault_color = true;
 		}
-		if(lv_tick_get() % 200 == 0){
-			lv_obj_remove_style(elements.faults_textarea, &(styles->blackRedFault), LV_PART_MAIN);
-			lv_obj_add_style(elements.faults_textarea, &(styles->redBlackFault), LV_PART_MAIN);
+		else if (lv_tick_get() % speed >= speed / 2 && lv_tick_get() % speed <= speed && fault_color == true) {
+			lv_obj_remove_style(elements.faults_text, &(styles->blackRedFault), LV_PART_MAIN);
+			lv_obj_remove_style(elements.faults_container, &(styles->blackRedFault), LV_PART_MAIN);
+
+			lv_obj_add_style(elements.faults_text, &(styles->redBlackFault), LV_PART_MAIN);
+			lv_obj_add_style(elements.faults_container, &(styles->redBlackFault), LV_PART_MAIN);
+
+            fault_color = false;
 		}
 		
 		lastdata = data;

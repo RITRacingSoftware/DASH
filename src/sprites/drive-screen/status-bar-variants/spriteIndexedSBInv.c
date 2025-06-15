@@ -21,7 +21,13 @@
 #define LV_ATTRIBUTE_IMG_SPRITEINDEXEDSBINV
 #endif
 
-const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_SPRITEINDEXEDSBINV uint8_t spriteIndexedSBInv_map[] = {
+#ifdef DASH_TESTING
+#define PROGMEM
+#else
+#include <Arduino.h>
+#endif
+
+const LV_ATTRIBUTE_MEM_ALIGN LV_ATTRIBUTE_LARGE_CONST LV_ATTRIBUTE_IMG_SPRITEINDEXEDSBINV uint8_t spriteIndexedSBInv_map[] PROGMEM = {
   0xea, 0xb3, 0x5b, 0xfc, 	/*Color of index 0*/
   0x0e, 0x0a, 0x05, 0xf4, 	/*Color of index 1*/
 
