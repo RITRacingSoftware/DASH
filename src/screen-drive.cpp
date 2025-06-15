@@ -365,20 +365,24 @@ namespace ScreenDrive {
 		}
         
         unsigned int speed = 800;
+        lv_coord_t scrollx;
 		if(lv_tick_get() % speed >= 0 && lv_tick_get() % speed <= speed / 2 && fault_color == false) {
+            scrollx = lv_obj_get_scroll_x(elements.faults_text);
 			lv_obj_remove_style(elements.faults_text, &(styles->redBlackFault), LV_PART_MAIN);
             lv_obj_remove_style(elements.faults_container, &(styles->redBlackFault), LV_PART_MAIN);
 			lv_obj_add_style(elements.faults_text, &(styles->blackRedFault), LV_PART_MAIN);
 			lv_obj_add_style(elements.faults_container, &(styles->blackRedFault), LV_PART_MAIN);
-
+            lv_obj_scroll_to_x(elements.faults_text, scrollx, LV_ANIM_OFF);
+            
             fault_color = true;
 		}
 		else if (lv_tick_get() % speed >= speed / 2 && lv_tick_get() % speed <= speed && fault_color == true) {
+            scrollx = lv_obj_get_scroll_x(elements.faults_text);
 			lv_obj_remove_style(elements.faults_text, &(styles->blackRedFault), LV_PART_MAIN);
 			lv_obj_remove_style(elements.faults_container, &(styles->blackRedFault), LV_PART_MAIN);
-
 			lv_obj_add_style(elements.faults_text, &(styles->redBlackFault), LV_PART_MAIN);
 			lv_obj_add_style(elements.faults_container, &(styles->redBlackFault), LV_PART_MAIN);
+            lv_obj_scroll_to_x(elements.faults_text, scrollx, LV_ANIM_OFF);
 
             fault_color = false;
 		}
