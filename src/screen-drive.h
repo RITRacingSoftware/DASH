@@ -5,7 +5,17 @@
 #include "lvgl.h"
 #include "tft-manager.h"
 
-LV_IMG_DECLARE(DriveScreen);
+LV_IMG_DECLARE(spriteBGDrive);
+
+LV_IMG_DECLARE(spriteSBOff);
+LV_IMG_DECLARE(spriteSBFLT);
+LV_IMG_DECLARE(spriteSBInv);
+LV_IMG_DECLARE(spriteSBPcrg);
+LV_IMG_DECLARE(spriteSBRTD);
+LV_IMG_DECLARE(spriteSBShut);
+LV_IMG_DECLARE(spriteSBStby);
+LV_IMG_DECLARE(spriteSBWait);
+
 LV_IMG_DECLARE(statusBarFault);
 LV_IMG_DECLARE(statusBarOff);
 LV_IMG_DECLARE(statusBarReady);
