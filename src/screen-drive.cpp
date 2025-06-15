@@ -220,6 +220,7 @@ namespace ScreenDrive {
         lv_obj_align(elements.faults_container, LV_ALIGN_TOP_LEFT, 10, 10);
         lv_obj_set_style_radius(elements.faults_container, 40, LV_PART_MAIN);
         lv_obj_set_style_border_width(elements.faults_container, 0, LV_PART_MAIN);
+        lv_obj_add_flag(elements.faults_container, LV_OBJ_FLAG_HIDDEN);
 		
 		elements.faults_text = lv_label_create(elements.faults_container);
 		lv_obj_remove_style_all(elements.faults_text);
@@ -332,31 +333,34 @@ namespace ScreenDrive {
         //
         // Faults
         //
-		// if (data.vc_faultvector != lastdata.vc_faultvector) {
-        //     uint8_t vc_faultnum = 0;
+		if (data.vc_faultvector != lastdata.vc_faultvector) {
+            uint8_t vc_faultnum = 0;
 
-        //     // Loop over possible VC faults
-        //     for(int i = 0; i < 17; i++) {
-        //         bool faulted = (data.vc_faultvector >> i) & 1;
-        //         if(faulted) {
-        //             lv_label_set_text(elements.faults_text, VC_FAULT_MESSAGES[i]);
-        //             vc_faultnum++;
-    
-        //         }
-        //     }
-        // }
+            // Loop over possible VC faults
+            for(int i = 0; i < 17; i++) {
+                bool faulted = (data.vc_faultvector >> i) & 1;
+                if(faulted) {
+                    lv_obj_clear_flag(elements.faults_container, LV_OBJ_FLAG_HIDDEN);
+                    
+                    lv_label_set_text(elements.faults_text, VC_FAULT_MESSAGES[i]);
+                    vc_faultnum++;
+                    
+                }
+            }
+        }
         
         if (data.bms_faultvector != lastdata.bms_faultvector) {
             // If any fault message changes, we must update them all...
             
             uint8_t bms_faultnum = 0;
             lv_label_set_text(elements.faults_text, "");
-
-
+            
+            
             // Loop over possible BMS faults
             for(int i = 0; i < 11; i++) {
                 bool faulted = (data.bms_faultvector >> i) & 1;
                 if(faulted) {
+                    lv_obj_clear_flag(elements.faults_container, LV_OBJ_FLAG_HIDDEN);
                     lv_label_set_text(elements.faults_text, BMS_FAULT_MESSAGES[i]);
                     bms_faultnum++;
                 }
