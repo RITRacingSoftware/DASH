@@ -121,7 +121,7 @@ namespace DisplayManager {
 
             //DRIVE STYLES 
             //
-            //Temprature
+            //Temperature
             //
 
             // Temp text
@@ -162,29 +162,31 @@ namespace DisplayManager {
             lv_style_set_text_color(&dr.bmsText, EVA_ORANGE);
             lv_style_set_radius(&dr.bmsText, 2);
             lv_style_set_text_font(&dr.bmsText, &helvetica_bold_48);
-            lv_style_set_text_letter_space(&dr.bmsText, -5);
+
 
             // BIG FLASHY FAULT STYLE
 
             //RED BG
             lv_style_init(&(dr.redBlackFault));
             lv_style_set_bg_color(&(dr.redBlackFault), EVA_RED);
+            lv_style_set_bg_opa(&(dr.redBlackFault), LV_OPA_COVER);
             lv_style_set_text_color(&(dr.redBlackFault), lv_color_black());
-            lv_style_set_pad_top(&(dr.redBlackFault), 3);
-            lv_style_set_pad_bottom(&(dr.redBlackFault), 0);
+            lv_style_set_pad_all(&(dr.redBlackFault), 10);
             lv_style_set_radius(&(dr.redBlackFault), 0);
-            lv_style_set_text_align(&(dr.redBlackFault), LV_TEXT_ALIGN_CENTER);
+            lv_style_set_text_align(&(dr.redBlackFault), LV_TEXT_ALIGN_LEFT);
             lv_style_set_text_font(&(dr.redBlackFault), &big_fault_font );
+            lv_style_set_text_letter_space(&(dr.redBlackFault), -5);
 
             //BLACK BG
             lv_style_init(&(dr.blackRedFault));
             lv_style_set_bg_color(&(dr.blackRedFault), lv_color_black());
+            lv_style_set_bg_opa(&(dr.blackRedFault), LV_OPA_100);
             lv_style_set_text_color(&(dr.blackRedFault), EVA_RED);
-            lv_style_set_pad_top(&(dr.blackRedFault), 3);
-            lv_style_set_pad_bottom(&(dr.blackRedFault), 0);
+            lv_style_set_pad_all(&(dr.blackRedFault), 10);
             lv_style_set_radius(&(dr.blackRedFault), 0);
-            lv_style_set_text_align(&(dr.blackRedFault), LV_TEXT_ALIGN_CENTER);
+            lv_style_set_text_align(&(dr.blackRedFault), LV_TEXT_ALIGN_LEFT);
             lv_style_set_text_font(&(dr.blackRedFault), &big_fault_font);
+            lv_style_set_text_letter_space(&(dr.blackRedFault), -5);
 
 
         }

@@ -12,6 +12,7 @@ LV_IMG_DECLARE(spriteSBFLT);
 LV_IMG_DECLARE(spriteSBInv);
 LV_IMG_DECLARE(spriteSBPcrg);
 LV_IMG_DECLARE(spriteSBRTD);
+LV_IMG_DECLARE(spriteIndexedSBRTD);
 LV_IMG_DECLARE(spriteSBShut);
 LV_IMG_DECLARE(spriteSBStby);
 LV_IMG_DECLARE(spriteSBWait);
