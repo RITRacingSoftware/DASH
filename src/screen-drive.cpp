@@ -233,6 +233,13 @@ namespace ScreenDrive {
 		lv_obj_set_scrollbar_mode(elements.faults_container,LV_SCROLLBAR_MODE_OFF);
 
 
+
+
+		lv_obj_set_scrollbar_mode(screen,LV_SCROLLBAR_MODE_OFF);
+
+
+
+
 		
 		memset(&lastdata, 0xff, sizeof(lastdata));
         
@@ -357,7 +364,7 @@ namespace ScreenDrive {
 
 		}
         
-        unsigned int speed = 1000;
+        unsigned int speed = 800;
 		if(lv_tick_get() % speed >= 0 && lv_tick_get() % speed <= speed / 2 && fault_color == false) {
 			lv_obj_remove_style(elements.faults_text, &(styles->redBlackFault), LV_PART_MAIN);
             lv_obj_remove_style(elements.faults_container, &(styles->redBlackFault), LV_PART_MAIN);
