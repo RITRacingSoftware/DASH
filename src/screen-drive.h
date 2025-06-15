@@ -7,15 +7,14 @@
 
 LV_IMG_DECLARE(spriteBGDrive);
 
-LV_IMG_DECLARE(spriteSBOff);
-LV_IMG_DECLARE(spriteSBFLT);
-LV_IMG_DECLARE(spriteSBInv);
-LV_IMG_DECLARE(spriteSBPcrg);
-LV_IMG_DECLARE(spriteSBRTD);
+LV_IMG_DECLARE(spriteIndexedSBOff);
+LV_IMG_DECLARE(spriteIndexedSBFLT);
+LV_IMG_DECLARE(spriteIndexedSBInv);
+LV_IMG_DECLARE(spriteIndexedSBPcrg);
 LV_IMG_DECLARE(spriteIndexedSBRTD);
-LV_IMG_DECLARE(spriteSBShut);
-LV_IMG_DECLARE(spriteSBStby);
-LV_IMG_DECLARE(spriteSBWait);
+LV_IMG_DECLARE(spriteIndexedSBShut);
+LV_IMG_DECLARE(spriteIndexedSBStby);
+LV_IMG_DECLARE(spriteIndexedSBWait);
 
 LV_IMG_DECLARE(statusBarFault);
 LV_IMG_DECLARE(statusBarOff);

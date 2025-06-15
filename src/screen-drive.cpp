@@ -161,7 +161,7 @@ namespace ScreenDrive {
 		lv_obj_set_style_text_align(elements.charge_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
 		
 		elements.mph_label = lv_label_create(screen);
-		lv_obj_align(elements.mph_label, LV_ALIGN_TOP_LEFT, 496, 261);
+		lv_obj_align(elements.mph_label, LV_ALIGN_TOP_LEFT, 496, 266);
 		lv_label_set_text(elements.mph_label, "?");
 		lv_obj_add_style(elements.mph_label, &dr->middleText, LV_PART_MAIN);
 		lv_obj_set_width(elements.mph_label, width_center);
@@ -210,10 +210,11 @@ namespace ScreenDrive {
 		// Faults
 		//
 		elements.faults_textarea = lv_label_create(screen);
+		lv_obj_remove_style_all(elements.faults_textarea);
+        lv_obj_add_style(elements.faults_textarea, &(dr->redBlackFault), LV_PART_MAIN);
         lv_obj_set_size(elements.faults_textarea, 780, 150);
         lv_obj_align(elements.faults_textarea, LV_ALIGN_TOP_LEFT, 10, 10);
         lv_label_set_long_mode(elements.faults_textarea, LV_LABEL_LONG_SCROLL_CIRCULAR);
-        lv_obj_add_style(elements.faults_textarea, &(dr->redBlackFault), LV_PART_MAIN);
 		
 		
 		memset(&lastdata, 0xff, sizeof(lastdata));
@@ -223,6 +224,9 @@ namespace ScreenDrive {
 	}
 	
 	void update(DataManager::car_data_t data) {
+        //
+        // Left Column (Levels)
+        //
 		int min_pack_voltage = 408; // Minimum pack voltage
 		int max_pack_voltage = 591.6; // Maximum pack voltage
 		
@@ -238,11 +242,43 @@ namespace ScreenDrive {
 		if (data.bms_maxcurrent != lastdata.bms_maxcurrent) {
 			lv_label_set_text_fmt(elements.current_label, "%2.1f A", data.bms_maxcurrent);
 		}
-        
+
+        //
+        // Center Column
+        //
         if (data.vel != lastdata.vel) {
         	lv_label_set_text_fmt(elements.mph_label, "%2.0f", data.vel);
         }
 
+        if(data.vc_status != lastdata.vc_status) {
+            switch (data.vc_status) {
+                case 0:
+                    lv_img_set_src(elements.status_bar, &spriteIndexedSBOff);
+                    break;
+                case 1:
+                    lv_img_set_src(elements.status_bar, &spriteIndexedSBInv);
+                    break;
+                case 2:
+                    lv_img_set_src(elements.status_bar, &spriteIndexedSBPcrg);
+                    break;
+                case 3:
+                    lv_img_set_src(elements.status_bar, &spriteIndexedSBWait);
+                    break;
+                case 4:
+                    lv_img_set_src(elements.status_bar, &spriteIndexedSBStby);
+                    break;
+                case 5:
+                    lv_img_set_src(elements.status_bar, &spriteIndexedSBRTD);
+                    break;
+                case 6:
+                    lv_img_set_src(elements.status_bar, &spriteIndexedSBShut);
+                    break;
+            }
+        }
+
+        //
+        // Right Column (Temps)
+        //
 		if (data.bms_maxtemp != lastdata.bms_maxtemp) {
 			lv_label_set_text_fmt(elements.max_batt_temp_label, "%2.0f C", data.bms_maxtemp);
 			if (data.bms_maxtemp > 90) {
@@ -266,22 +302,9 @@ namespace ScreenDrive {
 			}
 		}
 
-		// if(data.vc_status != lastdata.vc_status) {
-        //     lv_label_set_text_static(elements.vc_status, VC_STATUS_MESSAGES[data.vc_status]);
-        //     lv_obj_remove_style(elements.vc_status, &(styles->warn), LV_PART_ANY);
-        //     lv_obj_remove_style(elements.vc_status, &(styles->error), LV_PART_ANY);
-		// 	lv_obj_remove_style(elements.vc_status, &(styles->nominal), LV_PART_ANY);
-        //     if (data.vc_status == 2) {
-        //         lv_obj_add_style(elements.vc_status, &(styles->warn), LV_PART_MAIN);
-        //     }
-        //     if ((data.vc_status >= 3) && (data.vc_status == 4)&& (data.vc_status == 6)) {
-        //         lv_obj_add_style(elements.vc_status, &(styles->error), LV_PART_MAIN);
-        //     }
-		// 	if(data.vc_status == 5) {
-		// 		lv_obj_add_style(elements.vc_status, &(styles->nominal), LV_PART_MAIN);
-		// 	}
-        // }
-
+        //
+        // Faults
+        //
 		if(data.vc_faultvector != lastdata.vc_faultvector ||
             data.bms_faultvector != lastdata.bms_faultvector) {
             // If any fault message changes, we must update them all...
@@ -299,14 +322,6 @@ namespace ScreenDrive {
                     lv_label_set_text(elements.faults_textarea, VC_FAULT_MESSAGES[i]);
                     vc_faultnum++;
 
-                    // if(lv_tick_get() % 1000 == 0){
-                    //     lv_obj_remove_style(elements.faults_textarea, &(styles->redBlackFault), LV_PART_MAIN);
-                    //     lv_obj_add_style(elements.faults_textarea, &(styles->blackRedFault), LV_PART_MAIN);
-                    // }
-                    // if(lv_tick_get() % 2000 == 0){
-                    //     lv_obj_remove_style(elements.faults_textarea, &(styles->blackRedFault), LV_PART_MAIN);
-                    //     lv_obj_add_style(elements.faults_textarea, &(styles->redBlackFault), LV_PART_MAIN);
-                    // }
                 }
             }
             int startpos = strlen(lv_label_get_text(ta_label));
@@ -323,7 +338,15 @@ namespace ScreenDrive {
             lv_label_set_text_sel_start(ta_label, startpos);
             lv_label_set_text_sel_end(ta_label, endpos);
 		}
-
+		
+		if(lv_tick_get() % 100 == 0){
+			lv_obj_remove_style(elements.faults_textarea, &(styles->redBlackFault), LV_PART_MAIN);
+			lv_obj_add_style(elements.faults_textarea, &(styles->blackRedFault), LV_PART_MAIN);
+		}
+		if(lv_tick_get() % 200 == 0){
+			lv_obj_remove_style(elements.faults_textarea, &(styles->blackRedFault), LV_PART_MAIN);
+			lv_obj_add_style(elements.faults_textarea, &(styles->redBlackFault), LV_PART_MAIN);
+		}
 		
 		lastdata = data;
 	}
