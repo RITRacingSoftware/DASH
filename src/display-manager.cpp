@@ -142,6 +142,8 @@ namespace DisplayManager {
             lv_style_init(&(dr.nominal));
             lv_style_set_bg_color(&dr.nominal, EVA_GREEN);
 
+            
+
             // Cold
             lv_style_init(&(dr.cold));
             lv_style_set_bg_color(&dr.cold, EVA_BLUE);
