@@ -9,6 +9,7 @@
 #include "data-manager.h"
 #include "display-manager.h"
 #include <algorithm>
+#include <cmath>
 
 #include "lvgl.h"
 
@@ -118,6 +119,7 @@ namespace ScreenDrive {
 
     // Linear interpolation between points a, b, and c where a outputs 0, b outputs 0.5, and c outputs 1
     float lerp2(float a, float b, float c, float t) {
+        if (std::isnan(t)) return 0.0f; // Handle NaN input gracefully
         if (t <= a) return 0.0f;
         if (t >= c) return 1.0f;
         if (t <= b) {
@@ -126,9 +128,10 @@ namespace ScreenDrive {
             return 0.5f + (t - b) / (c - b) * 0.5f;
         }
     }
-
+    
     // Outputs a value between a and b for inputs between 0 and 0.5, and b and c for inputs between 0.5 and 1
     float invlerp2(float a, float b, float c, float t) {
+        if (std::isnan(t)) return 0.0f; // Handle NaN input gracefully
         if (t <= 0.0f) return a;
         if (t >= 1.0f) return c;
         if (t <= 0.5f) {
@@ -140,6 +143,8 @@ namespace ScreenDrive {
 
     // Calculate the segment index based on the danger index and the data value given bounds and nominal value and position
     int calculateSegment(int nom_index, int total_segments, float min, float nom, float max, float data) {
+        Serial.printf("Calculating segment for data: %f, min: %f, nom: %f, max: %f\n", data, min, nom, max);
+        Serial.printf("Data <= min: %d, Data >= max: %d\n", data <= min, data >= max);
         if (data <= min) {
             return 0; // Below minimum, return first segment
         } else if (data >= max) {
@@ -155,34 +160,9 @@ namespace ScreenDrive {
         int total_segments = lv_obj_get_child_cnt(bar);
         for (int i = 0; i < total_segments; i++) {
             lv_obj_t* segment = lv_obj_get_child(bar, i);
-            if (i < progress) {
+            if (i <= progress) {
                 lv_obj_set_style_bg_opa(segment, LV_OPA_COVER, LV_PART_MAIN);
             } else {
-                lv_obj_set_style_bg_opa(segment, 0, LV_PART_MAIN);
-            }
-        }
-    }
-
-    void setBarSegOpacity(lv_obj_t* bar, float progress, int danger_index) {
-        int total_segments = lv_obj_get_child_cnt(bar);
-        int filled_segments = invlerp2(0, danger_index, total_segments,(int)(total_segments * progress));
-        for (int i = 0; i < total_segments; i++) {
-            lv_obj_t* segment = lv_obj_get_child(bar, i);
-            if (i < filled_segments) {
-                lv_obj_set_style_bg_opa(segment, LV_OPA_COVER, LV_PART_MAIN);
-            } else {
-                lv_obj_set_style_bg_opa(segment, 0, LV_PART_MAIN);
-            }
-        }
-    }
-
-    void setBarSegOpacity(lv_obj_t* bar, float progress) {
-        for (int i = 0; i < lv_obj_get_child_cnt(bar); i++) {
-            if (i < (int)(progress * lv_obj_get_child_cnt(bar))) {
-                lv_obj_t* segment = lv_obj_get_child(bar, i);
-                lv_obj_set_style_bg_opa(segment, LV_OPA_COVER, LV_PART_MAIN);
-            } else {
-                lv_obj_t* segment = lv_obj_get_child(bar, i);
                 lv_obj_set_style_bg_opa(segment, 0, LV_PART_MAIN);
             }
         }
@@ -205,18 +185,21 @@ namespace ScreenDrive {
         }
     }
 
-
-	lv_obj_t* init(DisplayManager::drive_styles_t* dr) {
-		Serial.printf("Initializing Drive Screen\n");
-        styles = dr;
-        //Styles
+    void innit_styles() {
         lv_style_init(&temp_cold_style);
         lv_style_set_bg_color(&temp_cold_style, lv_palette_main(LV_PALETTE_BLUE));
         lv_style_init(&temp_optimal_style);
         lv_style_set_bg_color(&temp_optimal_style, lv_palette_main(LV_PALETTE_GREEN));
         lv_style_init(&temp_hot_style);
         lv_style_set_bg_color(&temp_hot_style, lv_palette_main(LV_PALETTE_RED));
+    }
 
+
+	lv_obj_t* init(DisplayManager::drive_styles_t* dr) {
+		Serial.printf("Initializing Drive Screen\n");
+        styles = dr;
+        //Styles
+        
 
         screen = lv_obj_create(NULL);
         // lv_obj_add_style(screen, &styles->style, LV_PART_MAIN);
@@ -434,7 +417,7 @@ namespace ScreenDrive {
         elements.faults_container = lv_obj_create(screen);
         lv_obj_set_size(elements.faults_container, 780, 150);
         lv_obj_align(elements.faults_container, LV_ALIGN_TOP_LEFT, 10, 10);
-        lv_obj_set_style_radius(elements.faults_container, 40, LV_PART_MAIN);
+        lv_obj_set_style_radius(elements.faults_container, 0, LV_PART_MAIN);
         lv_obj_set_style_border_width(elements.faults_container, 0, LV_PART_MAIN);
         lv_obj_add_flag(elements.faults_container, LV_OBJ_FLAG_HIDDEN);
 		
@@ -445,7 +428,7 @@ namespace ScreenDrive {
         lv_obj_set_size(elements.faults_text, 780, LV_SIZE_CONTENT);
         lv_obj_align(elements.faults_text, LV_ALIGN_CENTER, 0, 10);
         lv_label_set_long_mode(elements.faults_text, LV_LABEL_LONG_SCROLL_CIRCULAR);
-        lv_obj_set_style_radius(elements.faults_text, 60, LV_PART_MAIN);
+        lv_obj_set_style_radius(elements.faults_text, 0, LV_PART_MAIN);
 		lv_obj_set_scrollbar_mode(elements.faults_text,LV_SCROLLBAR_MODE_OFF);
 		lv_obj_set_scrollbar_mode(elements.faults_container,LV_SCROLLBAR_MODE_OFF);
 
@@ -471,7 +454,7 @@ namespace ScreenDrive {
         //
         // Left Column (Levels)
         //
-		int packBlinkIndex;
+		int pack_blink_index = 0;
 		int min_pack_voltage = 408; // Minimum pack voltage
 		int danger_pack_voltage = 430; // Minimum pack voltage
 		int max_pack_voltage = 591.6; // Maximum pack voltage
@@ -481,43 +464,50 @@ namespace ScreenDrive {
             lv_label_set_text_fmt(elements.hv_capac_label, "%2.3f H", (data.bms_packvoltage * 11.58f) / 1000);
 			lv_label_set_text_fmt(elements.charge_label, "%2.0f%%", (data.bms_packvoltage - min_pack_voltage)/(max_pack_voltage - min_pack_voltage) * 100.0f);
             setBarSegOpacity(elements.hv_capac_bar, calculateSegment(2, lv_obj_get_child_cnt(elements.hv_capac_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage));
-            packBlinkIndex = calculateSegment(2, lv_obj_get_child_cnt(elements.hv_capac_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage) - 1;
-            if (packBlinkIndex < 0) {
-                packBlinkIndex = 0; // Ensure we don't go out of bounds
-            }
-            if (packBlinkIndex >= lv_obj_get_child_cnt(elements.hv_capac_bar)) {
-                packBlinkIndex = lv_obj_get_child_cnt(elements.hv_capac_bar) - 1; // Ensure we don't go out of bounds
-            }
-            Serial.printf("Pack Blink Index: %d\n", packBlinkIndex);
+			int prev_pack_blink_index = pack_blink_index;
+            pack_blink_index = calculateSegment(2, lv_obj_get_child_cnt(elements.hv_capac_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage) ;
+            // if (pack_blink_index < 0) {
+            //     pack_blink_index = 0; // Ensure we don't go out of bounds
+            // }
+            // if (pack_blink_index >= lv_obj_get_child_cnt(elements.hv_capac_bar)) {
+            //     pack_blink_index = lv_obj_get_child_cnt(elements.hv_capac_bar) - 1; // Ensure we don't go out of bounds
+            // }
+            Serial.printf("Pack Blink Index: %d\n", pack_blink_index);
             Serial.printf("Pack Index: %d\n", calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage));
-            elements.pack_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex);
-		 	int prevBlinkIndex = packBlinkIndex;
-			if(packBlinkIndex != prevBlinkIndex){
-				if(prevBlinkIndex == 0 || 1){lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_capac_bar, prevBlinkIndex), EVA_RED, LV_PART_MAIN);}
-				else{lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_capac_bar, prevBlinkIndex), EVA_GREEN, LV_PART_MAIN);}
+            elements.pack_blink = lv_obj_get_child(elements.hv_capac_bar, pack_blink_index);
+		 	
+			if(pack_blink_index != prev_pack_blink_index){
+				if(prev_pack_blink_index == 0 || 1){lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_capac_bar, prev_pack_blink_index), EVA_RED, LV_PART_MAIN);}
+				else{lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_capac_bar, prev_pack_blink_index), EVA_GREEN, LV_PART_MAIN);}
 			}
 
         }
-
+        
+        
+		int cell_blink_index = 0;
         float min_cell_voltage = 2.5f; // Minimum cell voltage in V
         float danger_cell_voltage = 2.5f; // Minimum cell voltage in V
         float max_cell_voltage = 4.2f; // Maximum cell voltage in V
-        
-        
 		if (data.bms_cellvoltages_min != lastdata.bms_cellvoltages_min) {
 			lv_label_set_text_fmt(elements.hv_cell_min_label, "%2.1f V", data.bms_cellvoltages_min);
             setBarSegOpacity(elements.hv_cell_min_bar, calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_cell_voltage, danger_cell_voltage, max_cell_voltage, data.bms_cellvoltages_min));
-            int cellBlinkIndex = calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_cell_voltage, danger_cell_voltage, max_cell_voltage, data.bms_cellvoltages_min) - 1;
-            if (cellBlinkIndex < 0) {
-                cellBlinkIndex = 0; // Ensure we don't go out of bounds
-            }
-            if (cellBlinkIndex >= lv_obj_get_child_cnt(elements.hv_cell_min_bar)) {
-                cellBlinkIndex = lv_obj_get_child_cnt(elements.hv_cell_min_bar) - 1; // Ensure we don't go out of bounds
-            }
-            Serial.printf("Cell Blink Index: %d\n", cellBlinkIndex);
-            Serial.printf("Cell Index: %d\n", calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_cell_voltage, danger_cell_voltage, max_cell_voltage, data.bms_cellvoltages_min));
+			int prev_cell_blink_index = cell_blink_index;
+            cell_blink_index = calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_cell_voltage, danger_cell_voltage, max_cell_voltage, data.bms_cellvoltages_min);
+            // if (cell_blink_index < 0) {
+            //     cell_blink_index = 0; // Ensure we don't go out of bounds
+            // }
+            // if (cell_blink_index >= lv_obj_get_child_cnt(elements.hv_cell_min_bar)) {
+            //     cell_blink_index = lv_obj_get_child_cnt(elements.hv_cell_min_bar) - 1; // Ensure we don't go out of bounds
+            // }
+			if(cell_blink_index != prev_cell_blink_index){
+				
+				if(prev_cell_blink_index == 0 || 1){lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_cell_min_bar, prev_cell_blink_index), EVA_RED, LV_PART_MAIN);}
+				else{lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_cell_min_bar, prev_cell_blink_index), EVA_GREEN, LV_PART_MAIN);}
+			}
+            // Serial.printf("Cell Blink Index: %d\n", cell_blink_index);
+            // Serial.printf("Cell Index: %d\n", calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_cell_voltage, danger_cell_voltage, max_cell_voltage, data.bms_cellvoltages_min));
 
-            elements.cell_blink = lv_obj_get_child(elements.hv_cell_min_bar, cellBlinkIndex);
+            elements.cell_blink = lv_obj_get_child(elements.hv_cell_min_bar, cell_blink_index);
 		}
 
         float min_current = 0.0f; // Minimum current in A
