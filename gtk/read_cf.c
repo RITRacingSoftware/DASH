@@ -51,7 +51,21 @@ uint8_t cf_available(cf_file *ptr) {
     return 0;
 }
 
+int switched = 0;
+
 void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
+    uint64_t tdiff = time_usecs() - ptr->usec_offset;
+    if ((!switched) && (tdiff >= 10000000)) {
+        switched = 1;
+        memset(buf, 0, 16);
+        buf[0] = 1;
+        buf[1] = 1;
+        buf[4] = 2;
+        buf[5] = 7;
+        buf[8] = 1;
+        printf("Switching screens\n");
+        return;
+    }
     uint8_t len = ptr->data[1];
     if (len + 8 > bufsize) len = bufsize-8;
     memcpy(buf, ptr->data, 8);
@@ -60,16 +74,16 @@ void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
     // Modify data for testing
     switch ((buf[4] | (buf[5] << 8))) {
         case 312:
-            buf[8] = (((time_usecs() - ptr->usec_offset) / 1000000) % 6)<<4;
+            buf[8] = ((tdiff / 1000000) % 6)<<4;
             break;
         case 301:
-            buf[8] = (((time_usecs() - ptr->usec_offset) / 1000000) % 7);
+            buf[8] = ((tdiff / 1000000) % 7);
             break;
         case 311:
-            *((uint32_t*)(buf+8)) = 1<<(((time_usecs() - ptr->usec_offset) / 1000000) % 32);
+            *((uint32_t*)(buf+8)) = 1<<((tdiff / 3000000) % 17);
             break;
         case 700:
-            *((uint32_t*)(buf+8)) = 1<<(((time_usecs() - ptr->usec_offset) / 1000000) % 11);
+            *((uint32_t*)(buf+8)) = 1<<((tdiff / 3000000) % 11);
         default:
             break;
     }

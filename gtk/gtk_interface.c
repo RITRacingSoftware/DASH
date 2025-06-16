@@ -134,8 +134,10 @@ static gboolean configure_callback(GtkWidget *widget, GdkEventConfigure *event, 
 }
 
 static gboolean timeout_callback(gpointer data_pointer) {
+    gtk_globals *fd = (gtk_globals*)data_pointer;
     //printf("loop\n");
     loop();
+    gtk_widget_queue_draw(fd->drawing_area);
     return TRUE;
 }
 

@@ -256,6 +256,10 @@ namespace DataManager {
                 case MAIN_DBC_VC_TC_OUT_FRAME_ID:
                     data.tc_msg = *((uint64_t*)(message.data));
                     break;
+
+                case MAIN_DBC_MCAN_DASH_CONTROL_FRAME_ID:
+                    DisplayManager::switchScreens(message.data[0]);
+                    break;
             }
         }
 
