@@ -168,11 +168,11 @@ namespace ScreenDrive {
         }
     }
 
-    void setBarSegOpacityCentered(lv_obj_t* bar, float progress) {
+    void setBarSegOpacityCentered(lv_obj_t* bar, int progress) {
         int total_segments = lv_obj_get_child_cnt(bar);
         int centered_index = total_segments / 2;
-        int start_index = std::min(centered_index, (int)(progress * total_segments) - 1);
-        int end_index = std::max(centered_index, (int)(progress * total_segments));
+        int start_index = std::min(centered_index, progress);
+        int end_index = std::max(centered_index, progress);
         
         for (int i = 0; i < total_segments; i++) {
             if (i < end_index && i >= start_index) {
