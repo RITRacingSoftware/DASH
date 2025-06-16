@@ -490,6 +490,27 @@ namespace ScreenDrive {
             Serial.printf("Pack Index: %d\n", calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage));
             elements.pack_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex);
 
+			if(packBlinkIndex - 1 < 0){
+				lv_obj_t* after_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex + 1);
+				lv_obj_set_style_bg_color(after_blink, EVA_RED, LV_PART_MAIN);
+			}
+			else if(packBlinkIndex + 1 >= lv_obj_get_child_cnt(elements.hv_capac_bar)){
+				lv_obj_t* before_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex - 1);
+				lv_obj_set_style_bg_color(before_blink, EVA_GREEN, LV_PART_MAIN);
+			}
+			else if (packBlinkIndex == 2){
+				lv_obj_t* after_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex + 1);
+				lv_obj_t* before_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex - 1);
+				lv_obj_set_style_bg_color(after_blink, EVA_GREEN, LV_PART_MAIN);
+				lv_obj_set_style_bg_color(before_blink, EVA_RED, LV_PART_MAIN);
+			}
+			else{
+				lv_obj_t* after_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex + 1);
+				lv_obj_t* before_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex - 1);
+				lv_obj_set_style_bg_color(after_blink, EVA_GREEN, LV_PART_MAIN);
+				lv_obj_set_style_bg_color(before_blink, EVA_GREEN, LV_PART_MAIN);
+			}
+
         }
 
         float min_cell_voltage = 2.5f; // Minimum cell voltage in V
