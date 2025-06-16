@@ -471,15 +471,17 @@ namespace ScreenDrive {
         //
         // Left Column (Levels)
         //
+		int packBlinkIndex;
 		int min_pack_voltage = 408; // Minimum pack voltage
 		int danger_pack_voltage = 430; // Minimum pack voltage
 		int max_pack_voltage = 591.6; // Maximum pack voltage
         // 
 		if (data.bms_packvoltage != lastdata.bms_packvoltage) {
+			
             lv_label_set_text_fmt(elements.hv_capac_label, "%2.3f H", (data.bms_packvoltage * 11.58f) / 1000);
 			lv_label_set_text_fmt(elements.charge_label, "%2.0f%%", (data.bms_packvoltage - min_pack_voltage)/(max_pack_voltage - min_pack_voltage) * 100.0f);
             setBarSegOpacity(elements.hv_capac_bar, calculateSegment(2, lv_obj_get_child_cnt(elements.hv_capac_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage));
-            int packBlinkIndex = calculateSegment(2, lv_obj_get_child_cnt(elements.hv_capac_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage) - 1;
+            packBlinkIndex = calculateSegment(2, lv_obj_get_child_cnt(elements.hv_capac_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage) - 1;
             if (packBlinkIndex < 0) {
                 packBlinkIndex = 0; // Ensure we don't go out of bounds
             }
@@ -489,26 +491,10 @@ namespace ScreenDrive {
             Serial.printf("Pack Blink Index: %d\n", packBlinkIndex);
             Serial.printf("Pack Index: %d\n", calculateSegment(2, lv_obj_get_child_cnt(elements.hv_cell_min_bar), min_pack_voltage, danger_pack_voltage, max_pack_voltage, data.bms_packvoltage));
             elements.pack_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex);
-
-			if(packBlinkIndex - 1 < 0){
-				lv_obj_t* after_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex + 1);
-				lv_obj_set_style_bg_color(after_blink, EVA_RED, LV_PART_MAIN);
-			}
-			else if(packBlinkIndex + 1 >= lv_obj_get_child_cnt(elements.hv_capac_bar)){
-				lv_obj_t* before_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex - 1);
-				lv_obj_set_style_bg_color(before_blink, EVA_GREEN, LV_PART_MAIN);
-			}
-			else if (packBlinkIndex == 2){
-				lv_obj_t* after_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex + 1);
-				lv_obj_t* before_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex - 1);
-				lv_obj_set_style_bg_color(after_blink, EVA_GREEN, LV_PART_MAIN);
-				lv_obj_set_style_bg_color(before_blink, EVA_RED, LV_PART_MAIN);
-			}
-			else{
-				lv_obj_t* after_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex + 1);
-				lv_obj_t* before_blink = lv_obj_get_child(elements.hv_capac_bar, packBlinkIndex - 1);
-				lv_obj_set_style_bg_color(after_blink, EVA_GREEN, LV_PART_MAIN);
-				lv_obj_set_style_bg_color(before_blink, EVA_GREEN, LV_PART_MAIN);
+		 	int prevBlinkIndex = packBlinkIndex;
+			if(packBlinkIndex != prevBlinkIndex){
+				if(prevBlinkIndex == 0 || 1){lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_capac_bar, prevBlinkIndex), EVA_RED, LV_PART_MAIN);}
+				else{lv_obj_set_style_bg_color(lv_obj_get_child(elements.hv_capac_bar, prevBlinkIndex), EVA_GREEN, LV_PART_MAIN);}
 			}
 
         }
