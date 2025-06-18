@@ -28,7 +28,7 @@ LV_FONT_DECLARE(big_fault_font);
 namespace DisplayManager {
 
 
-    int active_screen = 2; // 0 = debug, 1 = drive
+    int active_screen = 0; // 0 = debug, 1 = drive
     lv_obj_t* screen_debug;
     lv_obj_t* screen_drive;
     lv_obj_t* screen_endurance;
@@ -245,13 +245,13 @@ namespace DisplayManager {
 
     void switchScreens(int new_screen) {
         if(new_screen != active_screen) {
+                lv_obj_clean(lv_scr_act());
             if(new_screen == 0) {
-                lv_obj_clean(lv_scr_act());
                 lv_scr_load(screen_debug);
-            }
-            else if (new_screen == 1){
-                lv_obj_clean(lv_scr_act());
+            } else if (new_screen == 1) {
                 lv_scr_load(screen_drive);
+            } else if (new_screen == 2) {
+                lv_scr_load(screen_endurance);
             }
 
             active_screen = new_screen;

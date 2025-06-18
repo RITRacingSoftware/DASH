@@ -55,17 +55,17 @@ int switched = 0;
 
 void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
     uint64_t tdiff = time_usecs() - ptr->usec_offset;
-    /*if ((!switched) && (tdiff >= 10000000)) {
+    if ((!switched) && (tdiff >= 10000000)) {
         switched = 1;
         memset(buf, 0, 16);
         buf[0] = 1;
         buf[1] = 1;
         buf[4] = 2;
         buf[5] = 7;
-        buf[8] = 1;
+        buf[8] = 2;
         printf("Switching screens\n");
         return;
-    }*/
+    }
     uint8_t len = ptr->data[1];
     if (len + 8 > bufsize) len = bufsize-8;
     memcpy(buf, ptr->data, 8);
