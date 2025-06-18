@@ -64,6 +64,9 @@ namespace DataManager {
         float tiretemp_rr;
 
         float rotortemp;
+
+        float total_energy;
+        float inv_bus_voltage;
     } car_data_t;
 
     void init();

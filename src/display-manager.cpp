@@ -10,6 +10,7 @@
 #include "tft-manager.h"
 #include "screen-debug.h"
 #include "screen-drive.h"
+#include "screen-endurance.h"
 
 
 #include "lvgl.h"
@@ -27,9 +28,10 @@ LV_FONT_DECLARE(big_fault_font);
 namespace DisplayManager {
 
 
-    int active_screen = 0; // 0 = debug, 1 = drive
+    int active_screen = 2; // 0 = debug, 1 = drive
     lv_obj_t* screen_debug;
     lv_obj_t* screen_drive;
+    lv_obj_t* screen_endurance;
 
     lv_disp_draw_buf_t drawbuf;
     lv_color_t drawbuf1[DRAW_BUFFER_SIZE];
@@ -37,6 +39,7 @@ namespace DisplayManager {
 
     debug_styles_t de;
     drive_styles_t dr;
+    endurance_styles_t en;
 
 
 
@@ -187,6 +190,20 @@ namespace DisplayManager {
         //BLANK BACKGROUND
         lv_style_init(&(dr.noOpacity));
         lv_style_set_bg_opa(&(dr.noOpacity), LV_OPA_0);
+
+        
+        // Endurance styles
+        lv_style_init(&(en.text));
+        lv_style_set_bg_color(&(en.text), lv_color_black());
+        lv_style_set_text_color(&(en.text), EVA_ORANGE);
+        lv_style_set_radius(&(en.text), 2);
+        lv_style_set_text_font(&(en.text), &helvetica_bold_48);
+
+        lv_style_init(&(en.small));
+        lv_style_set_text_font(&(en.small), &lv_font_montserrat_16);
+
+        lv_style_init(&(en.bar));
+        lv_style_set_radius(&(en.bar), 5);
     }
 
     void init() {
@@ -200,10 +217,13 @@ namespace DisplayManager {
         lv_obj_clean(lv_scr_act());
         screen_debug = ScreenDebug::init(&de);
         screen_drive = ScreenDrive::init(&dr);
+        screen_endurance = ScreenEndurance::init(&en);
         if (active_screen == 0) {
             lv_scr_load(screen_debug);
         } else if (active_screen == 1) {
             lv_scr_load(screen_drive);
+        } else if (active_screen == 2) {
+            lv_scr_load(screen_endurance);
         }
 
         Serial.printf("Initialized Screens\n");
@@ -212,11 +232,11 @@ namespace DisplayManager {
 
     void update(DataManager::car_data_t data) {
         if(active_screen == 0) {
-            
             ScreenDebug::update(data);
-        }
-        else if(active_screen == 1) {
+        } else if(active_screen == 1) {
             ScreenDrive::update(data);
+        } else if(active_screen == 2) {
+            ScreenEndurance::update(data);
         }
 
         // Force display refresh with new data

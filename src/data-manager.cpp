@@ -103,6 +103,8 @@ namespace DataManager {
                     main_dbc_bms_current_t current;
                     main_dbc_bms_current_unpack(&current, message.data, message.len);
                     data.bms_buscurrent = main_dbc_bms_current_bms_inst_current_filt_decode(current.bms_inst_current_filt);
+                    if (isnan(data.total_energy)) data.total_energy = 0;
+                    data.total_energy += data.bms_buscurrent * data.inv_bus_voltage * (0.001 / 1000 / 3600);
                     if ((data.bms_buscurrent > data.bms_maxcurrent) || (isnan(data.bms_maxcurrent))) {
                         data.bms_maxcurrent = data.bms_buscurrent;
                     }
@@ -200,6 +202,7 @@ namespace DataManager {
                     main_dbc_vc_fl_info_3_t val3_fl;
                     main_dbc_vc_fl_info_3_unpack(&val3_fl, message.data, message.len);
                     data.motor_temp[INV_FL] = main_dbc_vc_fl_info_3_vc_fl_temp_motor_decode(val3_fl.vc_fl_temp_motor);
+                    data.inv_bus_voltage = main_dbc_vc_fl_info_3_vc_fl_dc_bus_voltage_decode(val3_fl.vc_fl_dc_bus_voltage);
                     break; }
 
                 case MAIN_DBC_VC_FR_AMK_ACTUAL_1_FRAME_ID: {

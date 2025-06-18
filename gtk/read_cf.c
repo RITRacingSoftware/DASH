@@ -55,7 +55,7 @@ int switched = 0;
 
 void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
     uint64_t tdiff = time_usecs() - ptr->usec_offset;
-    if ((!switched) && (tdiff >= 10000000)) {
+    /*if ((!switched) && (tdiff >= 10000000)) {
         switched = 1;
         memset(buf, 0, 16);
         buf[0] = 1;
@@ -65,7 +65,7 @@ void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
         buf[8] = 1;
         printf("Switching screens\n");
         return;
-    }
+    }*/
     uint8_t len = ptr->data[1];
     if (len + 8 > bufsize) len = bufsize-8;
     memcpy(buf, ptr->data, 8);
@@ -84,6 +84,13 @@ void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
             break;
         case 700:
             *((uint32_t*)(buf+8)) = 1<<((tdiff / 3000000) % 11);
+            break;
+        case 424: 
+            buf[11] = 2;
+            break;
+        case 900:
+            *((uint32_t*)(buf+8)) = 200000;
+            break;
         default:
             break;
     }

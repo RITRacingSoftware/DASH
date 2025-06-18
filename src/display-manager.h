@@ -37,6 +37,12 @@ namespace DisplayManager {
         lv_style_t noOpacity;
 
     } drive_styles_t;
+
+    typedef struct endurance_styles_s {
+        lv_style_t text;
+        lv_style_t small;
+        lv_style_t bar;
+    } endurance_styles_t;
     // F8920F
 
 
