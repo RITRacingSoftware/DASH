@@ -4,7 +4,6 @@
 #include <sys/time.h>
 #include <stdlib.h>
 #include <signal.h>
-
 #include <libavcodec/avcodec.h>
 #include <libavutil/opt.h>
 #include <libavutil/imgutils.h>
