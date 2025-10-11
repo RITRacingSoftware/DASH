@@ -16,7 +16,7 @@ namespace DisplayManager {
 
     typedef struct drive_styles_s {
         lv_style_t tempText;
-        lv_style_t middleText;
+        lv_style_t invText;
         lv_style_t bmsText;
         // Temporary until we have a proper fault implementation
         lv_style_t faultText;

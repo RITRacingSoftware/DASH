@@ -134,13 +134,12 @@ namespace DisplayManager {
             lv_style_set_text_font(&dr.tempText, &helvetica_bold_48);
             // lv_style_set_text_letter_space(&dr.tempText, -5);
             
-            // Middle text style
-            lv_style_init(&dr.middleText);
-            lv_style_set_bg_color(&dr.middleText, lv_color_black());
-            lv_style_set_text_color(&dr.middleText, lv_color_black());
-            lv_style_set_radius(&dr.middleText, 2);
-            lv_style_set_text_letter_space(&dr.middleText, -5);
-            lv_style_set_text_font(&dr.middleText, &eurostileextended_bold_40);
+            // Inverter fault text
+            lv_style_init(&dr.invText);
+            lv_style_set_bg_color(&dr.invText, lv_color_black());
+            lv_style_set_text_color(&dr.invText, lv_color_white());
+            lv_style_set_radius(&dr.invText, 2);
+            lv_style_set_text_font(&dr.invText, &lv_font_montserrat_12);
 
 
             // BMS text style
@@ -149,7 +148,7 @@ namespace DisplayManager {
             lv_style_set_bg_color(&dr.bmsText, lv_color_black());
             lv_style_set_text_color(&dr.bmsText, EVA_ORANGE);
             lv_style_set_radius(&dr.bmsText, 2);
-            lv_style_set_text_font(&dr.bmsText, &helvetica_bold_48);
+            lv_style_set_text_font(&dr.bmsText, &lv_font_montserrat_40);
             lv_style_set_text_letter_space(&dr.bmsText, -3);
 
 
@@ -160,7 +159,7 @@ namespace DisplayManager {
             lv_style_set_text_color(&dr.faultText, lv_color_white());
             lv_style_set_radius(&dr.faultText, 0);
             lv_style_set_text_align(&(dr.faultText), LV_TEXT_ALIGN_LEFT);
-            lv_style_set_text_font(&dr.faultText, &eurostileextended_bold_40);
+            lv_style_set_text_font(&dr.faultText, &lv_font_montserrat_40);
 
 
             // Rectangle style

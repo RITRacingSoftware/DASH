@@ -27,7 +27,7 @@ namespace ScreenDrive {
     };
 
     const char* VC_FAULT_MESSAGES[] = {
-        "",
+        "PBX",
         "BMS",
         "APPS A IR",
         "APPS B IR",
@@ -43,7 +43,10 @@ namespace ScreenDrive {
         "FR",
         "FL",
         "PRECH",
-        "APPS SOFT DP"
+        "SOFT DP",
+        "VN UL",
+        "VN IRR",
+        "RUNAWAY"
     };
 
     const char* MCU_STATUS_MESSAGES[] = {
@@ -95,6 +98,8 @@ namespace ScreenDrive {
 
 		lv_obj_t* faults_textarea; //temporary until we have a proper fault implementation
 		lv_obj_t* vc_status;
+
+        lv_obj_t* fault_label[4];
 
 	} elements;
 
@@ -164,18 +169,20 @@ namespace ScreenDrive {
 		//
 		
 		elements.charge_label = lv_label_create(screen);
-		lv_obj_align(elements.charge_label, LV_ALIGN_TOP_LEFT, 395 - (width_center / 2), 142);
+		lv_obj_align(elements.charge_label, LV_ALIGN_TOP_LEFT, 400 - (width_center / 2), 142);
 		lv_label_set_text(elements.charge_label, "?");
-		lv_obj_add_style(elements.charge_label, &dr->middleText, LV_PART_MAIN);
+		lv_obj_add_style(elements.charge_label, &dr->bmsText, LV_PART_MAIN);
 		lv_obj_set_width(elements.charge_label, width_center);
 		lv_obj_set_style_text_align(elements.charge_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+        lv_obj_set_style_text_color(elements.charge_label, lv_color_black(), LV_PART_MAIN);
 
 		elements.mph_label = lv_label_create(screen);
 		lv_obj_align(elements.mph_label, LV_ALIGN_TOP_LEFT, 395 - (width_center / 2), 218);
 		lv_label_set_text(elements.mph_label, "?");
-		lv_obj_add_style(elements.mph_label, &dr->middleText, LV_PART_MAIN);
+		lv_obj_add_style(elements.mph_label, &dr->bmsText, LV_PART_MAIN);
 		lv_obj_set_width(elements.mph_label, width_center);
 		lv_obj_set_style_text_align(elements.mph_label, LV_TEXT_ALIGN_CENTER, LV_PART_MAIN);
+        lv_obj_set_style_text_color(elements.charge_label, lv_color_black(), LV_PART_MAIN);
 
 		//
 		// Right Column (Temps)
@@ -200,6 +207,15 @@ namespace ScreenDrive {
         lv_obj_align(elements.faults_textarea, LV_ALIGN_TOP_LEFT, 10, 10);
         lv_obj_add_style(elements.faults_textarea, &(dr->faultText), LV_PART_MAIN);
         lv_obj_add_style(lv_textarea_get_label(elements.faults_textarea), &(dr->error), LV_PART_SELECTED);
+		
+        // Inverters
+        for (int i=0; i < 4; i++) {
+            elements.fault_label[i] = lv_label_create(screen);
+            lv_obj_align(elements.fault_label[i], LV_ALIGN_TOP_LEFT, 630-120*(i&1), 395-80*(i>>1));
+            lv_label_set_text(elements.fault_label[i], "0/0/0/0");
+            lv_obj_add_style(elements.fault_label[i], &dr->invText, LV_PART_MAIN);
+            lv_obj_set_width(elements.fault_label[i], width_temp);
+        }
 
 
 		memset(&lastdata, 0xff, sizeof(lastdata));
@@ -287,7 +303,7 @@ namespace ScreenDrive {
             lv_textarea_set_text(elements.faults_textarea, "");
 
             // Loop over possible VC faults
-            for(int i = 0; i < 17; i++) {
+            for(int i = 0; i < (sizeof(VC_FAULT_MESSAGES) / sizeof(const char *)); i++) {
                 bool faulted = (data.vc_faultvector >> i) & 1;
                 if(faulted) {
                     if(!firstfault) {
@@ -318,6 +334,12 @@ namespace ScreenDrive {
             lv_label_set_text_sel_start(ta_label, startpos);
             lv_label_set_text_sel_end(ta_label, endpos);
 		}
+
+        for (int i=0; i < 4; i++) {
+            if (memcmp(data.inv_fault+i,  lastdata.inv_fault+i, 16)) {
+                lv_label_set_text_fmt(elements.fault_label[i], "%d/%d/%d/%d", data.inv_fault[i].error_info, data.inv_fault[i].error_list1, data.inv_fault[i].error_list2, data.inv_fault[i].error_list3);
+            }
+        }
 
 		
 		lastdata = data;

@@ -70,6 +70,10 @@ void cf_read_message(cf_file *ptr, uint8_t *buf, uint8_t bufsize) {
             break;
         case 700:
             *((uint32_t*)(buf+8)) = 1<<(((time_usecs() - ptr->usec_offset) / 1000000) % 11);
+            break;
+        case 413:
+            *((uint16_t*)(buf+12)) = 50;
+            break;
         default:
             break;
     }

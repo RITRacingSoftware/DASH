@@ -10,6 +10,13 @@
 #define INV_FL 3
 
 namespace DataManager {
+    typedef struct inverter_fault_s {
+        uint32_t error_info;
+        uint32_t error_list1;
+        uint32_t error_list2;
+        uint32_t error_list3;
+    } inverter_fault_t;
+
     typedef struct car_data_s {
         // float vel_n;
         // float vel_e;
@@ -19,6 +26,7 @@ namespace DataManager {
         uint8_t inv_state[4];
         float inv_temp[4];
         float motor_temp[4];
+        inverter_fault_t inv_fault[4];
         uint64_t tc_msg;
         uint64_t tv_msg;
 

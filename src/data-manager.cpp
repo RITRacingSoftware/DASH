@@ -5,6 +5,7 @@
 
 #ifdef DASH_TESTING
 #include "testing_arduino.h"
+#include <cstdio>
 #else
 #include <Arduino.h>
 #endif
@@ -77,9 +78,9 @@ namespace DataManager {
             //Serial.printf("Got CAN message, ID=0x%04x\n", message.id);
             switch(message.id) {
                 // vector_nav_vel_ned_e and vector_nav_vel_ned_n
-                case MAIN_DBC_SSDB_VECTOR_NAV6_FRAME_ID: {
-                    main_dbc_ssdb_vector_nav6_t sensor;
-                    main_dbc_ssdb_vector_nav6_unpack(&sensor, message.data, message.len);
+                case MAIN_DBC_VECTOR_NAV6_FRAME_ID: {
+                    main_dbc_vector_nav6_t sensor;
+                    main_dbc_vector_nav6_unpack(&sensor, message.data, message.len);
                     vel_x = sensor.vector_nav_vel_body_x;
                     vel_y = sensor.vector_nav_vel_body_y;
                     data.vel = sqrt(vel_x * vel_x + vel_y * vel_y);
@@ -191,9 +192,17 @@ namespace DataManager {
                     main_dbc_vc_fl_amk_actual_1_unpack(&val_fl, message.data, message.len);
                     data.torque[INV_FL] = main_dbc_vc_fl_amk_actual_1_vc_fl_feedback_torque_decode(val_fl.vc_fl_feedback_torque);
                     break; }
+                case MAIN_DBC_VC_FL_INFO_1_FRAME_ID: {
+                    main_dbc_vc_fl_info_1_t val1_fl;
+                    main_dbc_vc_fl_info_1_unpack(&val1_fl, message.data, message.len);
+                    data.inv_fault[INV_FL].error_list1 = val1_fl.vc_fl_error_list1;
+                    data.inv_fault[INV_FL].error_list2 = val1_fl.vc_fl_error_list2;
+                    break; }
                 case MAIN_DBC_VC_FL_INFO_2_FRAME_ID: {
                     main_dbc_vc_fl_info_2_t val2_fl;
                     main_dbc_vc_fl_info_2_unpack(&val2_fl, message.data, message.len);
+                    data.inv_fault[INV_FL].error_info = val2_fl.vc_fl_error_info;
+                    data.inv_fault[INV_FL].error_list3 = val2_fl.vc_fl_error_list3;
                     data.inv_temp[INV_FL] = main_dbc_vc_fl_info_2_vc_fl_temp_inverter_decode(val2_fl.vc_fl_temp_inverter);
                     break; }
                 case MAIN_DBC_VC_FL_INFO_3_FRAME_ID: {
@@ -207,9 +216,17 @@ namespace DataManager {
                     main_dbc_vc_fr_amk_actual_1_unpack(&val_fr, message.data, message.len);
                     data.torque[INV_FR] = main_dbc_vc_fr_amk_actual_1_vc_fr_feedback_torque_decode(val_fr.vc_fr_feedback_torque);
                     break; }
+                case MAIN_DBC_VC_FR_INFO_1_FRAME_ID: {
+                    main_dbc_vc_fr_info_1_t val1_fr;
+                    main_dbc_vc_fr_info_1_unpack(&val1_fr, message.data, message.len);
+                    data.inv_fault[INV_FR].error_list1 = val1_fr.vc_fr_error_list1;
+                    data.inv_fault[INV_FR].error_list2 = val1_fr.vc_fr_error_list2;
+                    break; }
                 case MAIN_DBC_VC_FR_INFO_2_FRAME_ID: {
                     main_dbc_vc_fr_info_2_t val2_fr;
                     main_dbc_vc_fr_info_2_unpack(&val2_fr, message.data, message.len);
+                    data.inv_fault[INV_FR].error_info = val2_fr.vc_fr_error_info;
+                    data.inv_fault[INV_FR].error_list3 = val2_fr.vc_fr_error_list3;
                     data.inv_temp[INV_FR] = main_dbc_vc_fr_info_2_vc_fr_temp_inverter_decode(val2_fr.vc_fr_temp_inverter);
                     break; }
                 case MAIN_DBC_VC_FR_INFO_3_FRAME_ID: {
@@ -223,9 +240,17 @@ namespace DataManager {
                     main_dbc_vc_rl_amk_actual_1_unpack(&val_rl, message.data, message.len);
                     data.torque[INV_RL] = main_dbc_vc_rl_amk_actual_1_vc_rl_feedback_torque_decode(val_rl.vc_rl_feedback_torque);
                     break; }
+                case MAIN_DBC_VC_RL_INFO_1_FRAME_ID: {
+                    main_dbc_vc_rl_info_1_t val1_rl;
+                    main_dbc_vc_rl_info_1_unpack(&val1_rl, message.data, message.len);
+                    data.inv_fault[INV_RL].error_list1 = val1_rl.vc_rl_error_list1;
+                    data.inv_fault[INV_RL].error_list2 = val1_rl.vc_rl_error_list2;
+                    break; }
                 case MAIN_DBC_VC_RL_INFO_2_FRAME_ID: {
                     main_dbc_vc_rl_info_2_t val2_rl;
                     main_dbc_vc_rl_info_2_unpack(&val2_rl, message.data, message.len);
+                    data.inv_fault[INV_RL].error_info = val2_rl.vc_rl_error_info;
+                    data.inv_fault[INV_RL].error_list3 = val2_rl.vc_rl_error_list3;
                     data.inv_temp[INV_RL] = main_dbc_vc_rl_info_2_vc_rl_temp_inverter_decode(val2_rl.vc_rl_temp_inverter);
                     break; }
                 case MAIN_DBC_VC_RL_INFO_3_FRAME_ID: {
@@ -239,9 +264,17 @@ namespace DataManager {
                     main_dbc_vc_rr_amk_actual_1_unpack(&val_rr, message.data, message.len);
                     data.torque[INV_RR] = main_dbc_vc_rr_amk_actual_1_vc_rr_feedback_torque_decode(val_rr.vc_rr_feedback_torque);
                     break; }
+                case MAIN_DBC_VC_RR_INFO_1_FRAME_ID: {
+                    main_dbc_vc_rr_info_1_t val1_rr;
+                    main_dbc_vc_rr_info_1_unpack(&val1_rr, message.data, message.len);
+                    data.inv_fault[INV_RR].error_list1 = val1_rr.vc_rr_error_list1;
+                    data.inv_fault[INV_RR].error_list2 = val1_rr.vc_rr_error_list2;
+                    break; }
                 case MAIN_DBC_VC_RR_INFO_2_FRAME_ID: {
                     main_dbc_vc_rr_info_2_t val2_rr;
                     main_dbc_vc_rr_info_2_unpack(&val2_rr, message.data, message.len);
+                    data.inv_fault[INV_RR].error_info = val2_rr.vc_rr_error_info;
+                    data.inv_fault[INV_RR].error_list3 = val2_rr.vc_rr_error_list3;
                     data.inv_temp[INV_RR] = main_dbc_vc_rr_info_2_vc_rr_temp_inverter_decode(val2_rr.vc_rr_temp_inverter);
                     break; }
                 case MAIN_DBC_VC_RR_INFO_3_FRAME_ID: {
